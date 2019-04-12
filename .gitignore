@@ -1,0 +1,8 @@
+# SDK service diagnostic bundles.
+service-diagnostic-bundles
+
+# Gradle subprojects.
+frameworks/*/.gradle/
+frameworks/*/build/
+frameworks/*/*-universe-url*
+frameworks/*/tests/__pycache__/
