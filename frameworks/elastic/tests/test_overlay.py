@@ -87,4 +87,6 @@ def test_endpoints_on_overlay() -> None:
     assert set(endpoints_on_overlay_to_count.keys()) == set(endpoint_names)
 
     for endpoint_name, expected_count in endpoints_on_overlay_to_count.items():
-        sdk_networks.check_endpoint_on_overlay(config.PACKAGE_NAME, config.SERVICE_NAME, endpoint_name, expected_count)
+        sdk_networks.check_endpoint_on_overlay(
+            config.PACKAGE_NAME, config.SERVICE_NAME, endpoint_name, expected_count
+        )

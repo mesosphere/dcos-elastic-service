@@ -26,12 +26,18 @@ cd /path/to/dcos-elastic-service
 
 ### Running static code analyzers
 
+#### Python
+
 ```bash
 dcos-commons/tools/ci/steps/check_python_files.sh
 ```
 
+### Running automatic code formatters
+
+#### Python
+
 ```bash
-dcos-commons/tools/ci/checks/run_pre_commit.sh
+DOCKER_COMMAND='black frameworks' dcos-commons/run_container.sh --project $(pwd)
 ```
 
 ### Building package

@@ -86,10 +86,7 @@ def test_on_cluster_parallel_write() -> None:
                 _replace_data_nodes_and_wait_for_completed_recovery, DATA_NODES_NUMBER
             )
 
-            wait(
-                [indexer_future, replace_future],
-                timeout=2 * n * INDEXER_INTERVAL_IN_SECONDS,
-            )
+            wait([indexer_future, replace_future], timeout=2 * n * INDEXER_INTERVAL_IN_SECONDS)
     except Exception as e:
         log.error("Failed to post docs or replace pods in parallel. {}".format(e))
 
@@ -112,7 +109,7 @@ def _post_docs_with_bulk_request(docs_number: int) -> None:
         "{}/{}/_bulk?refresh=wait_for".format(index_name, index_type),
         _generate_elastic_docs_as_ndjson(docs_number),
     )
-    assert bulk_response["errors"] == False
+    assert not bulk_response["errors"]
 
 
 def _interval_post_docs_with_bulk_request(
