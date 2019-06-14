@@ -32,64 +32,12 @@ def uninstall_packages(configure_security: None) -> Iterator[None]:
         sdk_install.uninstall(config.PACKAGE_NAME, foldered_name)
 
 
+# TODO(mpereira): Re-enable this test after we release Elasticsearch 6.6.2+.
 @pytest.mark.sanity
 @pytest.mark.timeout(30 * 60)
-def test_xpack_enabled_update_matrix() -> None:
-    from_version = "2.4.0-5.6.9"
-    to_version = "2.5.0-6.3.2"
-
-    # Updating from X-Pack 'enabled' to X-Pack Security 'enabled' is more involved than the other
-    # cases, so we use `test_upgrade_from_xpack_enabled`.
-    log.info("Updating X-Pack from 'enabled' to 'enabled'")
-    config.test_upgrade_from_xpack_enabled(
-        config.PACKAGE_NAME,
-        foldered_name,
-        {"elasticsearch": {"xpack_enabled": True}},
-        expected_task_count,
-        from_version=from_version,
-        to_version=to_version,
-    )
-
-    log.info("Updating X-Pack from 'enabled' to 'disabled'")
-    config.test_xpack_enabled_update(foldered_name, True, False, from_version, to_version)
-
-    log.info("Updating X-Pack from 'disabled' to 'enabled'")
-    config.test_xpack_enabled_update(foldered_name, False, True, from_version, to_version)
-
-    log.info("Updating X-Pack from 'disabled' to 'disabled'")
-    config.test_xpack_enabled_update(foldered_name, False, False, from_version, to_version)
-
-
-@pytest.mark.sanity
-@pytest.mark.timeout(30 * 60)
-def test_xpack_enabled_to_xpack_security_enabled_update_matrix() -> None:
-    from_version = "2.4.0-5.6.9"
-    to_version = "2.5.0-6.3.2"
-
-    # Updating from X-Pack 'enabled' to X-Pack Security 'enabled' (the default) is more involved
-    # than the other cases, so we use `test_upgrade_from_xpack_enabled`.
-    log.info("Updating X-Pack from 'enabled' to X-Pack Security 'enabled'")
-    config.test_upgrade_from_xpack_enabled(
-        config.PACKAGE_NAME,
-        foldered_name,
-        {"elasticsearch": {"xpack_security_enabled": True}},
-        expected_task_count,
-        from_version=from_version,
-        to_version=to_version,
-    )
-
-    log.info("Updating from X-Pack to 'enabled' to X-Pack Security 'disabled'")
-    config.test_xpack_enabled_update(foldered_name, True, False, from_version, to_version)
-
-    log.info("Updating from X-Pack to 'disabled' to X-Pack Security 'enabled'")
-    config.test_xpack_enabled_update(foldered_name, False, True, from_version, to_version)
-
-    log.info("Updating from X-Pack to 'disabled' to X-Pack Security 'disabled'")
-    config.test_xpack_enabled_update(foldered_name, False, False, from_version, to_version)
-
-
-@pytest.mark.sanity
-@pytest.mark.timeout(30 * 60)
+@pytest.mark.skip(
+    reason="DCOS-51376: Bug in Elasticsearch only fixed on 6.6.2+ causes this test to be flaky"
+)
 def test_xpack_security_enabled_update_matrix() -> None:
     log.info("Updating X-Pack Security from 'enabled' to 'enabled'")
     config.test_xpack_security_enabled_update(foldered_name, True, True)
