@@ -1084,6 +1084,26 @@
           "description": "[DEPRECATED] Starting from Elasticseach 6.0, this setting is no longer configurable and defaults to true. Changing this setting has no effect.",
           "type": "boolean",
           "default": true
+        },
+        "plugin_http_proxy_host": {
+          "description": "HTTP proxy host for plugin installation. Default value '' means that proxy won't be used.",
+          "type": "string",
+          "default": ""
+        },
+        "plugin_http_proxy_port": {
+          "description": "HTTP proxy port for plugin installation. Default value -1 means that proxy won't be used.",
+          "type": "integer",
+          "default": -1
+        },
+        "plugin_https_proxy_host": {
+          "description": "HTTPS proxy host for plugin installation. Default value '' means that proxy won't be used.",
+          "type": "string",
+          "default": ""
+        },
+        "plugin_https_proxy_port": {
+          "description": "HTTPS proxy port for plugin installation. Default value -1 means that proxy won't be used.",
+          "type": "integer",
+          "default": -1
         }
       }
     }

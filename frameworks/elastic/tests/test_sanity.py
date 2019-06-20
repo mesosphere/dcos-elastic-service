@@ -496,3 +496,83 @@ def test_adding_data_node_only_restarts_masters() -> None:
     )
     # Coordinator tasks should not restart.
     sdk_tasks.check_tasks_not_updated(service_name, "coordinator", initial_coordinator_task_ids)
+
+
+@pytest.mark.sanity
+def test_plugin_install_via_proxy() -> None:
+    try:
+        _uninstall_and_kill_proxy_before_install()
+
+        proxy_host = sdk_cmd._internal_leader_host()
+        proxy_port = 8899
+        _install_and_run_proxy(proxy_host, proxy_port)
+
+        plugin_name = "analysis-ukrainian"
+        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-6.6.1.zip"
+        _check_proxy_healthy(proxy_host, proxy_port, plugins)
+
+        sdk_service.update_configuration(
+            package_name,
+            service_name,
+            {
+                "elasticsearch": {
+                    "plugins": plugins,
+                    "plugin_http_proxy_host": proxy_host,
+                    "plugin_http_proxy_port": proxy_port,
+                    "plugin_https_proxy_host": proxy_host,
+                    "plugin_https_proxy_port": proxy_port,
+                }
+            },
+            config.DEFAULT_TASK_COUNT,
+        )
+
+        config.check_elasticsearch_plugin_installed(
+            plugin_name, service_name=service_name, expected_task_count=current_expected_task_count
+        )
+        _check_proxy_was_used()
+
+        sdk_service.update_configuration(
+            package_name,
+            service_name,
+            {"elasticsearch": {"plugins": ""}},
+            current_expected_task_count,
+        )
+        config.check_elasticsearch_plugin_uninstalled(plugin_name, service_name=service_name)
+    finally:
+        _uninstall_and_kill_proxy()
+
+
+def _install_and_run_proxy(host: str, port: int) -> None:
+    rc, stdout, stderr = sdk_cmd.master_ssh(
+        "sudo docker run --name py_proxy --rm -d --net=host mesosphere/proxy.py:a0021cdb3ab913495b8da53c8dc1081b895f3ef2 --hostname={} --port={}".format(
+            host, port
+        )
+    )
+    assert rc == 0
+
+
+def _uninstall_and_kill_proxy() -> None:
+    rc, stdout, stderr = sdk_cmd.master_ssh(
+        "sudo docker stop py_proxy ; sudo docker rmi mesosphere/proxy.py:a0021cdb3ab913495b8da53c8dc1081b895f3ef2"
+    )
+    assert rc == 0
+
+
+def _uninstall_and_kill_proxy_before_install() -> None:
+    sdk_cmd.master_ssh(
+        "sudo docker stop py_proxy ; sudo docker rmi mesosphere/proxy.py:a0021cdb3ab913495b8da53c8dc1081b895f3ef2"
+    )
+
+
+def _check_proxy_healthy(host: str, port: int, uri: str) -> None:
+    rc, stdout, stderr = sdk_cmd.master_ssh(
+        "curl -so /dev/null -w {} --proxy {}:{} {}".format("'%{http_code}'", host, port, uri)
+    )
+    assert rc == 0 and stdout == "200"
+
+
+def _check_proxy_was_used() -> None:
+    rc, stdout, stderr = sdk_cmd.master_ssh(
+        "sudo docker logs py_proxy 2>&1 | grep 's3.amazonaws.com'"
+    )
+    assert rc == 0 and "s3.amazonaws.com" in stdout

@@ -160,10 +160,12 @@ def check_kibana_plugin_installed(plugin_name: str, service_name: str = SERVICE_
     wait_fixed=1000, stop_max_delay=DEFAULT_TIMEOUT * 1000, retry_on_result=lambda res: not res
 )
 def check_elasticsearch_plugin_installed(
-    plugin_name: str, service_name: str = SERVICE_NAME
+    plugin_name: str,
+    service_name: str = SERVICE_NAME,
+    expected_task_count: int = DEFAULT_TASK_COUNT,
 ) -> bool:
     result = _get_hosts_with_plugin(service_name, plugin_name)
-    return result is not None and len(result) == DEFAULT_TASK_COUNT
+    return result is not None and len(result) == expected_task_count
 
 
 @retrying.retry(
