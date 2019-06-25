@@ -3,6 +3,7 @@
 set -exo pipefail
 
 export PATH="${PATH}:/usr/sbin"
+export HOME="${MESOS_SANDBOX}"
 
 ################################ nginx proxy ###################################
 
