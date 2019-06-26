@@ -66,6 +66,15 @@
           "description": "[DEPRECATED] X-Pack is enabled by default on Kibana 6.3+. Changing this setting now has no effect.",
           "type": "boolean",
           "default": true
+        },
+        "custom_kibana_yml": {
+          "description": "Custom YAML to be appended to kibana.yml. This field must be base64 encoded.",
+          "type": "string",
+          "media": {
+            "binaryEncoding": "base64",
+            "type": "application/x-yaml"
+          },
+          "default": ""
         }
       },
       "required": [

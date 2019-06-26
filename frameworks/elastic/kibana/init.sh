@@ -20,6 +20,10 @@ nginx -c "${MESOS_SANDBOX}/nginx/nginx.conf"
 readonly KIBANA_PATH="${MESOS_SANDBOX}/kibana-${ELASTIC_VERSION}-linux-x86_64"
 readonly KIBANA_YML_PATH="${KIBANA_PATH}/config/kibana.yml"
 
+if [ -n  "${CUSTOM_YAML_BLOCK_BASE64}" ]; then
+  CUSTOM_YAML_BLOCK=$(echo "${CUSTOM_YAML_BLOCK_BASE64}" | base64 -d)
+fi
+
 cat <<-EOF > "${KIBANA_YML_PATH}"
 	elasticsearch.url: "${ELASTICSEARCH_URL}"
 	elasticsearch.username: "${KIBANA_USER}"
@@ -34,6 +38,8 @@ cat <<-EOF > "${KIBANA_YML_PATH}"
 
 	xpack.security.encryptionKey: "${MESOS_FRAMEWORK_ID}"
 	xpack.reporting.encryptionKey: "${MESOS_FRAMEWORK_ID}"
+
+	${CUSTOM_YAML_BLOCK}
 EOF
 
 if [ "${KIBANA_ELASTICSEARCH_TLS}" = "true" ]; then
