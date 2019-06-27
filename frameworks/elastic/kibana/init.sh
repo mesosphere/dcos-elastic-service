@@ -42,6 +42,15 @@ cat <<-EOF > "${KIBANA_YML_PATH}"
 	${CUSTOM_YAML_BLOCK}
 EOF
 
+if [ -n "$KIBANA_PLUGINS" ]; then 
+  echo 'Installing Kibana plugins.'
+  IFS=',' read -ra PLUGINS <<< "$KIBANA_PLUGINS"
+  for plugin in "${PLUGINS[@]}"; do
+    echo "Installing plugin: ${plugin}" 
+    ${KIBANA_PATH}/bin/kibana-plugin install "$plugin"
+  done; 
+fi
+
 if [ "${KIBANA_ELASTICSEARCH_TLS}" = "true" ]; then
   cat <<-EOF >> "${KIBANA_YML_PATH}"
 		elasticsearch.ssl.certificateAuthorities: ${MESOS_SANDBOX}/.ssl/ca-bundle.crt

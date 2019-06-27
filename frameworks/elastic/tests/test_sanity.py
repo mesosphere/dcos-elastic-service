@@ -576,3 +576,31 @@ def _check_proxy_was_used() -> None:
         "sudo docker logs py_proxy 2>&1 | grep 's3.amazonaws.com'"
     )
     assert rc == 0 and "s3.amazonaws.com" in stdout
+
+
+@pytest.mark.sanity
+def test_kibana_plugin_installation():
+    try:
+        elasticsearch_url = "http://" + sdk_hosts.vip_host(service_name, "coordinator", 9200)
+        sdk_install.install(
+            kibana_package_name,
+            kibana_service_name,
+            0,
+            {
+                "kibana": {
+                    "plugins": "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/Logtrail-6.6.1-0.1.31,https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/own_home-6.6.1-1.zip",
+                    "elasticsearch_url": elasticsearch_url,
+                }
+            },
+            timeout_seconds=kibana_timeout,
+            wait_for_deployment=False,
+            insert_strict_options=False,
+        )
+        assert config.check_kibana_plugin_installed("logtrail", kibana_service_name)
+        assert config.check_kibana_plugin_installed("own_home", kibana_service_name)
+
+    except Exception:
+        log.exception(Exception)
+    finally:
+        log.info("Ensure elasticsearch and kibana are uninstalled.")
+        sdk_install.uninstall(kibana_package_name, kibana_package_name)
