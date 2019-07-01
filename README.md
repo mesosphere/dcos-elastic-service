@@ -6,7 +6,7 @@ Elastic](https://mesosphere.com/service-catalog/elastic) package.
 Official documentation can be found in the [service docs
 page](https://docs.mesosphere.com/services/elastic/).
 
-## Integration Test Builds Matrix
+## Nightly integration test builds matrix
 
 |                | DC/OS 1.11 | DC/OS 1.12 | DC/OS 1.13 | DC/OS Master |
 | -------------- | ---------- | ---------- | ---------- | ------------ |
@@ -15,6 +15,16 @@ page](https://docs.mesosphere.com/services/elastic/).
 | **Strict**     | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_111_Strict&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_111_Strict)/statusIcon"/></a> | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_112_Strict&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_112_Strict)/statusIcon"/></a> | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_113_Strict&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_113_Strict)/statusIcon"/></a> | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_master_Strict&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_master_Strict)/statusIcon"/></a> |
 
 ## Getting Started
+
+The dcos-commons git submodule is set up via
+[SSH](https://help.github.com/en/articles/connecting-to-github-with-ssh). Please
+make sure you have that configured.
+
+### Clone the repository
+
+```bash
+git clone --recurse-submodules git@github.com:mesosphere/dcos-elastic-service.git /path/to/dcos-elastic-service
+```
 
 ## Development
 
@@ -57,13 +67,6 @@ container and build the package there:
 
 ```bash
 DOCKER_COMMAND="frameworks/elastic/build.sh aws" dcos-commons/run_container.sh --project $(pwd)
-```
-
-You could also have the package be built in the host machine, but that's not
-recommended:
-
-```bash
-frameworks/elastic/build.sh aws
 ```
 
 ### Running tests
