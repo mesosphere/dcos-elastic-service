@@ -82,6 +82,9 @@
     "MASTER_NODE_HEAP_MB": "{{master_nodes.heap.size}}",
     "MASTER_NODE_DISK": "{{master_nodes.disk}}",
     "MASTER_NODE_DISK_TYPE": "{{master_nodes.disk_type}}",
+    {{#master_nodes.master_node_volume_profile}}
+    "MASTER_NODE_VOLUME_PROFILE": "{{master_nodes.master_node_volume_profile}}",
+    {{/master_nodes.master_node_volume_profile}}
     "MASTER_NODE_TRANSPORT_PORT": "{{master_nodes.transport_port}}",
     "DATA_NODE_COUNT": "{{data_nodes.count}}",
     "DATA_NODE_CPUS": "{{data_nodes.cpus}}",
@@ -90,6 +93,9 @@
     "DATA_NODE_HEAP_MB": "{{data_nodes.heap.size}}",
     "DATA_NODE_DISK": "{{data_nodes.disk}}",
     "DATA_NODE_DISK_TYPE": "{{data_nodes.disk_type}}",
+    {{#data_nodes.data_node_volume_profile}}
+    "DATA_NODE_VOLUME_PROFILE": "{{data_nodes.data_node_volume_profile}}",
+    {{/data_nodes.data_node_volume_profile}}
     "INGEST_NODE_COUNT": "{{ingest_nodes.count}}",
     "INGEST_NODE_CPUS": "{{ingest_nodes.cpus}}",
     "INGEST_NODE_MEM": "{{ingest_nodes.mem}}",
@@ -97,6 +103,9 @@
     "INGEST_NODE_HEAP_MB": "{{ingest_nodes.heap.size}}",
     "INGEST_NODE_DISK": "{{ingest_nodes.disk}}",
     "INGEST_NODE_DISK_TYPE": "{{ingest_nodes.disk_type}}",
+    {{#ingest_nodes.ingest_node_volume_profile}}
+    "INGEST_NODE_VOLUME_PROFILE": "{{ingest_nodes.ingest_node_volume_profile}}",
+    {{/ingest_nodes.ingest_node_volume_profile}}
     "COORDINATOR_NODE_COUNT": "{{coordinator_nodes.count}}",
     "COORDINATOR_NODE_CPUS": "{{coordinator_nodes.cpus}}",
     "COORDINATOR_NODE_MEM": "{{coordinator_nodes.mem}}",
@@ -104,6 +113,9 @@
     "COORDINATOR_NODE_HEAP_MB": "{{coordinator_nodes.heap.size}}",
     "COORDINATOR_NODE_DISK": "{{coordinator_nodes.disk}}",
     "COORDINATOR_NODE_DISK_TYPE": "{{coordinator_nodes.disk_type}}",
+    {{#coordinator_nodes.coordinator_node_volume_profile}}
+    "COORDINATOR_NODE_VOLUME_PROFILE": "{{coordinator_nodes.coordinator_node_volume_profile}}",
+    {{/coordinator_nodes.coordinator_node_volume_profile}}
     {{#service.region}}
     "SERVICE_REGION": "{{service.region}}",
     {{/service.region}}

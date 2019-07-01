@@ -180,6 +180,10 @@
           "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
           "default": "ROOT"
         },
+        "master_node_volume_profile": {
+          "type": "string",
+          "description": "Volume profile to be used for storing Master Node data."
+        },
         "transport_port": {
           "description": "Transport port for master nodes to listen on.",
           "type": "integer",
@@ -294,6 +298,10 @@
           "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
           "default": "ROOT"
         },
+        "data_node_volume_profile": {
+          "type": "string",
+          "description": "Volume profile to be used for storing Data Node data."
+        },
         "placement": {
           "description": "Placement constraints for data nodes (e.g., [[\"hostname\", \"UNIQUE\"]]).",
           "type": "string",
@@ -403,6 +411,10 @@
           "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
           "default": "ROOT"
         },
+        "ingest_node_volume_profile": {
+          "type": "string",
+          "description": "Volume profile to be used for storing Ingest Node data."
+        },
         "placement": {
           "description": "Placement constraints for ingest nodes (e.g., [[\"hostname\", \"UNIQUE\"]]).",
           "type": "string",
@@ -511,6 +523,10 @@
           "type": "string",
           "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
           "default": "ROOT"
+        },
+        "coordinator_node_volume_profile": {
+          "type": "string",
+          "description": "Volume profile to be used for storing Coordinator Node data."
         },
         "placement": {
           "description": "Placement constraints for coordinator nodes (e.g., [[\"hostname\", \"UNIQUE\"]]).",
