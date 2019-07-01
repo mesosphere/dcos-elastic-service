@@ -20,6 +20,9 @@ The dcos-commons git submodule is set up via
 [SSH](https://help.github.com/en/articles/connecting-to-github-with-ssh). Please
 make sure you have that configured.
 
+Also make sure your Docker daemon is [running under a non-root
+user](https://docs.docker.com/install/linux/linux-postinstall/).
+
 ### Clone the repository
 
 ```bash
@@ -47,7 +50,7 @@ dcos-commons/tools/ci/steps/check_python_files.sh
 #### Python
 
 ```bash
-DOCKER_COMMAND='black frameworks' dcos-commons/run_container.sh --project $(pwd)
+DOCKER_COMMAND='black frameworks' dcos-commons/run_container.sh elastic --project $(pwd)
 ```
 
 ### Building package
@@ -66,7 +69,7 @@ The following command should be run from your host. It will run a Docker
 container and build the package there:
 
 ```bash
-DOCKER_COMMAND="frameworks/elastic/build.sh aws" dcos-commons/run_container.sh --project $(pwd)
+DOCKER_COMMAND="frameworks/elastic/build.sh aws" dcos-commons/run_container.sh elastic --project $(pwd)
 ```
 
 ### Running tests
