@@ -121,3 +121,49 @@ module you'll need to set `PYTEST_ARGS` similar to the example above.
 ```bash
 dcos-commons/test.sh elastic --project $(pwd) -k test_endpoints
 ```
+
+### Style guide
+
+#### Pull requests
+
+PR titles should be in imperative mood, useful, concise and follow the following
+format:
+
+```
+[DCOS-xxxxx] Add support for new thing.
+```
+
+Notice that they reference an actual JIRA ticket with the `[DCOS-xxxxx]` tag. If
+for some reason the PR isn't related to an actual ticket, feel free to use tags
+that were already used, like `[DOCS]`, `[SDK]` or `[MISC]`.
+
+PR descriptions should include additional context regarding what is achieved
+with the PR, why is it needed, rationale regarding decisions that were made,
+possibly with pointers to actual commits.
+
+Example:
+```
+To make it possible for the new thing we had to:
+- Prepare this other thing (5417f75)
+- Clean up something else (ec4c78d)
+
+This was required because of this and that.
+
+Please look into http://www.somewebsite.com/details-about-thing
+for more context.
+```
+
+When all checks are green, PRs should be merged as a squash-commit, with its
+message being the PR title followed by the PR number.
+
+Title:
+```
+[DCOS-xxxxx] Add support for new thing. (#42)
+```
+
+Its description will ideally be the PR description. If the PR description is
+empty (it probably shouldn't be!) the squash-commit description will be a list
+of all the commits in the PR's branch. That list should be cleaned up to only
+contain useful entries (no `fix`, `formatting`, `changed foo`, `refactored
+bar`), or rewritten so that additional context is added to the commit like in
+the example above for PR descriptions.
