@@ -180,7 +180,7 @@
           "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
           "default": "ROOT"
         },
-        "master_node_volume_profile": {
+        "volume_profile": {
           "type": "string",
           "description": "Volume profile to be used for storing Master Node data."
         },
@@ -298,7 +298,7 @@
           "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
           "default": "ROOT"
         },
-        "data_node_volume_profile": {
+        "volume_profile": {
           "type": "string",
           "description": "Volume profile to be used for storing Data Node data."
         },
@@ -411,7 +411,7 @@
           "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
           "default": "ROOT"
         },
-        "ingest_node_volume_profile": {
+        "volume_profile": {
           "type": "string",
           "description": "Volume profile to be used for storing Ingest Node data."
         },
@@ -524,7 +524,7 @@
           "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
           "default": "ROOT"
         },
-        "coordinator_node_volume_profile": {
+        "volume_profile": {
           "type": "string",
           "description": "Volume profile to be used for storing Coordinator Node data."
         },
