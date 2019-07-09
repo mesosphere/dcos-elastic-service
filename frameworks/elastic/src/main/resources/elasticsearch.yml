@@ -88,7 +88,7 @@ http.compression: {{HTTP_COMPRESSION}}
 http.compression_level: {{HTTP_COMPRESSION_LEVEL}}
 http.cors.enabled: {{HTTP_CORS_ENABLED}}
 {{#HTTP_CORS_ALLOW_ORIGIN}}
-http.cors.allow-origin: {{HTTP_CORS_ALLOW_ORIGIN}}
+http.cors.allow-origin: "{{{HTTP_CORS_ALLOW_ORIGIN}}}"
 {{/HTTP_CORS_ALLOW_ORIGIN}}
 http.cors.max-age: {{HTTP_CORS_MAX_AGE}}
 http.cors.allow-methods: {{HTTP_CORS_ALLOW_METHODS}}
