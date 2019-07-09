@@ -1,0 +1,29 @@
+{
+  "standardize_config_json": {
+    "sections": {
+      "elasticsearch": {
+        "head": [
+          "custom_elasticsearch_yml",
+          "health_user",
+          "health_user_password",
+          "plugins",
+          "plugin_http_proxy_host",
+          "plugin_http_proxy_port",
+          "plugin_https_proxy_host",
+          "plugin_https_proxy_port",
+          "xpack_http_proxy_host",
+          "xpack_http_proxy_port",
+          "xpack_graph_enabled",
+          "xpack_ml_enabled",
+          "xpack_monitoring_collection_enabled",
+          "xpack_monitoring_enabled",
+          "xpack_security_audit_enabled",
+          "xpack_security_enabled",
+          "xpack_sql_enabled",
+          "xpack_watcher_enabled"
+        ],
+        "tail": ["http_content_type_required", "xpack_enabled"]
+      }
+    }
+  }
+}

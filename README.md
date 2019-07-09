@@ -14,7 +14,7 @@ page](https://docs.mesosphere.com/services/elastic/).
 | **Permissive** | (not tested) | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_112_Permissive&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_112_Permissive)/statusIcon"/></a> | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_113_Permissive&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_113_Permissive)/statusIcon"/></a> | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_master_Permissive&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_master_Permissive)/statusIcon"/></a> |
 | **Strict**     | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_111_Strict&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_111_Strict)/statusIcon"/></a> | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_112_Strict&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_112_Strict)/statusIcon"/></a> | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_113_Strict&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_113_Strict)/statusIcon"/></a> | <a href="https://teamcity.mesosphere.io/viewType.html?buildTypeId=DataServices_Elastic_IntegrationTests_DCOS_master_Strict&guest=1"><img src="https://teamcity.mesosphere.io/app/rest/builds/buildType:(id:DataServices_Elastic_IntegrationTests_DCOS_master_Strict)/statusIcon"/></a> |
 
-## Getting Started
+## Development
 
 The dcos-commons git submodule is set up via
 [SSH](https://help.github.com/en/articles/connecting-to-github-with-ssh). Please
@@ -23,13 +23,11 @@ make sure you have that configured.
 Also make sure your Docker daemon is [running under a non-root
 user](https://docs.docker.com/install/linux/linux-postinstall/).
 
-### Clone the repository
+### Cloning the repository
 
 ```bash
 git clone --recurse-submodules git@github.com:mesosphere/dcos-elastic-service.git /path/to/dcos-elastic-service
 ```
-
-## Development
 
 All commands assume that you're in the project root directory.
 
@@ -51,6 +49,16 @@ dcos-commons/tools/ci/steps/check_python_files.sh
 
 ```bash
 DOCKER_COMMAND='black frameworks' dcos-commons/run_container.sh elastic --project $(pwd)
+```
+
+#### config.json
+
+```bash
+DOCKER_COMMAND='
+  ./tools/standardize_config_json.py
+     --service-config-json frameworks/elastic/universe/config.json
+     --sdk-tools-config frameworks/elastic/sdk-tools.json
+' dcos-commons/run_container.sh elastic --project $(pwd)
 ```
 
 ### Building package
@@ -124,7 +132,7 @@ dcos-commons/test.sh elastic --project $(pwd) -k test_endpoints
 
 ### Style guide
 
-#### Pull requests
+#### Opening pull requests
 
 PR titles should be in imperative mood, useful, concise and follow the following
 format:
@@ -133,9 +141,10 @@ format:
 [DCOS-xxxxx] Add support for new thing.
 ```
 
-Notice that they reference an actual JIRA ticket with the `[DCOS-xxxxx]` tag. If
-for some reason the PR isn't related to an actual ticket, feel free to use tags
-that were already used, like `[DOCS]`, `[SDK]` or `[MISC]`.
+In the example above a JIRA ticket is referenced with the `[DCOS-xxxxx]` tag. If
+for some reason the PR isn't related to a ticket, feel free to use "free-form"
+tags, ideally ones that were already used like `[DOCS]`, `[SDK]`, `[MISC]`,
+`[TOOLS]` or even `[SDK][TOOLS]` for increased specificity.
 
 PR descriptions should include additional context regarding what is achieved
 with the PR, why is it needed, rationale regarding decisions that were made,
@@ -149,21 +158,29 @@ To make it possible for the new thing we had to:
 
 This was required because of this and that.
 
-Please look into http://www.somewebsite.com/details-about-thing
-for more context.
+Example output of thing:
+
+    {
+      "a": 2
+    }
 ```
 
-When all checks are green, PRs should be merged as a squash-commit, with its
-message being the PR title followed by the PR number.
+Please look into http://www.somewebsite.com/details-about-thing
+for more context.
 
-Title:
+#### Merging pull requests
+
+When all checks are green, a PR should be merged as a squash-commit, with its
+message being the PR title followed by the PR number. Example:
+
 ```
 [DCOS-xxxxx] Add support for new thing. (#42)
 ```
 
-Its description will ideally be the PR description. If the PR description is
-empty (it probably shouldn't be!) the squash-commit description will be a list
-of all the commits in the PR's branch. That list should be cleaned up to only
-contain useful entries (no `fix`, `formatting`, `changed foo`, `refactored
-bar`), or rewritten so that additional context is added to the commit like in
-the example above for PR descriptions.
+The description for the squash-commit will ideally be the PR description
+verbatim. If the PR description was empty (it probably shouldn't have been!) the
+squash-commit description will by default be a list of all the commits in the
+PR's branch. That list should be cleaned up to only contain useful entries (no
+`fix`, `formatting`, `changed foo`, `refactored bar`), or rewritten so that
+additional context is added to the commit, like in the example above for PR
+descriptions.
