@@ -67,6 +67,7 @@ def default_populated_index() -> None:
     )
 
 
+@pytest.mark.incremental
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_pod_replace_then_immediate_config_update() -> None:
@@ -87,6 +88,7 @@ def test_pod_replace_then_immediate_config_update() -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.sanity
 def test_endpoints() -> None:
     # Check that we can reach the scheduler via admin router, and that returned endpoints are
@@ -101,6 +103,7 @@ def test_endpoints() -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.sanity
 def test_indexing(default_populated_index: None) -> None:
     indices_stats = config.get_elasticsearch_indices_stats(index_name, service_name=service_name)
@@ -112,6 +115,7 @@ def test_indexing(default_populated_index: None) -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.sanity
 @pytest.mark.dcos_min_version("1.9")
 def test_metrics() -> None:
@@ -142,6 +146,7 @@ def test_metrics() -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.sanity
 def test_custom_yaml_base64() -> None:
     # Apply this custom YAML block as a base64-encoded string:
@@ -184,6 +189,7 @@ def test_custom_yaml_base64() -> None:
     )
 
 
+@pytest.mark.incremental
 @pytest.mark.sanity
 @pytest.mark.timeout(60 * 60)
 def test_security_toggle_with_kibana(default_populated_index: None) -> None:
@@ -328,6 +334,7 @@ def test_security_toggle_with_kibana(default_populated_index: None) -> None:
     )
 
 
+@pytest.mark.incremental
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_losing_and_regaining_index_health(default_populated_index: None) -> None:
@@ -344,6 +351,7 @@ def test_losing_and_regaining_index_health(default_populated_index: None) -> Non
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_master_reelection() -> None:
@@ -363,6 +371,7 @@ def test_master_reelection() -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_master_node_replace() -> None:
@@ -374,6 +383,7 @@ def test_master_node_replace() -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_data_node_replace() -> None:
@@ -382,6 +392,7 @@ def test_data_node_replace() -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_coordinator_node_replace() -> None:
@@ -390,6 +401,7 @@ def test_coordinator_node_replace() -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.recovery
 @pytest.mark.sanity
 @pytest.mark.timeout(15 * 60)
@@ -412,6 +424,7 @@ def test_plugin_install_and_uninstall(default_populated_index: None) -> None:
     config.check_elasticsearch_plugin_uninstalled(plugins, service_name=service_name)
 
 
+@pytest.mark.incremental
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_add_ingest_and_coordinator_nodes_does_not_restart_master_or_data_nodes() -> None:
@@ -449,6 +462,7 @@ def test_add_ingest_and_coordinator_nodes_does_not_restart_master_or_data_nodes(
     sdk_tasks.check_tasks_not_updated(service_name, "data", initial_data_task_ids)
 
 
+@pytest.mark.incremental
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_adding_data_node_only_restarts_masters() -> None:
@@ -498,6 +512,7 @@ def test_adding_data_node_only_restarts_masters() -> None:
     sdk_tasks.check_tasks_not_updated(service_name, "coordinator", initial_coordinator_task_ids)
 
 
+@pytest.mark.incremental
 @pytest.mark.sanity
 def test_plugin_install_via_proxy() -> None:
     try:
@@ -578,6 +593,7 @@ def _check_proxy_was_used() -> None:
     assert rc == 0 and "s3.amazonaws.com" in stdout
 
 
+@pytest.mark.incremental
 @pytest.mark.sanity
 def test_kibana_plugin_installation():
     try:
