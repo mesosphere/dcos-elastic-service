@@ -671,6 +671,11 @@
           "type": "boolean",
           "default": true
         },
+        "xpack_monitoring_default_exporter_use_ingest": {
+          "description": "Whether to supply a placeholder pipeline to the cluster and a pipeline processor with every bulk request. Defaults to false.",
+          "type": "boolean",
+          "default": false
+        },
         "xpack_security_audit_enabled": {
           "description": "Set to true to enable auditing on the node. Defaults to false.",
           "type": "boolean",

@@ -330,6 +330,10 @@ xpack.ml.node_concurrent_job_allocations: {{XPACK_ML_NODE_CONCURRENT_JOB_ALLOCAT
 {{#XPACK_MONITORING_ENABLED}}
 xpack.monitoring.enabled: {{XPACK_MONITORING_ENABLED}}
 {{/XPACK_MONITORING_ENABLED}}
+{{^XPACK_MONITORING_DEFAULT_EXPORTER_USE_INGEST}}
+xpack.monitoring.exporters.default_exporter.type: local
+xpack.monitoring.exporters.default_exporter.use_ingest: {{XPACK_MONITORING_DEFAULT_EXPORTER_USE_INGEST}}
+{{/XPACK_MONITORING_DEFAULT_EXPORTER_USE_INGEST}}
 {{#XPACK_MONITORING_COLLECTION_ENABLED}}
 xpack.monitoring.collection.enabled: {{XPACK_MONITORING_COLLECTION_ENABLED}}
 {{/XPACK_MONITORING_COLLECTION_ENABLED}}
