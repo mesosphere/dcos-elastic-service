@@ -8,6 +8,17 @@ import logging
 log = logging.getLogger(__name__)
 
 
+@pytest.fixture(autouse=True)
+def uninstall_elastic():
+    try:
+        log.info("Ensuring Elastic is uninstalled before running test")
+        sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
+        yield  # let the test session execute
+    finally:
+        log.info("Ensuring Elastic is uninstalled after running test")
+        sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
+
+
 @pytest.mark.sanity
 def test_xmx_and_xms_flags(configure_security):
     """ method to test the duplication of JVM flags in elastic tasks """
@@ -18,7 +29,6 @@ def test_xmx_and_xms_flags(configure_security):
     COORDINATOR_NODE_HEAP = 900
     INGEST_NODE_HEAP = 1000
 
-    sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
     # installing elastic service and passing customized json to overwrite default values.
     sdk_install.install(
         config.PACKAGE_NAME,
@@ -85,6 +95,3 @@ def test_xmx_and_xms_flags(configure_security):
             assert (
                 str(stdout).count(ingest_xmx) == 1
             ), "Configured ingest node flag xmx prefix should appear once"
-
-    # uninstalling the installed service
-    sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)

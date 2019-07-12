@@ -10,11 +10,21 @@ from tests import config
 log = logging.getLogger(__name__)
 
 
+@pytest.fixture(autouse=True)
+def uninstall_elastic():
+    try:
+        log.info("Ensuring Elastic is uninstalled before running test")
+        sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
+        yield  # let the test session execute
+    finally:
+        log.info("Ensuring Elastic is uninstalled after running test")
+        sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
+
+
 @pytest.mark.sanity
 @pytest.mark.dcos_min_version("1.11")
 @sdk_utils.dcos_ee_only
 def test_zones_not_referenced_in_placement_constraints() -> None:
-    sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
     sdk_install.install(config.PACKAGE_NAME, config.SERVICE_NAME, config.DEFAULT_TASK_COUNT)
 
     nodes_info = config.get_elasticsearch_nodes_info(service_name=config.SERVICE_NAME)
@@ -28,14 +38,11 @@ def test_zones_not_referenced_in_placement_constraints() -> None:
         )
         assert sdk_fault_domain.is_valid_zone(get_in(["attributes", "zone"], node))
 
-    sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
-
 
 @pytest.mark.sanity
 @pytest.mark.dcos_min_version("1.11")
 @sdk_utils.dcos_ee_only
 def test_zones_referenced_in_placement_constraints() -> None:
-    sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
     sdk_install.install(
         config.PACKAGE_NAME,
         config.SERVICE_NAME,
@@ -56,14 +63,11 @@ def test_zones_referenced_in_placement_constraints() -> None:
         )
         assert sdk_fault_domain.is_valid_zone(get_in(["attributes", "zone"], node))
 
-    sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
-
 
 @pytest.mark.sanity
 @pytest.mark.dcos_min_version("1.11")
 @sdk_utils.dcos_ee_only
 def test_heterogeneus_zone_constraints() -> None:
-    sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
     sdk_install.install(
         config.PACKAGE_NAME,
         config.SERVICE_NAME,
@@ -84,5 +88,3 @@ def test_heterogeneus_zone_constraints() -> None:
         service_name=config.SERVICE_NAME,
     )
     config.verify_document(config.SERVICE_NAME, document_id, document_fields)
-
-    sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
