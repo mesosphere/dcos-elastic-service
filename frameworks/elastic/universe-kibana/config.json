@@ -57,6 +57,18 @@
           "type": "string",
           "default": "changeme"
         },
+        "placement": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": [
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "default": []
+        },
         "cpus": {
           "description": "Kibana CPU requirements",
           "type": "number",

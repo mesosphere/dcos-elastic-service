@@ -2,6 +2,7 @@ import pytest
 import sdk_cmd
 import sdk_hosts
 import sdk_install
+import sdk_marathon
 import base64
 
 from tests import config
@@ -38,6 +39,40 @@ def test_config_with_custom_yml() -> None:
         config.check_kibana_adminrouter_integration(
             "service/{}/".format(config.KIBANA_SERVICE_NAME)
         )
+    finally:
+        _uninstall_services()
+
+
+@pytest.mark.sanity
+def test_config_with_custom_placement():
+
+    try:
+        _uninstall_services()
+
+        non_default_placement = [["hostname", "CLUSTER"]]
+
+        sdk_install.install(
+            config.PACKAGE_NAME,
+            service_name=config.SERVICE_NAME,
+            expected_running_tasks=config.DEFAULT_TASK_COUNT,
+        )
+
+        sdk_install.install(
+            config.KIBANA_PACKAGE_NAME,
+            config.KIBANA_SERVICE_NAME,
+            0,
+            {"kibana": {"placement": non_default_placement}},
+            wait_for_deployment=False,
+            insert_strict_options=False,
+        )
+
+        marathon_constraints = sdk_marathon.get_config(config.KIBANA_SERVICE_NAME)["constraints"]
+
+        assert marathon_constraints == non_default_placement
+        assert config.check_kibana_adminrouter_integration(
+            "service/{}/".format(config.KIBANA_SERVICE_NAME)
+        )
+
     finally:
         _uninstall_services()
 
