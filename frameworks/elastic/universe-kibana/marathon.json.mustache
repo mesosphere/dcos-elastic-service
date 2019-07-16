@@ -6,6 +6,23 @@
   "user": "{{service.user}}",
   "container": {
     "type": "MESOS",
+    {{#service.virtual_network_enabled}}
+    "portMappings": [
+      {
+        "name": "kibana",
+        "containerPort": 0,
+        "hostPort": 0,
+        "labels": {
+          "VIP_0": "/web.{{service.name}}:80"
+        }
+      },
+      {
+        "name": "proxy",
+        "hostPort": 0,
+        "containerPort": 0
+      }
+    ],
+    {{/service.virtual_network_enabled}}
     "docker": {
       "image": "{{resource.assets.container.docker.nginx}}"
     }
@@ -31,6 +48,12 @@
     {{/kibana.elasticsearch_tls}}
     "KIBANA_USER": "{{kibana.user}}",
     "KIBANA_PASSWORD": "{{kibana.password}}",
+    {{#service.virtual_network_enabled}}
+    "VIRTUAL_NETWORK_ENABLED": "true",
+    {{^service.virtual_network_plugin_labels.isEmpty}}
+    "VIRTUAL_NETWORK_PLUGIN_LABELS": "{{#service.virtual_network_plugin_labels}}{{key}}:{{value}},{{/service.virtual_network_plugin_labels}}",
+    {{/service.virtual_network_plugin_labels.isEmpty}}
+    {{/service.virtual_network_enabled}}
     "CUSTOM_YAML_BLOCK_BASE64": "{{kibana.custom_kibana_yml}}"
   },
   "fetch": [
@@ -52,6 +75,23 @@
     "minimumHealthCapacity": 0,
     "maximumOverCapacity": 0
   },
+  {{#service.virtual_network_enabled}}
+  "networks": [
+    {
+      "name": "{{service.virtual_network_name}}",
+      {{^service.virtual_network_plugin_labels.isEmpty}}
+      "labels": {
+        {{#service.virtual_network_plugin_labels}}
+        "{{key}}": "{{value}}",
+        {{/service.virtual_network_plugin_labels}}
+        "network_name": "{{service.virtual_network_name}}"
+      },
+      {{/service.virtual_network_plugin_labels.isEmpty}}
+      "mode": "container"
+    }
+  ],
+  {{/service.virtual_network_enabled}}
+  {{^service.virtual_network_enabled}}
   "portDefinitions": [
     {
       "port": 0,
@@ -65,6 +105,7 @@
       "protocol": "tcp"
     }
   ],
+  {{/service.virtual_network_enabled}}
   "healthChecks": [
     {
       "protocol": "MESOS_HTTP",

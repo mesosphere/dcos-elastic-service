@@ -15,6 +15,34 @@
           "description": "The user that runs the Kibana services and owns the Mesos sandbox.",
           "type": "string",
           "default": "nobody"
+        },
+        "virtual_network_enabled": {
+          "description": "Enable virtual networking",
+          "type": "boolean",
+          "default": false
+        },
+        "virtual_network_name": {
+          "description": "The name of the virtual network to join",
+          "type": "string",
+          "default": "dcos"
+        },
+        "virtual_network_plugin_labels": {
+          "description": "Labels to pass to the virtual network plugin. Array of key-value lables objects. Example: [{'key':'k_0','value':'v_0'},...,{'key':'k_N','value':'v_N'}]",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "default": {}
+          },
+          "default": []
         }
       },
       "required": [

@@ -1,18 +1,15 @@
 import json
-import pytest
-from toolz import get_in
 from typing import Any, Dict, Iterator
 
+import pytest
 import sdk_cmd
-import sdk_install
 import sdk_hosts
 import sdk_recovery
-import sdk_service
 import sdk_utils
-
-from security import transport_encryption
+from toolz import get_in
 
 from tests import config
+from tests.commons import tls
 
 pytestmark = [
     sdk_utils.dcos_ee_only,
@@ -27,96 +24,40 @@ def service_account(configure_security: None) -> Iterator[Dict[str, Any]]:
     """
     Sets up a service account for use with TLS.
     """
-    try:
-        name = config.SERVICE_NAME
-        service_account_info = transport_encryption.setup_service_account(name)
-
-        yield service_account_info
-    finally:
-        transport_encryption.cleanup_service_account(config.SERVICE_NAME, service_account_info)
+    yield from tls._service_account_impl(configure_security)
 
 
 @pytest.fixture(scope="module")
 def elastic_service(service_account: Dict[str, Any]) -> Iterator[Dict[str, Any]]:
-    package_name = config.PACKAGE_NAME
-    service_name = config.SERVICE_NAME
-    expected_running_tasks = config.DEFAULT_TASK_COUNT
-
-    service_options = {
-        "service": {
-            "name": service_name,
-            "service_account": service_account["name"],
-            "service_account_secret": service_account["secret"],
-            "security": {"transport_encryption": {"enabled": True}},
+    yield from tls._elastic_service_impl(
+        service_account,
+        {
+            "service": {
+                "name": config.SERVICE_NAME,
+                "service_account": service_account["name"],
+                "service_account_secret": service_account["secret"],
+                "security": {"transport_encryption": {"enabled": True}},
+            },
+            "elasticsearch": {"xpack_security_enabled": True},
         },
-        "elasticsearch": {"xpack_security_enabled": True},
-    }
-
-    try:
-        sdk_install.uninstall(package_name, service_name)
-
-        sdk_install.install(
-            package_name,
-            service_name=service_name,
-            expected_running_tasks=expected_running_tasks,
-            additional_options=service_options,
-            timeout_seconds=30 * 60,
-        )
-
-        # Start trial license.
-        config.start_trial_license(service_name, https=True)
-
-        # Set up passwords. Basic HTTP credentials will have to be used in HTTP requests to
-        # Elasticsearch from now on.
-        passwords = config.setup_passwords(service_name, https=True)
-
-        # Set up healthcheck basic HTTP credentials.
-        sdk_service.update_configuration(
-            package_name,
-            service_name,
-            {"elasticsearch": {"health_user_password": passwords["elastic"]}},
-            expected_running_tasks,
-        )
-
-        yield {**service_options, **{"package_name": package_name, "passwords": passwords}}
-    finally:
-        sdk_install.uninstall(package_name, service_name)
+    )
 
 
 @pytest.fixture(scope="module")
 def kibana_application(elastic_service: Dict[str, Any]) -> Iterator[Dict[str, Any]]:
-    package_name = config.KIBANA_PACKAGE_NAME
-    service_name = config.KIBANA_SERVICE_NAME
-
-    elasticsearch_url = "https://" + sdk_hosts.vip_host(
-        elastic_service["service"]["name"], "coordinator", 9200
-    )
-
-    service_options = {
-        "service": {"name": service_name},
-        "kibana": {
-            "elasticsearch_tls": True,
-            "elasticsearch_url": elasticsearch_url,
-            "elasticsearch_xpack_security_enabled": True,
-            "password": elastic_service["passwords"]["kibana"],
+    yield from tls._kibana_application_impl(
+        elastic_service,
+        {
+            "service": {"name": config.KIBANA_SERVICE_NAME},
+            "kibana": {
+                "elasticsearch_tls": True,
+                "elasticsearch_url": "https://"
+                + sdk_hosts.vip_host(elastic_service["service"]["name"], "coordinator", 9200),
+                "elasticsearch_xpack_security_enabled": True,
+                "password": elastic_service["passwords"]["kibana"],
+            },
         },
-    }
-
-    try:
-        sdk_install.uninstall(package_name, service_name)
-
-        sdk_install.install(
-            package_name,
-            service_name=service_name,
-            expected_running_tasks=0,
-            additional_options=service_options,
-            timeout_seconds=config.KIBANA_DEFAULT_TIMEOUT,
-            wait_for_deployment=False,
-        )
-
-        yield {**service_options, **{"package_name": package_name, "elastic": elastic_service}}
-    finally:
-        sdk_install.uninstall(package_name, service_name)
+    )
 
 
 @pytest.mark.tls
