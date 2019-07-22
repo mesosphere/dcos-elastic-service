@@ -106,6 +106,26 @@
     }
   ],
   {{/service.virtual_network_enabled}}
+  "fetch": [
+        {
+            "uri": "https://artifacts.elastic.co/downloads/kibana/kibana-5.6.5-linux-x86_64.tar.gz",
+            "extract": true,
+            "executable": false,
+            "cache": false
+        },
+        {
+            "uri": "https://github.com/floragunncom/search-guard-kibana-plugin/releases/download/v5.6.5-5/searchguard-kibana-5.6.5-5.zip", // TODO change this to current version
+            "extract": true,
+            "executable": false,
+            "cache": false
+        },
+        {
+            "uri": "https://s3.amazonaws.com/mbgl-universe/ksetup.sh",
+            "extract": false,
+            "executable": true,
+            "cache": false
+        }
+    ],
   "healthChecks": [
     {
       "protocol": "MESOS_HTTP",

@@ -42,7 +42,7 @@ node.ingest: {{INGEST_ENABLED}}
 
 # https://www.elastic.co/guide/en/elasticsearch/reference/6.3/security-settings.html
 {{#SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
-xpack.security.enabled: true
+xpack.security.enabled: {{XPACK_SECURITY_ENABLED}}
 # https://www.elastic.co/guide/en/elasticsearch/reference/6.3/security-settings.html#ssl-tls-settings
 xpack.ssl.key: {{MESOS_SANDBOX}}/node.key
 xpack.ssl.certificate: {{MESOS_SANDBOX}}/node.crt
@@ -364,6 +364,22 @@ xpack.http.proxy.host: {{XPACK_HTTP_PROXY_HOST}}
 {{#XPACK_HTTP_PROXY_PORT}}
 xpack.http.proxy.port: {{XPACK_HTTP_PROXY_PORT}}
 {{/XPACK_HTTP_PROXY_PORT}}
+{{#SEARCHGUARD_ENABLED}}
+searchguard.ssl.http.enabled: true
+searchguard.ssl.http.clientauth_mode: NONE
+searchguard.ssl.http.pemcert_filepath: {{MESOS_SANDBOX}}/node.crt
+searchguard.ssl.http.pemkey_filepath: {{MESOS_SANDBOX}}/node.key.pkcs8
+searchguard.ssl.http.pemtrustedcas_filepath: {{MESOS_SANDBOX}}/node.ca
+searchguard.ssl.transport.pemcert_filepath: {{MESOS_SANDBOX}}/node.crt
+searchguard.ssl.transport.pemkey_filepath: {{MESOS_SANDBOX}}/node.key.pkcs8
+searchguard.ssl.transport.pemtrustedcas_filepath: {{MESOS_SANDBOX}}/node.ca
+searchguard.ssl.transport.enforce_hostname_verification: true
+searchguard.nodes_dn:
+  - CN=*-node.elastic,O=Mesosphere\, Inc,L=San Francisco,ST=CA,C=US
+searchguard.authcz.admin_dn:
+  - CN=sginit-0-init,elastic.O=Mesosphere\, Inc,L=San Francisco,ST=CA,C=US
+  - CN=sgadmin-0-admin,elastic.O=Mesosphere\, Inc,L=San Francisco,ST=CA,C=US
+{{/SEARCHGUARD_ENABLED}}
 {{#CLUSTER_MAX_SHARDS_PER_NODE}}
 cluster.max_shards_per_node: {{CLUSTER_MAX_SHARDS_PER_NODE}}
 {{/CLUSTER_MAX_SHARDS_PER_NODE}}

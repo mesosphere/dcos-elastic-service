@@ -16,6 +16,9 @@ pods:
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
       - {{STATSD_URI}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      - {{SEARCHGUARD_SGADMIN_URI}}
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
     rlimits:
       RLIMIT_NOFILE:
         soft: {{MASTER_NODE_RLIMIT_NOFILE_SOFT}}
@@ -113,6 +116,9 @@ pods:
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
       - {{STATSD_URI}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      - {{SEARCHGUARD_SGADMIN_URI}}
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
     rlimits:
       RLIMIT_NOFILE:
         soft: {{DATA_NODE_RLIMIT_NOFILE_SOFT}}
@@ -208,6 +214,9 @@ pods:
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
       - {{STATSD_URI}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      - {{SEARCHGUARD_SGADMIN_URI}}
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
     rlimits:
       RLIMIT_NOFILE:
         soft: {{INGEST_NODE_RLIMIT_NOFILE_SOFT}}
@@ -304,6 +313,9 @@ pods:
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
       - {{STATSD_URI}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      - {{SEARCHGUARD_SGADMIN_URI}}
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
     rlimits:
       RLIMIT_NOFILE:
         soft: {{COORDINATOR_NODE_RLIMIT_NOFILE_SOFT}}
@@ -386,6 +398,89 @@ pods:
           - name: node
             type: TLS
         {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+  {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+  {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+  sginit:
+    count: 1
+    {{#ENABLE_VIRTUAL_NETWORK}}
+    networks:
+      {{VIRTUAL_NETWORK_NAME}}:
+        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
+    {{/ENABLE_VIRTUAL_NETWORK}}
+    uris:
+      - {{ELASTICSEARCH_JAVA_URI}}
+      - {{SEARCHGUARD_SGADMIN_URI}}
+    placement:
+    tasks:
+      init:
+        goal: ONCE
+        cpus: 0.25
+        memory: 512
+        cmd: |
+          set -e
+
+          export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
+
+          openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
+
+          tools/sgadmin.sh -cd sgconfig -nhnv -cacert node.ca -cert node.crt -key node.key.pkcs8 -icl -h coordinator.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory
+        transport-encryption:
+          - name: node
+            type: TLS
+  sgadmin:
+    count: {{SGADMIN_NODE_COUNT}}
+    allow-decomission: true
+    {{#ENABLE_VIRTUAL_NETWORK}}
+    networks:
+      {{VIRTUAL_NETWORK_NAME}}:
+        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
+    {{/ENABLE_VIRTUAL_NETWORK}}
+    uris:
+      - {{ELASTICSEARCH_JAVA_URI}}
+      - {{SEARCHGUARD_SGADMIN_URI}}
+    placement:
+    tasks:
+      admin:
+        goal: RUNNING
+        cpus: 0.25
+        memory: 512
+        cmd: |
+          set -e
+          rm -f sgconfig/*
+          cat > sgadmin.sh << 'EOF'
+          #!/bin/bash
+          export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
+          tools/sgadmin.sh "$@"
+          EOF
+          chmod +x sgadmin.sh
+
+          openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
+          while [ true ] ; do
+            sleep 120
+          done
+
+          set -e
+           export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/jre/)
+           ./elasticsearch-$ELASTIC_VERSION/bin/elasticsearch-plugin install --batch file://$(ls $MESOS_SANDBOX/search-guard-6-*.zip)
+           chmod +x elasticsearch-$ELASTIC_VERSION/plugins/search-guard-6/tools/sgadmin.sh
+           rm -rf sgconfig
+           cat > sgadmin.sh <<EOF
+           export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/jre/)
+           rm -rf sgconfig
+           unzip sgconfig.zip
+           openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
+           elasticsearch-$ELASTIC_VERSION/plugins/search-guard-6/tools/sgadmin.sh -icl -nhnv -key node.key.pkcs8 -cert node.crt -cacert node.ca -cd sgconfig -h coordinator.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory
+           rm node.key.pkcs8
+           EOF
+           chmod +x sgadmin.sh
+           while [ true ] ; do
+             sleep 120
+           done
+        transport-encryption:
+          - name: node
+            type: TLS
+  {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+  {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
 plans:
   deploy:
     strategy: {{DEPLOY_STRATEGY}}
@@ -402,6 +497,16 @@ plans:
       coordinator-deploy:
         strategy: {{DEPLOY_STRATEGY}}
         pod: coordinator
+      {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      sginit-deploy:
+        strategy: {{DEPLOY_STRATEGY}}
+        pod: sginit
+      sgadmin-deploy:
+        strategy: {{DEPLOY_STRATEGY}}
+        pod: sgadmin
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
   update:
     strategy: {{UPDATE_STRATEGY}}
     phases:
@@ -417,3 +522,10 @@ plans:
       coordinator-update:
         strategy: {{UPDATE_STRATEGY}}
         pod: coordinator
+      {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      sgadmin-update:
+        strategy: {{UPDATE_STRATEGY}}
+        pod: sgadmin
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}

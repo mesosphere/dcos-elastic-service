@@ -40,6 +40,7 @@
     "STATSD_URI": "{{resource.assets.uris.statsd-plugin-zip}}",
     "ELASTICSEARCH_URI" : "{{resource.assets.uris.elasticsearch-tar-gz}}",
     "ELASTICSEARCH_JAVA_URI" : "{{resource.assets.uris.elasticsearch-jre-tar-gz}}",
+    "SEARCHGUARD_SGADMIN_URI": "{{resource.assets.uris.searchguard-sgadmin-zip}}",
     "DIAGNOSTICS_URI" : "{{resource.assets.uris.diagnostics-zip}}",
     "BOOTSTRAP_URI": "{{resource.assets.uris.bootstrap-zip}}",
     "JAVA_URI": "{{resource.assets.uris.jre-tar-gz}}",
@@ -113,6 +114,7 @@
     "COORDINATOR_NODE_HEAP_MB": "{{coordinator_nodes.heap.size}}",
     "COORDINATOR_NODE_DISK": "{{coordinator_nodes.disk}}",
     "COORDINATOR_NODE_DISK_TYPE": "{{coordinator_nodes.disk_type}}",
+    "SGADMIN_NODE_COUNT": "{{sgadmin_nodes.count}}",
     {{#coordinator_nodes.volume_profile}}
     "COORDINATOR_NODE_VOLUME_PROFILE": "{{coordinator_nodes.volume_profile}}",
     {{/coordinator_nodes.volume_profile}}
@@ -121,6 +123,10 @@
     {{/service.region}}
     "ELASTICSEARCH_HEALTH_USER": "{{elasticsearch.health_user}}",
     "ELASTICSEARCH_HEALTH_USER_PASSWORD": "{{elasticsearch.health_user_password}}",
+
+    {{#elasticsearch.searchguard_enabled}}
+    "TASKCFG_ALL_SEARCHGUARD_ENABLED": "{{elasticsearch.searchguard_enabled}}",
+    {{/elasticsearch.searchguard_enabled}}
     "TASKCFG_ALL_XPACK_SECURITY_ENABLED": "{{elasticsearch.xpack_security_enabled}}",
     "TASKCFG_ALL_ELASTICSEARCH_PLUGINS": "{{elasticsearch.plugins}}",
     "TASKCFG_ALL_PLUGIN_HTTP_PROXY_HOST": "{{elasticsearch.plugin_http_proxy_host}}",

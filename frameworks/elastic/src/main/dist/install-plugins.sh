@@ -20,6 +20,18 @@ if [ -n "$STATSD_UDP_HOST" ]; then
   fi
 fi
 
+if [ -n "$SEARCHGUARD_ENABLED" ]; then
+    openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
+    PLUGIN_FILE=$(ls $MESOS_SANDBOX/search-guard-6-*.zip)
+
+    SEARCHGUARD_PLUGIN="file://${PLUGIN_FILE}"
+    if [ -n "$PLUGINS" ]; then
+        PLUGINS="$PLUGINS$IFS$SEARCHGUARD_PLUGIN"
+    else
+        PLUGINS="$SEARCHGUARD_PLUGIN"
+    fi
+fi
+
 if [ -n "$PLUGIN_HTTP_PROXY_HOST" ] && [ -n "$PLUGIN_HTTP_PROXY_PORT" ]; then
     PROXY_ES_JAVA_OPTS="-Dhttp.proxyHost=$PLUGIN_HTTP_PROXY_HOST -Dhttp.proxyPort=$PLUGIN_HTTP_PROXY_PORT"
 fi

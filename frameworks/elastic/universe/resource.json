@@ -8,7 +8,8 @@
       "statsd-plugin-zip": "https://downloads.mesosphere.com/elastic/assets/elasticsearch-statsd-{{elastic-statsd-version}}.zip",
       "elasticsearch-jre-tar-gz": "{{jre-url}}",
       "elasticsearch-tar-gz": "https://downloads.mesosphere.com/elastic/assets/elasticsearch-{{elastic-version}}.tar.gz",
-      "diagnostics-zip": "https://downloads.mesosphere.com/elastic/assets/support-diagnostics-{{support-diagnostics-version}}-dist.zip"
+      "diagnostics-zip": "https://downloads.mesosphere.com/elastic/assets/support-diagnostics-{{support-diagnostics-version}}-dist.zip",
+      "searchguard-sgadmin-zip": "https://oss.sonatype.org/service/local/repositories/releases/content/com/floragunn/search-guard-6/6.6.1-24.2/search-guard-6-6.6.1-24.2.zip"
     }
   },
   "images": {

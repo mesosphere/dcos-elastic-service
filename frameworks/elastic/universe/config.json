@@ -592,6 +592,22 @@
         "count"
       ]
     },
+    "sgadmin_nodes": {
+      "description": "Elasticsearch sgadmin node configuration properties",
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "Number of sgadmin nodes to run",
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "count"
+      ]
+    },
     "elasticsearch": {
       "description": "Elasticsearch service configuration properties",
       "type": "object",
@@ -1310,6 +1326,11 @@
           "description": "[DEPRECATED] X-Pack is enabled by default on Elastic 6.3+. Changing this setting has no effect.",
           "type": "boolean",
           "default": true
+        },
+        "searchguard_enabled": {
+          "description": "Whether or not to enable the commercial Search Guard plugin for Elastic",
+          "type": "boolean",
+          "default": false
         }
       }
     }
