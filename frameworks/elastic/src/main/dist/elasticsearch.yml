@@ -377,7 +377,7 @@ searchguard.ssl.transport.enforce_hostname_verification: true
 searchguard.nodes_dn:
   - CN=*-node.elastic,O=Mesosphere\, Inc,L=San Francisco,ST=CA,C=US
 searchguard.authcz.admin_dn:
-  - CN=sgadmin-0-admin,elastic.O=Mesosphere\, Inc,L=San Francisco,ST=CA,C=US
+  - CN=sgadmin-0-admin.elastic,O=Mesosphere\, Inc,L=San Francisco,ST=CA,C=US
 {{/SEARCHGUARD_ENABLED}}
 {{#CLUSTER_MAX_SHARDS_PER_NODE}}
 cluster.max_shards_per_node: {{CLUSTER_MAX_SHARDS_PER_NODE}}
