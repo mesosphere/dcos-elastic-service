@@ -400,33 +400,6 @@ pods:
         {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
   {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
   {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
-  sginit:
-    count: 1
-    {{#ENABLE_VIRTUAL_NETWORK}}
-    networks:
-      {{VIRTUAL_NETWORK_NAME}}:
-        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
-    {{/ENABLE_VIRTUAL_NETWORK}}
-    uris:
-      - {{ELASTICSEARCH_JAVA_URI}}
-      - {{SEARCHGUARD_SGADMIN_URI}}
-    placement:
-    tasks:
-      init:
-        goal: ONCE
-        cpus: 0.25
-        memory: 512
-        cmd: |
-          set -e
-
-          export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
-
-          openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
-
-          tools/sgadmin.sh -cd sgconfig -nhnv -cacert node.ca -cert node.crt -key node.key.pkcs8 -icl -h coordinator.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory
-        transport-encryption:
-          - name: node
-            type: TLS
   sgadmin:
     count: {{SGADMIN_NODE_COUNT}}
     allow-decomission: true
@@ -437,45 +410,48 @@ pods:
     {{/ENABLE_VIRTUAL_NETWORK}}
     uris:
       - {{ELASTICSEARCH_JAVA_URI}}
+      - {{ELASTICSEARCH_URI}}
       - {{SEARCHGUARD_SGADMIN_URI}}
     placement:
+    ports:
+      sgadmin-http:
+        port: 0
+        env-key: PORT_HTTP
+        advertise: true
+        vip:
+          prefix: sgadmin
+          port: 9200
+      sgadmin-transport:
+        port: 0
+        env-key: PORT_TRANSPORT
+        advertise: true
+        vip:
+          prefix: sgadmin
+          port: 9300
     tasks:
       admin:
         goal: RUNNING
         cpus: 0.25
         memory: 512
         cmd: |
-          set -e
-          rm -f sgconfig/*
-          cat > sgadmin.sh << 'EOF'
-          #!/bin/bash
-          export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
-          tools/sgadmin.sh "$@"
-          EOF
-          chmod +x sgadmin.sh
+         set -e
+         export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
+         ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch-plugin install --batch file://$(ls $MESOS_SANDBOX/search-guard-6-*.zip)
+         chmod +x elasticsearch-{{ELASTIC_VERSION}}/plugins/search-guard-6/tools/sgadmin.sh
 
-          openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
-          while [ true ] ; do
-            sleep 120
-          done
+         cat > sgadmin.sh << 'EOF'
+         #!/bin/bash
+         export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
+         unzip sgconfig.zip
+         openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
+         elasticsearch-{{ELASTIC_VERSION}}/plugins/search-guard-6/tools/sgadmin.sh -nhnv -key node.key.pkcs8 -cert node.crt -cacert node.ca -cd sgconfig -icl -h coordinator.elastic.l4lb.thisdcos.directory
+         EOF
 
-          set -e
-           export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/jre/)
-           ./elasticsearch-$ELASTIC_VERSION/bin/elasticsearch-plugin install --batch file://$(ls $MESOS_SANDBOX/search-guard-6-*.zip)
-           chmod +x elasticsearch-$ELASTIC_VERSION/plugins/search-guard-6/tools/sgadmin.sh
-           rm -rf sgconfig
-           cat > sgadmin.sh <<EOF
-           export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/jre/)
-           rm -rf sgconfig
-           unzip sgconfig.zip
-           openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
-           elasticsearch-$ELASTIC_VERSION/plugins/search-guard-6/tools/sgadmin.sh -icl -nhnv -key node.key.pkcs8 -cert node.crt -cacert node.ca -cd sgconfig -h coordinator.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory
-           rm node.key.pkcs8
-           EOF
-           chmod +x sgadmin.sh
-           while [ true ] ; do
-             sleep 120
-           done
+         chmod +x sgadmin.sh
+         ./sgadmin.sh  &> log.file
+         while [ true ] ; do
+           sleep 120
+         done
         transport-encryption:
           - name: node
             type: TLS
@@ -499,9 +475,6 @@ plans:
         pod: coordinator
       {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
       {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
-      sginit-deploy:
-        strategy: {{DEPLOY_STRATEGY}}
-        pod: sginit
       sgadmin-deploy:
         strategy: {{DEPLOY_STRATEGY}}
         pod: sgadmin
