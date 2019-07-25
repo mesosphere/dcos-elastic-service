@@ -7,6 +7,7 @@ import sdk_hosts
 import sdk_install
 import sdk_marathon
 import sdk_networks
+import sdk_utils
 
 from tests import config
 from tests.commons import tls
@@ -159,6 +160,10 @@ def test_virtual_network(configure_package) -> None:
 
 @pytest.mark.tls
 @pytest.mark.sanity
+@sdk_utils.dcos_ee_only
+@pytest.mark.skipif(
+    sdk_utils.dcos_version_less_than("1.10"), reason="TLS tests require DC/OS 1.10+"
+)
 def test_virtual_network_tls(
     kibana_application: Dict[str, Any], elastic_service: Dict[str, Any]
 ) -> None:
