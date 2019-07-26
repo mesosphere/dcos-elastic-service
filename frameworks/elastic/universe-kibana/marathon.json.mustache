@@ -43,6 +43,10 @@
     "FRAMEWORK_USER": "{{service.user}}",
     "KIBANA_PLUGINS": "{{kibana.plugins}}",
     "ELASTICSEARCH_URL": "{{kibana.elasticsearch_url}}",
+    "SEARCHGUARD_ENABLED": "{{kibana.searchguard_enabled}}",
+    {{#kibana.searchguard_enabled}}
+    "SEARCHGUARD_PLUGIN_URI": "{{resource.assets.uris.kibana-searchguard-plugin-zip}}",
+    {{/kibana.searchguard_enabled}}
     {{#kibana.elasticsearch_tls}}
     "KIBANA_ELASTICSEARCH_TLS": "{{kibana.elasticsearch_tls}}",
     {{/kibana.elasticsearch_tls}}
@@ -59,6 +63,10 @@
   "fetch": [
     {
       "uri": "{{resource.assets.uris.kibana-tar-gz}}",
+      "cache": true
+    },
+    {
+      "uri": "{{resource.assets.uris.kibana-searchguard-plugin-zip}}",
       "cache": true
     },
     {
@@ -106,26 +114,6 @@
     }
   ],
   {{/service.virtual_network_enabled}}
-  "fetch": [
-        {
-            "uri": "https://artifacts.elastic.co/downloads/kibana/kibana-5.6.5-linux-x86_64.tar.gz",
-            "extract": true,
-            "executable": false,
-            "cache": false
-        },
-        {
-            "uri": "https://github.com/floragunncom/search-guard-kibana-plugin/releases/download/v5.6.5-5/searchguard-kibana-5.6.5-5.zip", // TODO change this to current version
-            "extract": true,
-            "executable": false,
-            "cache": false
-        },
-        {
-            "uri": "https://s3.amazonaws.com/mbgl-universe/ksetup.sh",
-            "extract": false,
-            "executable": true,
-            "cache": false
-        }
-    ],
   "healthChecks": [
     {
       "protocol": "MESOS_HTTP",

@@ -75,6 +75,11 @@
           "type": "boolean",
           "default": false
         },
+        "searchguard_enabled": {
+          "description": "Whether or not to enable the commercial Search Guard plugin for Kibana",
+          "type": "boolean",
+          "default": false
+        },
         "user": {
           "description": "Kibana username to use for X-Pack authentication, if enabled",
           "type": "string",

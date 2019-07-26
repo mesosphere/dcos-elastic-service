@@ -712,6 +712,11 @@
           "type": "boolean",
           "default": true
         },
+        "searchguard_enabled": {
+          "description": "Whether or not to enable the commercial Search Guard plugin for Elastic",
+          "type": "boolean",
+          "default": false
+        },
         "action_destructive_requires_name": {
           "description": "In order to disable allowing to delete indices via wildcards or _all, set it as true.",
           "type": "boolean",
@@ -1326,11 +1331,6 @@
           "description": "[DEPRECATED] X-Pack is enabled by default on Elastic 6.3+. Changing this setting has no effect.",
           "type": "boolean",
           "default": true
-        },
-        "searchguard_enabled": {
-          "description": "Whether or not to enable the commercial Search Guard plugin for Elastic",
-          "type": "boolean",
-          "default": false
         }
       }
     }
