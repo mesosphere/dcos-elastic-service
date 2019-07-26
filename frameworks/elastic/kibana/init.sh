@@ -53,8 +53,8 @@ if [ "${SEARCHGUARD_ENABLED}" = "true" ]; then
   NODE_OPTIONS="--max-old-space-size=8192"
 
   cat <<-EOF >> "${KIBANA_YML_PATH}"
-		searchguard.basicauth.enabled: true
 		elasticsearch.hosts: "${ELASTICSEARCH_URL}"
+		xpack.security.enabled: false
 	EOF
 
   if [ -n "$KIBANA_PLUGINS" ]; then
