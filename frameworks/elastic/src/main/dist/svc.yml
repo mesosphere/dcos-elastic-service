@@ -408,6 +408,37 @@ pods:
       {{VIRTUAL_NETWORK_NAME}}:
         labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
     {{/ENABLE_VIRTUAL_NETWORK}}
+    secrets:
+      {{#TASKCFG_ALL_SG_INTERNAL_USERS_SECRET_PATH}}
+      sg_internal_users:
+        secret: {{TASKCFG_ALL_SG_INTERNAL_USERS_SECRET_PATH}}
+        file: sg_internal_users.yml
+      {{/TASKCFG_ALL_SG_INTERNAL_USERS_SECRET_PATH}}
+      {{#TASKCFG_ALL_SG_CONFIG_SECRET_PATH}}
+      sg_config:
+        secret: {{TASKCFG_ALL_SG_CONFIG_SECRET_PATH}}
+        file: sg_config.yml
+      {{/TASKCFG_ALL_SG_CONFIG_SECRET_PATH}}
+      {{#TASKCFG_ALL_SG_ACTION_GROUPS_SECRET_PATH}}
+      sg_action_groups:
+        secret: {{TASKCFG_ALL_SG_ACTION_GROUPS_SECRET_PATH}}
+        file: sg_action_groups.yml
+      {{/TASKCFG_ALL_SG_ACTION_GROUPS_SECRET_PATH}}
+      {{#TASKCFG_ALL_SG_ROLES_SECRET_PATH}}
+      sg_roles:
+        secret: {{TASKCFG_ALL_SG_ROLES_SECRET_PATH}}
+        file: sg_roles.yml
+      {{/TASKCFG_ALL_SG_ROLES_SECRET_PATH}}
+      {{#TASKCFG_ALL_SG_ROLES_MAPPING_SECRET_PATH}}
+      sg_roles_mapping:
+        secret: {{TASKCFG_ALL_SG_ROLES_MAPPING_SECRET_PATH}}
+        file: sg_roles_mapping.yml
+      {{/TASKCFG_ALL_SG_ROLES_MAPPING_SECRET_PATH}}
+      {{#TASKCFG_ALL_SG_TENANTS_SECRET_PATH}}
+      sg_tenants:
+        secret: {{TASKCFG_ALL_SG_TENANTS_SECRET_PATH}}
+        file: sg_tenants.yml
+      {{/TASKCFG_ALL_SG_TENANTS_SECRET_PATH}}
     uris:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{ELASTICSEARCH_URI}}
@@ -437,12 +468,15 @@ pods:
          set -e
          export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
          ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch-plugin install --batch file://$(ls $MESOS_SANDBOX/search-guard-6-*.zip)
+         for sg_config_file in sg_internal_users.yml sg_action_groups.yml sg_roles.yml sg_roles_mapping.yml sg_config.yml sg_tenants.yml; do
+           if [ -f $MESOS_SANDBOX/$sg_config_file ]; then
+             ln -sf $MESOS_SANDBOX/$sg_config_file sgconfig/$sg_config_file
+           fi
+         done
          chmod +x elasticsearch-{{ELASTIC_VERSION}}/plugins/search-guard-6/tools/sgadmin.sh
 
          cat > sgadmin.sh << 'EOF'
          #!/bin/bash
-         export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
-         unzip sgconfig.zip
          openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
          elasticsearch-{{ELASTIC_VERSION}}/plugins/search-guard-6/tools/sgadmin.sh -key node.key.pkcs8 -cert node.crt -cacert node.ca -cd sgconfig -cn elastic -h master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory
          EOF

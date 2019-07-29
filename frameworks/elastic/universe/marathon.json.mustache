@@ -462,6 +462,25 @@
     {{/elasticsearch.script_painless_regex_enabled}}
     "CUSTOM_YAML_BLOCK_BASE64": "{{elasticsearch.custom_elasticsearch_yml}}",
 
+    {{#elasticsearch.searchguard_internal_users}}
+    "TASKCFG_ALL_SG_INTERNAL_USERS_SECRET_PATH": "{{elasticsearch.searchguard_internal_users}}",
+    {{/elasticsearch.searchguard_internal_users}}
+    {{#elasticsearch.searchguard_config}}
+    "TASKCFG_ALL_SG_CONFIG_SECRET_PATH": "{{elasticsearch.searchguard_config}}",
+    {{/elasticsearch.searchguard_config}}
+    {{#elasticsearch.searchguard_action_groups}}
+    "TASKCFG_ALL_SG_ACTION_GROUPS_SECRET_PATH": "{{elasticsearch.searchguard_action_groups}}",
+    {{/elasticsearch.searchguard_action_groups}}
+    {{#elasticsearch.searchguard_roles}}
+    "TASKCFG_ALL_SG_ROLES_SECRET_PATH": "{{elasticsearch.searchguard_roles}}",
+    {{/elasticsearch.searchguard_roles}}
+    {{#elasticsearch.searchguard_roles_mapping}}
+    "TASKCFG_ALL_SG_ROLES_MAPPING_SECRET_PATH": "{{elasticsearch.searchguard_roles_mapping}}",
+    {{/elasticsearch.searchguard_roles_mapping}}
+    {{#elasticsearch.searchguard_tenants}}
+    "TASKCFG_ALL_SG_TENANTS_SECRET_PATH": "{{elasticsearch.searchguard_tenants}}",
+    {{/elasticsearch.searchguard_tenants}}
+
     "MASTER_NODE_READINESS_CHECK_INTERVAL": "{{master_nodes.readiness_check.interval}}",
     "MASTER_NODE_READINESS_CHECK_DELAY": "{{master_nodes.readiness_check.delay}}",
     "MASTER_NODE_READINESS_CHECK_TIMEOUT": "{{master_nodes.readiness_check.timeout}}",
