@@ -183,6 +183,7 @@ def test_virtual_network_tls(
 @pytest.mark.incremental
 @pytest.mark.sanity
 @pytest.mark.timeout(60 * 60)
+@sdk_utils.dcos_ee_only
 @pytest.mark.skipif(
     sdk_utils.dcos_version_less_than("1.12"), reason="Kibana service URL won't work on DC/OS 1.11"
 )
