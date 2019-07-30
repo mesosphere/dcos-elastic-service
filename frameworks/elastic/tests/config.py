@@ -330,7 +330,9 @@ def verify_xpack_license(
 
 
 @retrying.retry(
-    wait_fixed=1000, stop_max_delay=5 * 1000, retry_on_result=lambda return_value: not return_value
+    wait_fixed=1000,
+    stop_max_delay=3 * 60 * 1000,
+    retry_on_result=lambda return_value: not return_value,
 )
 def setup_passwords(
     service_name: str = SERVICE_NAME, task_name: str = "master-0-node", https: bool = False

@@ -40,24 +40,20 @@ node.master: false
 node.data: {{DATA_ENABLED}}
 node.ingest: {{INGEST_ENABLED}}
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/6.3/security-settings.html
-{{#SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+# https://www.elastic.co/guide/en/elasticsearch/reference/6.8/security-settings.html
+{{#SECURITY_ENABLED}}
 xpack.security.enabled: true
-# https://www.elastic.co/guide/en/elasticsearch/reference/6.3/security-settings.html#ssl-tls-settings
+# https://www.elastic.co/guide/en/elasticsearch/reference/6.8/security-settings.html#ssl-tls-settings
 xpack.ssl.key: {{MESOS_SANDBOX}}/node.key
 xpack.ssl.certificate: {{MESOS_SANDBOX}}/node.crt
 xpack.ssl.certificate_authorities: [ "{{MESOS_SANDBOX}}/node.ca" ]
 xpack.ssl.client_authentication: optional
-# Node to node encryption
+# Node to node encryption.
 xpack.security.transport.ssl.enabled: true
-# Client encryption
+# Client encryption.
 xpack.security.http.ssl.enabled: true
 xpack.security.http.ssl.client_authentication: none
-{{/SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
-{{^SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
-# X-Pack security is enabled without TLS.
-xpack.security.enabled: {{XPACK_SECURITY_ENABLED}}
-{{/SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+{{/SECURITY_ENABLED}}
 
 {{#SCRIPT_ALLOWED_CONTEXTS}}
 script.allowed_contexts: {{SCRIPT_ALLOWED_CONTEXTS}}
