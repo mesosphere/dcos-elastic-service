@@ -15,6 +15,12 @@ from tests import config
 from tests.commons import tls
 
 kibana_virtual_network_plugin_labels = {"c": "d", "a": "b", "network_name": "dcos"}
+pytestmark = [
+    pytest.mark.skipif(
+        sdk_utils.dcos_version_less_than("1.12"),
+        reason="Kibana service URL won't work on DC/OS 1.11",
+    )
+]
 
 
 @pytest.fixture
@@ -177,6 +183,9 @@ def test_virtual_network_tls(
 @pytest.mark.incremental
 @pytest.mark.sanity
 @pytest.mark.timeout(60 * 60)
+@pytest.mark.skipif(
+    sdk_utils.dcos_version_less_than("1.12"), reason="Kibana service URL won't work on DC/OS 1.11"
+)
 def test_security_toggle_with_kibana() -> None:
     try:
         sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
