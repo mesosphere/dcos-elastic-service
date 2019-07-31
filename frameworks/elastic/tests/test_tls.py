@@ -94,6 +94,9 @@ def test_crud_over_tls(elastic_service: Dict[str, Any]) -> None:
 
 @pytest.mark.tls
 @pytest.mark.sanity
+@pytest.mark.skipif(
+    sdk_utils.dcos_version_less_than("1.12"), reason="Kibana service URL won't work on DC/OS 1.11"
+)
 def test_kibana_tls(kibana_application: Dict[str, Any]) -> None:
     service_name = kibana_application["service"]["name"]
     config.check_kibana_adminrouter_integration("service/{}/".format(service_name))

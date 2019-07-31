@@ -33,10 +33,8 @@ def _elastic_service_impl(
             expected_running_tasks=expected_running_tasks,
             additional_options=configuration,
             timeout_seconds=30 * 60,
+            wait_for_deployment=False,
         )
-
-        # Start trial license.
-        config.start_trial_license(service_name, https=True)
 
         # Set up passwords. Basic HTTP credentials will have to be used in HTTP requests to
         # Elasticsearch from now on.

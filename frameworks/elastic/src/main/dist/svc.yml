@@ -98,11 +98,11 @@ pods:
           interval: {{MASTER_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{MASTER_NODE_READINESS_CHECK_DELAY}}
           timeout: {{MASTER_NODE_READINESS_CHECK_TIMEOUT}}
-        {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+        {{#TASKCFG_ALL_SECURITY_ENABLED}}
         transport-encryption:
           - name: node
             type: TLS
-        {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+        {{/TASKCFG_ALL_SECURITY_ENABLED}}
   data:
     count: {{DATA_NODE_COUNT}}
     {{#ENABLE_VIRTUAL_NETWORK}}
@@ -196,11 +196,11 @@ pods:
           interval: {{DATA_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{DATA_NODE_READINESS_CHECK_DELAY}}
           timeout: {{DATA_NODE_READINESS_CHECK_TIMEOUT}}
-        {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+        {{#TASKCFG_ALL_SECURITY_ENABLED}}
         transport-encryption:
           - name: node
             type: TLS
-        {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+        {{/TASKCFG_ALL_SECURITY_ENABLED}}
   ingest:
     count: {{INGEST_NODE_COUNT}}
     {{#ENABLE_VIRTUAL_NETWORK}}
@@ -294,11 +294,11 @@ pods:
           interval: {{INGEST_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{INGEST_NODE_READINESS_CHECK_DELAY}}
           timeout: {{INGEST_NODE_READINESS_CHECK_TIMEOUT}}
-        {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+        {{#TASKCFG_ALL_SECURITY_ENABLED}}
         transport-encryption:
           - name: node
             type: TLS
-        {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+        {{/TASKCFG_ALL_SECURITY_ENABLED}}
   coordinator:
     count: {{COORDINATOR_NODE_COUNT}}
     allow-decommission: true
@@ -393,11 +393,11 @@ pods:
           interval: {{COORDINATOR_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{COORDINATOR_NODE_READINESS_CHECK_DELAY}}
           timeout: {{COORDINATOR_NODE_READINESS_CHECK_TIMEOUT}}
-        {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+        {{#TASKCFG_ALL_SECURITY_ENABLED}}
         transport-encryption:
           - name: node
             type: TLS
-        {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+        {{/TASKCFG_ALL_SECURITY_ENABLED}}
   {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
   {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
   sgadmin:
