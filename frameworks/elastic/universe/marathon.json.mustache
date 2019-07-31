@@ -82,6 +82,10 @@
     {{/elasticsearch.xpack_security_enabled}}
     {{/service.security.transport_encryption.enabled}}
 
+    {{#elasticsearch.searchguard_enabled}}
+    "TASKCFG_ALL_SEARCHGUARD_ENABLED": "{{elasticsearch.searchguard_enabled}}",
+    {{/elasticsearch.searchguard_enabled}}
+
     "TASKCFG_ALL_XPACK_SECURITY_ENABLED": "{{elasticsearch.xpack_security_enabled}}",
 
     {{#service.security.custom_domain}}
@@ -136,9 +140,6 @@
     {{/service.region}}
     "ELASTICSEARCH_HEALTH_USER": "{{elasticsearch.health_user}}",
     "ELASTICSEARCH_HEALTH_USER_PASSWORD": "{{elasticsearch.health_user_password}}",
-    {{#elasticsearch.searchguard_enabled}}
-    "TASKCFG_ALL_SEARCHGUARD_ENABLED": "{{elasticsearch.searchguard_enabled}}",
-    {{/elasticsearch.searchguard_enabled}}
     "TASKCFG_ALL_ELASTICSEARCH_PLUGINS": "{{elasticsearch.plugins}}",
     "TASKCFG_ALL_PLUGIN_HTTP_PROXY_HOST": "{{elasticsearch.plugin_http_proxy_host}}",
     "TASKCFG_ALL_PLUGIN_HTTP_PROXY_PORT": "{{elasticsearch.plugin_http_proxy_port}}",

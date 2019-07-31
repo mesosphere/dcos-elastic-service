@@ -398,7 +398,7 @@ pods:
           - name: node
             type: TLS
         {{/TASKCFG_ALL_SECURITY_ENABLED}}
-  {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+  {{#TASKCFG_ALL_SECURITY_ENABLED}}
   {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
   sgadmin:
     count: {{SGADMIN_NODE_COUNT}}
@@ -490,7 +490,7 @@ pods:
           - name: node
             type: TLS
   {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
-  {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+  {{/TASKCFG_ALL_SECURITY_ENABLED}}
 plans:
   deploy:
     strategy: {{DEPLOY_STRATEGY}}
@@ -507,13 +507,13 @@ plans:
       coordinator-deploy:
         strategy: {{DEPLOY_STRATEGY}}
         pod: coordinator
-      {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+      {{#TASKCFG_ALL_SECURITY_ENABLED}}
       {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
       sgadmin-deploy:
         strategy: {{DEPLOY_STRATEGY}}
         pod: sgadmin
       {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
-      {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+      {{/TASKCFG_ALL_SECURITY_ENABLED}}
   update:
     strategy: {{UPDATE_STRATEGY}}
     phases:
@@ -529,10 +529,10 @@ plans:
       coordinator-update:
         strategy: {{UPDATE_STRATEGY}}
         pod: coordinator
-      {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+      {{#TASKCFG_ALL_SECURITY_ENABLED}}
       {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
       sgadmin-update:
         strategy: {{UPDATE_STRATEGY}}
         pod: sgadmin
       {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
-      {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+      {{/TASKCFG_ALL_SECURITY_ENABLED}}

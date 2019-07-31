@@ -2,7 +2,7 @@
   "assets": {
     "uris": {
       "kibana-tar-gz": "https://downloads.mesosphere.com/elastic/assets/kibana-{{elastic-version}}-linux-x86_64.tar.gz",
-      "kibana-searchguard-plugin-zip": "https://repo1.maven.org/maven2/com/floragunn/search-guard-kibana-plugin/6.6.1-18.5/search-guard-kibana-plugin-6.6.1-18.5.zip",
+      "kibana-searchguard-plugin-zip": "https://oss.sonatype.org/service/local/repositories/releases/content/com/floragunn/search-guard-kibana-plugin/6.8.1-18.5/search-guard-kibana-plugin-6.8.1-18.5.zip",
       "init-sh": "{{artifact-dir}}/nginx.conf.tmpl",
       "nginx-conf-tmpl": "{{artifact-dir}}/init.sh"
     },
