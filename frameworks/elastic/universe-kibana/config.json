@@ -81,12 +81,12 @@
           "default": false
         },
         "user": {
-          "description": "Kibana username to use for X-Pack authentication, if enabled",
+          "description": "Kibana username to use for authentication, if enabled",
           "type": "string",
           "default": "kibana"
         },
         "password": {
-          "description": "Password to use for X-Pack authentication, if enabled. Note that you are not setting the password here. You are specifying the credentials for Kibana to use when sending requests.",
+          "description": "Password to use for authentication, if enabled. Note that you are not setting the password here. You are specifying the credentials for Kibana to use when sending requests.",
           "type": "string",
           "default": "changeme"
         },
