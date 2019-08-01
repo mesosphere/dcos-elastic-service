@@ -21,12 +21,17 @@ def _uninstall_services() -> None:
 def sg_internal_users_path(tmp_path) -> str:
     path = tmp_path / "sg_internal_users.yml"
     sg_internal_users_config = (
+        # password: admin_password
         "admin.readonly: true\n"
-        'admin.hash: "$2y$12$Pd3kIQD1WgaKpekPyMkUi.jmBDF3QDmPIEUg37wXCRufZZQOnYYYW"\n'  # password: admin_password
+        'admin.hash: "$2y$12$Pd3kIQD1WgaKpekPyMkUi.jmBDF3QDmPIEUg37wXCRufZZQOnYYYW"\n' 
         "admin.roles: [ admin ]\n"
+
+        # password: kibanaserver_password
         "kibanaserver.readonly: true\n"
-        'kibanaserver.hash: "$2y$12$lrwJYnjrlTGgOcf7Kd6xXOHIbkqFWBO3qgqyLYlEwIuRM3CfgL5fG"\n'  # password: kibanaserver_password
-        'kibanaro.hash: "$2y$12$gaYwLqeOWzvWXuvf5OnpFe3kqsqKggxHiiMp/JG9hq2nnuxTFtcN."\n'  # password: kibanaro_password
+        'kibanaserver.hash: "$2y$12$lrwJYnjrlTGgOcf7Kd6xXOHIbkqFWBO3qgqyLYlEwIuRM3CfgL5fG"\n' 
+
+        # password: kibanaro_password
+        'kibanaro.hash: "$2y$12$gaYwLqeOWzvWXuvf5OnpFe3kqsqKggxHiiMp/JG9hq2nnuxTFtcN."\n' 
         "kibanaro.roles: [kibanauser, readall]\n"
     )
 
@@ -140,14 +145,12 @@ def test_searchguard_support_kibana(service_account: Dict[str, Any], sg_internal
             insert_strict_options=False,
         )
 
-        curl_cmd = "curl -L -i -k -u kibanaserver:kibanaserver_password -s {}/{}".format(
-            sdk_utils.dcos_url().rstrip("/"),
-            "service/{}/{}".format(
-                config.KIBANA_PACKAGE_NAME, "api/saved_objects/_find?type=index-pattern"
-            ).lstrip("/"),
+        assert config.check_kibana_adminrouter_integration(
+            "service/{}/".format(config.KIBANA_PACKAGE_NAME)
         )
-        rc, stdout, _ = sdk_cmd.master_ssh(curl_cmd)
-        assert bool(rc == 0 and stdout and "HTTP/1.1 200" in stdout and '"status":"UP"' in stdout)
+        assert config.check_kibana_adminrouter_integration(
+            "service/{}/login".format(config.KIBANA_PACKAGE_NAME)
+        )
 
     finally:
         sdk_install.uninstall(config.KIBANA_PACKAGE_NAME, config.KIBANA_SERVICE_NAME)
