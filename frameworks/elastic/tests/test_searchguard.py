@@ -27,9 +27,6 @@ def sg_internal_users_path(tmp_path) -> str:
         # password: kibanaserver_password
         "kibanaserver.readonly: true\n"
         'kibanaserver.hash: "$2y$12$lrwJYnjrlTGgOcf7Kd6xXOHIbkqFWBO3qgqyLYlEwIuRM3CfgL5fG"\n'
-        # password: kibanaro_password
-        'kibanaro.hash: "$2y$12$gaYwLqeOWzvWXuvf5OnpFe3kqsqKggxHiiMp/JG9hq2nnuxTFtcN."\n'
-        "kibanaro.roles: [kibanauser, readall]\n"
     )
 
     path.write_text(sg_internal_users_config)
