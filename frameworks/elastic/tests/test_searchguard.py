@@ -5,7 +5,6 @@ import sdk_cmd
 import sdk_install
 import sdk_hosts
 import sdk_security
-import sdk_utils
 
 from tests import config
 from security import transport_encryption
