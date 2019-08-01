@@ -23,15 +23,13 @@ def sg_internal_users_path(tmp_path) -> str:
     sg_internal_users_config = (
         # password: admin_password
         "admin.readonly: true\n"
-        'admin.hash: "$2y$12$Pd3kIQD1WgaKpekPyMkUi.jmBDF3QDmPIEUg37wXCRufZZQOnYYYW"\n' 
+        'admin.hash: "$2y$12$Pd3kIQD1WgaKpekPyMkUi.jmBDF3QDmPIEUg37wXCRufZZQOnYYYW"\n'
         "admin.roles: [ admin ]\n"
-
         # password: kibanaserver_password
         "kibanaserver.readonly: true\n"
-        'kibanaserver.hash: "$2y$12$lrwJYnjrlTGgOcf7Kd6xXOHIbkqFWBO3qgqyLYlEwIuRM3CfgL5fG"\n' 
-
+        'kibanaserver.hash: "$2y$12$lrwJYnjrlTGgOcf7Kd6xXOHIbkqFWBO3qgqyLYlEwIuRM3CfgL5fG"\n'
         # password: kibanaro_password
-        'kibanaro.hash: "$2y$12$gaYwLqeOWzvWXuvf5OnpFe3kqsqKggxHiiMp/JG9hq2nnuxTFtcN."\n' 
+        'kibanaro.hash: "$2y$12$gaYwLqeOWzvWXuvf5OnpFe3kqsqKggxHiiMp/JG9hq2nnuxTFtcN."\n'
         "kibanaro.roles: [kibanauser, readall]\n"
     )
 
