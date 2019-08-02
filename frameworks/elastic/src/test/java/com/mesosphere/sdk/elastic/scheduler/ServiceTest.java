@@ -84,6 +84,8 @@ public class ServiceTest {
         .setBuildTemplateParams(
             "elastic-version", "1.2.3",
             "elastic-statsd-version", "1.2.3.0", // NOPMD
-            "support-diagnostics-version", "1.2");
+            "support-diagnostics-version", "1.2",
+            "searchguard-elastic-version", "1.2",
+            "searchguard-kibana-plugin-version", "1.2");
   }
 }
