@@ -11,6 +11,13 @@ from tests.commons import tls
 
 sg_internal_users_secret_name = "sg_internal_users"
 
+pytestmark = [
+    sdk_utils.dcos_ee_only,
+    pytest.mark.skipif(
+        sdk_utils.dcos_version_less_than("1.10"), reason="TLS tests require DC/OS 1.10+"
+    ),
+]
+
 
 def _uninstall_services() -> None:
     sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
