@@ -11,8 +11,10 @@ from tests.commons import tls
 
 sg_internal_users_secret_name = "sg_internal_users"
 
+
 def _uninstall_services() -> None:
     sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
+
 
 @pytest.fixture
 def sg_internal_users_path(tmp_path) -> str:
@@ -30,12 +32,14 @@ def sg_internal_users_path(tmp_path) -> str:
     path.write_text(sg_internal_users_config)
     return path.resolve()
 
+
 @pytest.fixture(scope="module")
 def service_account(configure_security: None) -> Iterator[Dict[str, Any]]:
     yield from tls._service_account_impl(configure_security)
 
+
 @pytest.fixture
-def elastic_searchguard(service_account: Dict[str, Any], sg_internal_users_path: str):
+def elastic_service(service_account: Dict[str, Any], sg_internal_users_path: str):
     try:
         _uninstall_services()
         sdk_cmd.run_cli(
@@ -69,20 +73,20 @@ def elastic_searchguard(service_account: Dict[str, Any], sg_internal_users_path:
         sdk_security.delete_secret(sg_internal_users_secret_name)
 
 
-
 @pytest.mark.sanity
-def test_searchguard_support_elastic(elastic_searchguard):
+def test_searchguard_support_elastic(elastic_service):
     curl_cmd = "curl -L -i -k -s {}/_searchguard/health".format(
         "https://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
     )
-    rc, stdout, stderr = sdk_cmd.service_task_exec(
-        config.SERVICE_NAME, "master-0-node", curl_cmd
-    )
+    rc, stdout, stderr = sdk_cmd.service_task_exec(config.SERVICE_NAME, "master-0-node", curl_cmd)
     assert bool(rc == 0 and stdout and "HTTP/1.1 200" in stdout and '"status":"UP"' in stdout)
 
 
 @pytest.mark.sanity
-def test_searchguard_support_kibana(elastic_searchguard):
+@pytest.mark.skipif(
+    sdk_utils.dcos_version_less_than("1.12"), reason="Kibana service URL won't work on DC/OS 1.11"
+)
+def test_searchguard_support_kibana(elastic_service):
     try:
         sdk_install.uninstall(config.KIBANA_PACKAGE_NAME, config.KIBANA_SERVICE_NAME)
 
