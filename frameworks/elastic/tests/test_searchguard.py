@@ -20,10 +20,6 @@ pytestmark = [
 ]
 
 
-def _uninstall_services() -> None:
-    sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
-
-
 @pytest.fixture
 def sg_internal_users_path(tmp_path) -> str:
     path = tmp_path / "sg_internal_users.yml"
@@ -49,7 +45,7 @@ def service_account(configure_security: None) -> Iterator[Dict[str, Any]]:
 @pytest.fixture
 def elastic_service(service_account: Dict[str, Any], sg_internal_users_path: str):
     try:
-        _uninstall_services()
+        sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
         sdk_cmd.run_cli(
             "security secrets create -f {} {}".format(
                 str(sg_internal_users_path), sg_internal_users_secret_name
@@ -77,7 +73,7 @@ def elastic_service(service_account: Dict[str, Any], sg_internal_users_path: str
             },
         )
     finally:
-        _uninstall_services()
+        sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
         sdk_security.delete_secret(sg_internal_users_secret_name)
 
 
