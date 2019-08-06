@@ -22,7 +22,7 @@ fi
 
 if [ -n "$SEARCHGUARD_ENABLED" ]; then
     openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
-    PLUGIN_FILE=$(ls $MESOS_SANDBOX/search-guard-6-*.zip)
+    PLUGIN_FILE=$(ls $MESOS_SANDBOX/search-guard-*.zip)
 
     SEARCHGUARD_PLUGIN="file://${PLUGIN_FILE}"
     if [ -n "$PLUGINS" ]; then

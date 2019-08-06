@@ -467,7 +467,7 @@ pods:
         cmd: |
          set -e
          export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
-         ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch-plugin install --batch file://$(ls $MESOS_SANDBOX/search-guard-6-*.zip)
+         ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch-plugin install --batch file://$(ls $MESOS_SANDBOX/search-guard-*.zip)
          for sg_config_file in sg_internal_users.yml sg_action_groups.yml sg_roles.yml sg_roles_mapping.yml sg_config.yml sg_tenants.yml; do
            if [ -f $MESOS_SANDBOX/$sg_config_file ]; then
              ln -sf $MESOS_SANDBOX/$sg_config_file sgconfig/$sg_config_file
