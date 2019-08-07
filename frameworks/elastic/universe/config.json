@@ -592,22 +592,6 @@
         "count"
       ]
     },
-    "sgadmin_nodes": {
-      "description": "Elasticsearch sgadmin node configuration properties",
-      "type": "object",
-      "properties": {
-        "count": {
-          "description": "Number of sgadmin nodes to run",
-          "type": "integer",
-          "default": 0,
-          "minimum": 0,
-          "maximum": 1
-        }
-      },
-      "required": [
-        "count"
-      ]
-    },
     "elasticsearch": {
       "description": "Elasticsearch service configuration properties",
       "type": "object",

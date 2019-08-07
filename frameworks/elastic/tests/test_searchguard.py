@@ -63,7 +63,6 @@ def elastic_service(service_account: Dict[str, Any], sg_internal_users_path: str
                     "service_account_secret": service_account["secret"],
                     "security": {"transport_encryption": {"enabled": True}},
                 },
-                "sgadmin_nodes": {"count": 1},
                 "elasticsearch": {
                     "searchguard_enabled": True,
                     "health_user": "admin",

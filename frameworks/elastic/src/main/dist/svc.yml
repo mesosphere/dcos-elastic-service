@@ -401,7 +401,7 @@ pods:
   {{#TASKCFG_ALL_SECURITY_ENABLED}}
   {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
   sgadmin:
-    count: {{SGADMIN_NODE_COUNT}}
+    count: 1
     allow-decomission: true
     {{#ENABLE_VIRTUAL_NETWORK}}
     networks:
@@ -461,7 +461,7 @@ pods:
           port: 9300
     tasks:
       admin:
-        goal: RUNNING
+        goal: ONCE
         cpus: 0.25
         memory: 512
         cmd: |
@@ -483,9 +483,6 @@ pods:
 
          chmod +x sgadmin.sh
          ./sgadmin.sh
-         while [ true ] ; do
-           sleep 120
-         done
         transport-encryption:
           - name: node
             type: TLS
