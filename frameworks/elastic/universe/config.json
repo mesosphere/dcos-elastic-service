@@ -697,7 +697,7 @@
           "default": true
         },
         "searchguard_enabled": {
-          "description": "Whether or not to enable the commercial Search Guard plugin for Elastic",
+          "description": "Set it to true to enable the Search Guard plugin for Elastic. Defaults to false.",
           "type": "boolean",
           "default": false
         },
