@@ -50,7 +50,7 @@ if [ "${KIBANA_ELASTICSEARCH_TLS}" = "true" ]; then
 fi
 
 if [ "${SEARCHGUARD_ENABLED}" = "true" ]; then
-  NODE_OPTIONS="--max-old-space-size=8192"
+  export NODE_OPTIONS="--max-old-space-size=8192"
 
   cat <<-EOF >> "${KIBANA_YML_PATH}"
 		elasticsearch.hosts: "${ELASTICSEARCH_URL}"
@@ -69,7 +69,7 @@ if [ -n "$KIBANA_PLUGINS" ]; then
   read -ra PLUGINS <<< "$KIBANA_PLUGINS"
   for plugin in "${PLUGINS[@]}"; do
     echo "Installing plugin: ${plugin}"
-    ${KIBANA_PATH}/bin/kibana-plugin install "$plugin"
+    "${KIBANA_PATH}"/bin/kibana-plugin install "$plugin"
   done;
 fi
 
