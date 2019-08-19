@@ -15,7 +15,6 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
-      - {{STATSD_URI}}
     rlimits:
       RLIMIT_NOFILE:
         soft: {{MASTER_NODE_RLIMIT_NOFILE_SOFT}}
@@ -60,7 +59,6 @@ pods:
 
           chmod -R +x scripts
 
-          ./scripts/java-dns-ttl.sh
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
 
@@ -73,7 +71,6 @@ pods:
           DATA_ENABLED: false
           INGEST_ENABLED: false
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
-          ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           jvm.options:
             template: jvm.options
@@ -112,7 +109,6 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
-      - {{STATSD_URI}}
     rlimits:
       RLIMIT_NOFILE:
         soft: {{DATA_NODE_RLIMIT_NOFILE_SOFT}}
@@ -157,7 +153,6 @@ pods:
 
           chmod -R +x scripts
 
-          ./scripts/java-dns-ttl.sh
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
 
@@ -168,7 +163,6 @@ pods:
           DATA_ENABLED: true
           INGEST_ENABLED: false
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
-          ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           jvm.options:
             template: jvm.options
@@ -207,7 +201,6 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
-      - {{STATSD_URI}}
     rlimits:
       RLIMIT_NOFILE:
         soft: {{INGEST_NODE_RLIMIT_NOFILE_SOFT}}
@@ -252,7 +245,6 @@ pods:
 
           chmod -R +x scripts
 
-          ./scripts/java-dns-ttl.sh
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
 
@@ -263,7 +255,6 @@ pods:
           DATA_ENABLED: false
           INGEST_ENABLED: true
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
-          ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           jvm.options:
             template: jvm.options
@@ -303,7 +294,6 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
-      - {{STATSD_URI}}
     rlimits:
       RLIMIT_NOFILE:
         soft: {{COORDINATOR_NODE_RLIMIT_NOFILE_SOFT}}
@@ -348,7 +338,6 @@ pods:
 
           chmod -R +x scripts
 
-          ./scripts/java-dns-ttl.sh
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
 
@@ -359,7 +348,6 @@ pods:
           DATA_ENABLED: false
           INGEST_ENABLED: false
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
-          ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           jvm.options:
             template: jvm.options

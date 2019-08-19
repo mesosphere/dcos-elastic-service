@@ -115,9 +115,11 @@ def test_indexing(default_populated_index: None) -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
-@pytest.mark.incremental
 @pytest.mark.sanity
 @pytest.mark.dcos_min_version("1.9")
+@pytest.mark.skip(
+    reason="DCOS-56115: Disabled statsd reporter for now, will attempt using Prometheus exporter instead"
+)
 def test_metrics() -> None:
     expected_metrics = [
         "node.data-0-node.fs.total.total_in_bytes",

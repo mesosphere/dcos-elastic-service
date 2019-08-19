@@ -18,9 +18,10 @@
 
 # Xms represents the initial size of total heap space
 # Xmx represents the maximum size of total heap space
+
 {{#NODE_HEAP_MB}}
--Xms{{NODE_HEAP_MB}}M 
--Xmx{{NODE_HEAP_MB}}M
+-Xms{{NODE_HEAP_MB}}m
+-Xmx{{NODE_HEAP_MB}}m
 {{/NODE_HEAP_MB}}
 
 ################################################################
@@ -33,10 +34,26 @@
 ##
 ################################################################
 
+# https://github.com/elastic/elasticsearch/issues/36828#issuecomment-448564460
+
 ## GC configuration
--XX:+UseConcMarkSweepGC
--XX:CMSInitiatingOccupancyFraction=75
--XX:+UseCMSInitiatingOccupancyOnly
+# -XX:+UseConcMarkSweepGC
+# -XX:CMSInitiatingOccupancyFraction=75
+# -XX:+UseCMSInitiatingOccupancyOnly
+
+## G1GC Configuration
+# NOTE: G1GC is only supported on JDK version 10 or later.
+-XX:+UseG1GC
+-XX:InitiatingHeapOccupancyPercent=75
+
+## DNS cache policy
+# cache ttl in seconds for positive DNS lookups noting that this overrides the
+# JDK security property networkaddress.cache.ttl; set to -1 to cache forever
+-Des.networkaddress.cache.ttl=60
+# cache ttl in seconds for negative DNS lookups noting that this overrides the
+# JDK security property networkaddress.cache.negative ttl; set to -1 to cache
+# forever
+-Des.networkaddress.cache.negative.ttl=10
 
 ## optimizations
 
@@ -101,6 +118,3 @@
 # due to internationalization enhancements in JDK 9 Elasticsearch need to set the provider to COMPAT otherwise
 # time/date parsing will break in an incompatible way for some date patterns and locals
 9-:-Djava.locale.providers=COMPAT
-
-# temporary workaround for C2 bug with JDK 10 on hardware with AVX-512
-10-:-XX:UseAVX=2

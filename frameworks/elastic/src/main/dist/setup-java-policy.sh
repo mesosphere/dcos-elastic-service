@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAVA_POLICY_FILE=$JAVA_HOME/lib/security/java.policy
+JAVA_POLICY_FILE=$JAVA_HOME/conf/security/java.policy
 
 cat <<EOF >> $JAVA_POLICY_FILE
 

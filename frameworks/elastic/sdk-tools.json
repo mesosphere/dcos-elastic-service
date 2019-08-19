@@ -22,7 +22,18 @@
           "xpack_sql_enabled",
           "xpack_watcher_enabled"
         ],
-        "tail": ["http_content_type_required", "xpack_enabled"]
+        "tail": [
+          "http_content_type_required",
+          "http_enabled",
+          "http_pipelining",
+          "thread_pool_bulk_queue_size",
+          "thread_pool_bulk_size",
+          "thread_pool_index_queue_size",
+          "thread_pool_index_size",
+          "xpack_enabled",
+          "xpack_security_audit_index_flush_interval",
+          "xpack_security_audit_index_rollover"
+        ]
       }
     }
   }
