@@ -2,6 +2,7 @@ import base64
 from typing import Any, Dict, Iterator
 
 import pytest
+import urllib.parse
 import sdk_cmd
 import sdk_hosts
 import sdk_install
@@ -349,6 +350,56 @@ def test_security_toggle_with_kibana() -> None:
         sdk_install.uninstall(config.KIBANA_PACKAGE_NAME, config.KIBANA_SERVICE_NAME)
         sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
         transport_encryption.cleanup_service_account(config.SERVICE_NAME, service_account_info)
+
+
+@pytest.mark.sanity
+def test_admin_router_with_folder_name() -> None:
+    elastic_service_name = "test/integration/elastic"
+    kibana_service_name = "test/integration/kibana"
+
+    try:
+        sdk_install.uninstall(config.KIBANA_PACKAGE_NAME, kibana_service_name)
+        sdk_install.uninstall(config.PACKAGE_NAME, elastic_service_name)
+
+        service_account_info = transport_encryption.setup_service_account(elastic_service_name)
+        sdk_install.install(
+            config.PACKAGE_NAME,
+            service_name=elastic_service_name,
+            expected_running_tasks=config.DEFAULT_TASK_COUNT,
+            additional_options={
+                "service": {
+                    "name": elastic_service_name,
+                    "service_account": service_account_info["name"],
+                    "service_account_secret": service_account_info["secret"],
+                }
+            },
+            timeout_seconds=30 * 60,
+            wait_for_deployment=True,
+        )
+
+        elasticsearch_url = "http://" + sdk_hosts.vip_host(
+            elastic_service_name, "coordinator", 9200
+        )
+        sdk_install.install(
+            config.KIBANA_PACKAGE_NAME,
+            kibana_service_name,
+            0,
+            {"kibana": {"elasticsearch_url": elasticsearch_url}},
+            wait_for_deployment=False,
+            insert_strict_options=False,
+        )
+
+        encoded_kibana_service_name = urllib.parse.quote(kibana_service_name)
+        config.check_kibana_adminrouter_integration(
+            "service/{}/".format(encoded_kibana_service_name)
+        )
+        config.check_kibana_adminrouter_integration(
+            "service/{}/app/kibana".format(encoded_kibana_service_name)
+        )
+    finally:
+        sdk_install.uninstall(config.KIBANA_PACKAGE_NAME, kibana_service_name)
+        sdk_install.uninstall(config.PACKAGE_NAME, elastic_service_name)
+        transport_encryption.cleanup_service_account(elastic_service_name, service_account_info)
 
 
 def _check_cni_working(expected_labels: Dict[str, str]) -> None:
