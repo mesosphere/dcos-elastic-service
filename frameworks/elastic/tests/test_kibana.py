@@ -353,6 +353,7 @@ def test_security_toggle_with_kibana() -> None:
 
 
 @pytest.mark.sanity
+@sdk_utils.dcos_ee_only
 def test_admin_router_with_folder_name() -> None:
     elastic_service_name = "test/integration/elastic"
     kibana_service_name = "test/integration/kibana"
