@@ -1,7 +1,11 @@
 {
   "packagingVersion": "4.0",
-  "upgradesFrom": ["{{upgrades-from}}"],
-  "downgradesTo": ["{{downgrades-to}}"],
+  "upgradesFrom": [
+    "{{upgrades-from}}"
+  ],
+  "downgradesTo": [
+    "{{downgrades-to}}"
+  ],
   "minDcosReleaseVersion": "1.11",
   "name": "kibana",
   "version": "{{package-version}}",
@@ -9,18 +13,23 @@
   "description": "Kibana 6, and X-Pack",
   "selected": true,
   "framework": true,
-  "tags": ["elastic", "elasticsearch", "kibana", "x-pack"],
+  "tags": [
+    "elastic",
+    "elasticsearch",
+    "kibana",
+    "x-pack"
+  ],
   "preInstallNotes": "Default configuration requires 1 agent node with: 0.5 CPU | 2048 MB MEM",
   "postInstallNotes": "The DC/OS Kibana service is being installed!\n\n\tDocumentation: {{documentation-path}}\n\tIssues: {{issues-path}}",
   "postUninstallNotes": "The DC/OS Kibana service is being uninstalled.\n\nFor DC/OS versions from 1.11 no further action is required. For older DC/OS versions follow the instructions at {{documentation-path}}uninstall to remove any persistent state if required.",
   "licenses": [
     {
-        "name": "Apache License Version 2.0",
-        "url": "https://raw.githubusercontent.com/elastic/kibana/master/LICENSE.txt"
+      "name": "Apache License Version 2.0",
+      "url": "https://raw.githubusercontent.com/elastic/kibana/master/LICENSE.txt"
     },
     {
-        "name": "Elastic License",
-        "url": "https://raw.githubusercontent.com/elastic/kibana/master/x-pack/README.md"
+      "name": "Elastic License",
+      "url": "https://raw.githubusercontent.com/elastic/kibana/master/x-pack/README.md"
     }
   ]
 }
