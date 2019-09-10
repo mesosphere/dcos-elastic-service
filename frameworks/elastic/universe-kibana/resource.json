@@ -2,8 +2,8 @@
   "assets": {
     "uris": {
       "kibana-tar-gz": "https://downloads.mesosphere.com/elastic/assets/kibana-{{elastic-version}}-linux-x86_64.tar.gz",
-      "init-sh": "{{artifact-dir}}/nginx.conf.tmpl",
-      "nginx-conf-tmpl": "{{artifact-dir}}/init.sh"
+      "init-sh": "{{artifact-dir}}/init.sh",
+      "nginx-conf-tmpl": "{{artifact-dir}}/nginx.conf.tmpl"
     },
     "container": {
       "docker": {
