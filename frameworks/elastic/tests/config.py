@@ -32,7 +32,9 @@ KIBANA_DEFAULT_TIMEOUT = 5 * 60
 # - data: 2
 # - ingest: 0
 # - coordinator: 1
-DEFAULT_TASK_COUNT = 6
+DEFAULT_NODES_COUNT = 6
+# - exporter 1
+DEFAULT_TASK_COUNT = DEFAULT_NODES_COUNT + 1
 # TODO: add and use throughout a method to determine expected task count based on options.
 #       the method should provide for use cases:
 #         * total count, ie 6
@@ -126,7 +128,7 @@ def check_custom_elasticsearch_cluster_setting(
     wait_fixed=1000, stop_max_delay=DEFAULT_TIMEOUT * 1000, retry_on_result=lambda res: not res
 )
 def wait_for_expected_nodes_to_exist(
-    service_name: str = SERVICE_NAME, task_count: int = DEFAULT_TASK_COUNT
+    service_name: str = SERVICE_NAME, task_count: int = DEFAULT_NODES_COUNT
 ) -> bool:
     result = _curl_query(service_name, "GET", "_cluster/health")
     if not result or "number_of_nodes" not in result:
@@ -583,7 +585,7 @@ def test_xpack_enabled_update(
         },
     )
 
-    wait_for_expected_nodes_to_exist(service_name=service_name, task_count=DEFAULT_TASK_COUNT)
+    wait_for_expected_nodes_to_exist(service_name=service_name)
 
 
 def test_xpack_security_enabled_update(
@@ -600,7 +602,7 @@ def test_xpack_security_enabled_update(
         },
     )
 
-    wait_for_expected_nodes_to_exist(service_name=service_name, task_count=DEFAULT_TASK_COUNT)
+    wait_for_expected_nodes_to_exist(service_name=service_name)
 
 
 def test_upgrade_from_xpack_enabled(

@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator, List
+from typing import Any, Dict, Iterator, List, Set, Optional
 
 from toolz import get_in
 import pytest
@@ -14,6 +14,7 @@ import sdk_service
 import sdk_tasks
 import sdk_upgrade
 import sdk_utils
+import sdk_repository
 from tests import config
 
 log = logging.getLogger(__name__)
@@ -36,9 +37,10 @@ def configure_package(configure_security: None) -> Iterator[None]:
         sdk_install.uninstall(kibana_package_name, kibana_package_name)
         sdk_install.uninstall(package_name, service_name)
 
-        sdk_upgrade.test_upgrade(
+        _test_upgrade(
             package_name,
             service_name,
+            config.DEFAULT_NODES_COUNT,
             current_expected_task_count,
             from_options={"service": {"name": service_name}},
         )
@@ -48,6 +50,75 @@ def configure_package(configure_security: None) -> Iterator[None]:
         log.info("Clean up elasticsearch and kibana...")
         sdk_install.uninstall(kibana_package_name, kibana_package_name)
         sdk_install.uninstall(package_name, service_name)
+
+
+# Use sdk_upgrade.test_upgrade instead of this function after
+# it will be upgraded to accept different number of expecting tasks for install and upgrade
+def _test_upgrade(
+    package_name: str,
+    service_name: str,
+    expected_running_tasks_before_upgrade: int,
+    expected_running_tasks_after_upgrade: int,
+    from_version: str = None,
+    from_options: Dict[str, Any] = {},
+    to_version: str = None,
+    to_options: Optional[Dict[str, Any]] = None,
+    timeout_seconds: int = sdk_upgrade.TIMEOUT_SECONDS,
+    wait_for_deployment: bool = True,
+) -> None:
+    sdk_install.uninstall(package_name, service_name)
+
+    log.info(
+        "Called with 'from' version '{}' and 'to' version '{}'".format(from_version, to_version)
+    )
+
+    universe_version = None
+    try:
+        # Move the Universe repo to the top of the repo list so that we can first install the latest
+        # released version.
+        test_version, universe_version = sdk_repository.move_universe_repo(
+            package_name, universe_repo_index=0
+        )
+        log.info("Found 'test' version: {}".format(test_version))
+        log.info("Found 'universe' version: {}".format(universe_version))
+
+        from_version = from_version or universe_version
+        to_version = to_version or test_version
+
+        log.info(
+            "Will upgrade {} from version '{}' to '{}'".format(
+                package_name, from_version, to_version
+            )
+        )
+
+        log.info("Installing {} 'from' version: {}".format(package_name, from_version))
+        sdk_install.install(
+            package_name,
+            service_name,
+            expected_running_tasks_before_upgrade,
+            package_version=from_version,
+            additional_options=from_options,
+            timeout_seconds=timeout_seconds,
+            wait_for_deployment=wait_for_deployment,
+        )
+    finally:
+        if universe_version:
+            # Return the Universe repo back to the bottom of the repo list so that we can upgrade to
+            # the build version.
+            sdk_repository.move_universe_repo(package_name)
+
+    log.info(
+        "Upgrading {} from version '{}' to '{}'".format(package_name, from_version, to_version)
+    )
+    sdk_upgrade.update_or_upgrade_or_downgrade(
+        package_name,
+        service_name,
+        to_version,
+        to_options or from_options,
+        expected_running_tasks_after_upgrade,
+        wait_for_deployment,
+        timeout_seconds,
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -71,6 +142,8 @@ def default_populated_index() -> None:
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_pod_replace_then_immediate_config_update() -> None:
+    sdk_install.uninstall(kibana_package_name, kibana_package_name)
+    sdk_install.uninstall(package_name, service_name)
     sdk_cmd.svc_cli(package_name, service_name, "pod replace data-0")
 
     plugins = "analysis-phonetic"
@@ -116,36 +189,31 @@ def test_indexing(default_populated_index: None) -> None:
 
 
 @pytest.mark.sanity
-@pytest.mark.dcos_min_version("1.9")
-@pytest.mark.skip(
-    reason="DCOS-56115: Disabled statsd reporter for now, will attempt using Prometheus exporter instead"
-)
+@pytest.mark.dcos_min_version("1.13")
 def test_metrics() -> None:
-    expected_metrics = [
-        "node.data-0-node.fs.total.total_in_bytes",
-        "node.data-0-node.jvm.mem.pools.old.peak_used_in_bytes",
-        "node.data-0-node.jvm.threads.count",
-    ]
+    metrics = sdk_metrics.wait_for_metrics_from_cli("exporter-0-node", 60)
 
-    def expected_metrics_exist(emitted_metrics: List[str]) -> bool:
-        # Elastic metrics are also dynamic and based on the service name# For eg:
-        # elasticsearch.test__integration__elastic.node.data-0-node.thread_pool.listener.completed
-        # To prevent this from breaking we drop the service name from the metric name
-        # => data-0-node.thread_pool.listener.completed
-        metric_names = [".".join(metric_name.split(".")[2:]) for metric_name in emitted_metrics]
-        return sdk_metrics.check_metrics_presence(metric_names, expected_metrics)
+    elastic_metrics = list(non_zero_elastic_metrics(metrics))
+    assert len(elastic_metrics) > 0
 
-    sdk_metrics.wait_for_service_metrics(
-        package_name,
-        service_name,
-        "data-0",
-        "data-0-node",
-        config.DEFAULT_TIMEOUT,
-        expected_metrics_exist,
-    )
+    node_types = ["master", "data", "coordinator"]
+    node_names = get_node_names_from_metrics(elastic_metrics)
+    for node_type in node_types:
+        assert len(list(filter(lambda x: x.startswith(node_type), node_names))) > 0
 
-    sdk_plan.wait_for_completed_deployment(service_name)
-    sdk_plan.wait_for_completed_recovery(service_name)
+
+def non_zero_elastic_metrics(metrics: List[Dict[Any, Any]]):
+    for metric in metrics:
+        if metric["name"].startswith("elasticsearch") and metric["value"] != 0:
+            yield metric
+
+
+def get_node_names_from_metrics(metrics: List[Dict[Any, Any]]) -> Set[str]:
+    names = set()
+    for metric in metrics:
+        if "name" in metric["tags"]:
+            names.add(metric["tags"]["name"])
+    return names
 
 
 @pytest.mark.incremental

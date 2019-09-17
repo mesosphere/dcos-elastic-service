@@ -592,6 +592,75 @@
         "count"
       ]
     },
+    "prometheus_exporter": {
+      "description": "Elasticsearch prometheus exporter configuration properties",
+      "type": "object",
+      "properties": {
+        "prometheus_exporter_enabled": {
+          "description": "By default, Prometheus exporter is enabled for Elasticsearch. Set to false to disable metrics collection.",
+          "type": "boolean",
+          "default": true
+        },
+        "configuration_options": {
+          "description": "Command line arguments for exporter",
+          "type": "string",
+          "default": "--es.all --es.indices --es.shards"
+        },
+        "cpus": {
+          "description": "Prometheus exporter cpu requirements",
+          "type": "number",
+          "default": 1.0
+        },
+        "mem": {
+          "description": "Prometheus exporter mem requirements",
+          "type": "integer",
+          "default": 128
+        },
+        "disk": {
+          "description": "Prometheus exporter disk requirements (only respected with persistent volumes)",
+          "type": "integer",
+          "default": 256
+        },
+        "disk_type": {
+          "type": "string",
+          "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
+          "default": "ROOT"
+        },
+        "volume_profile": {
+          "type": "string",
+          "description": "Volume profile to be used for storing Prometheus exporter data."
+        },
+        "readiness_check": {
+          "description": "Readiness check settings. Exercise caution when modifying these default values as it can lead to spurious task failures.",
+          "type": "object",
+          "properties": {
+            "interval": {
+              "type": "integer",
+              "description": "The period in seconds to wait after the last readiness check has completed to start the next check.",
+              "default": 5,
+              "minimum": 5
+            },
+            "delay": {
+              "type": "integer",
+              "description": "An amount of time in seconds to wait before starting the readiness check attempts.",
+              "default": 0,
+              "minimum": 0
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "An amount of time in seconds to wait for a readiness check to succeed.",
+              "default": 10,
+              "minimum": 10
+            }
+          }
+        }
+      },
+      "required": [
+        "cpus",
+        "mem",
+        "disk"
+      ]
+    },
     "elasticsearch": {
       "description": "Elasticsearch service configuration properties",
       "type": "object",

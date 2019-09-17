@@ -7,7 +7,8 @@
       "scheduler-zip": "{{artifact-dir}}/elastic-scheduler.zip",
       "elasticsearch-jre-tar-gz": "https://downloads.mesosphere.com/elastic/assets/openjdk-{{elasticsearch-openjdk-version}}_linux-x64_bin.tar.gz",
       "elasticsearch-tar-gz": "https://downloads.mesosphere.com/elastic/assets/elasticsearch-{{elastic-version}}-linux-x86_64.tar.gz",
-      "diagnostics-zip": "https://downloads.mesosphere.com/elastic/assets/support-diagnostics-{{support-diagnostics-version}}-dist.zip"
+      "diagnostics-zip": "https://downloads.mesosphere.com/elastic/assets/support-diagnostics-{{support-diagnostics-version}}-dist.zip",
+      "prometheus-exporter-tar-gz": "https://downloads.mesosphere.com/elastic/assets/elasticsearch-prometheus-exporter-{{elasticsearch-prometheus-exporter-version}}-linux-amd64.tar.gz"
     }
   },
   "images": {

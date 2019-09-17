@@ -38,6 +38,7 @@
     "ELASTIC_VERSION": "{{elastic-version}}",
     "ELASTICSEARCH_URI" : "{{resource.assets.uris.elasticsearch-tar-gz}}",
     "ELASTICSEARCH_JAVA_URI" : "{{resource.assets.uris.elasticsearch-jre-tar-gz}}",
+    "ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION": "{{elasticsearch-prometheus-exporter-version}}",
     "DIAGNOSTICS_URI" : "{{resource.assets.uris.diagnostics-zip}}",
     "BOOTSTRAP_URI": "{{resource.assets.uris.bootstrap-zip}}",
     "JAVA_URI": "{{resource.assets.uris.jre-tar-gz}}",
@@ -46,7 +47,7 @@
     "FRAMEWORK_USER": "{{service.user}}",
     "FRAMEWORK_PRINCIPAL": "{{service.service_account}}",
     "FRAMEWORK_LOG_LEVEL": "{{service.log_level}}",
-
+    "PROMETHEUS_EXPORTER_URI" : "{{resource.assets.uris.prometheus-exporter-tar-gz}}",
     {{#service.service_account_secret}}
     "DCOS_SERVICE_ACCOUNT_CREDENTIAL": "secrets/service-account.json",
     "MESOS_MODULES": "{\"libraries\":[{\"file\":\"libmesos-bundle\/lib\/mesos\/libdcos_security.so\",\"modules\":[{\"name\": \"com_mesosphere_dcos_ClassicRPCAuthenticatee\",\"parameters\":[{\"key\":\"service_account_credential\",\"value\":\"file://secrets/service-account.json\"}]},{\"name\":\"com_mesosphere_dcos_http_Authenticatee\",\"parameters\":[{\"key\":\"service_account_credential\",\"value\":\"file://secrets/service-account.json\"},{\"key\":\"jwt_exp_timeout\",\"value\":\"5mins\"},{\"key\":\"preemptive_refresh_duration\",\"value\":\"30mins\"}]}]}]}",
@@ -62,20 +63,20 @@
 
     {{#service.security.transport_encryption.enabled}}
     "TASKCFG_ALL_SECURITY_ENABLED": "true",
-    "ELASTICSEARCH_HEALTH_PROTOCOL": "https",
+    "ELASTICSEARCH_HTTP_PROTOCOL": "https",
     {{/service.security.transport_encryption.enabled}}
 
     {{^service.security.transport_encryption.enabled}}
     {{#elasticsearch.xpack_security_enabled}}
     "TASKCFG_ALL_SECURITY_ENABLED": "true",
-    "ELASTICSEARCH_HEALTH_PROTOCOL": "https",
+    "ELASTICSEARCH_HTTP_PROTOCOL": "https",
     {{/elasticsearch.xpack_security_enabled}}
     {{/service.security.transport_encryption.enabled}}
 
     {{^service.security.transport_encryption.enabled}}
     {{^elasticsearch.xpack_security_enabled}}
     "TASKCFG_ALL_SECURITY_ENABLED": "false",
-    "ELASTICSEARCH_HEALTH_PROTOCOL": "http",
+    "ELASTICSEARCH_HTTP_PROTOCOL": "http",
     {{/elasticsearch.xpack_security_enabled}}
     {{/service.security.transport_encryption.enabled}}
 
@@ -127,6 +128,16 @@
     {{#coordinator_nodes.volume_profile}}
     "COORDINATOR_NODE_VOLUME_PROFILE": "{{coordinator_nodes.volume_profile}}",
     {{/coordinator_nodes.volume_profile}}
+    {{#prometheus_exporter.prometheus_exporter_enabled}}
+    "PROMETHEUS_EXPORTER_ENABLED": "{{prometheus_exporter.prometheus_exporter_enabled}}",
+    {{/prometheus_exporter.prometheus_exporter_enabled}}
+    "PROMETHEUS_EXPORTER_CPUS": "{{prometheus_exporter.cpus}}",
+    "PROMETHEUS_EXPORTER_MEM": "{{prometheus_exporter.mem}}",
+    "PROMETHEUS_EXPORTER_DISK": "{{prometheus_exporter.disk}}",
+    "PROMETHEUS_EXPORTER_DISK_TYPE": "{{prometheus_exporter.disk_type}}",
+    {{#prometheus_exporter.volume_profile}}
+    "PROMETHEUS_EXPORTER_VOLUME_PROFILE": "{{prometheus_exporter.volume_profile}}",
+    {{/prometheus_exporter.volume_profile}}
     {{#service.region}}
     "SERVICE_REGION": "{{service.region}}",
     {{/service.region}}
@@ -483,7 +494,12 @@
     "COORDINATOR_NODE_READINESS_CHECK_TIMEOUT": "{{coordinator_nodes.readiness_check.timeout}}",
 
     "COORDINATOR_NODE_RLIMIT_NOFILE_SOFT": "{{coordinator_nodes.rlimits.rlimit_nofile.soft}}",
-    "COORDINATOR_NODE_RLIMIT_NOFILE_HARD": "{{coordinator_nodes.rlimits.rlimit_nofile.hard}}"
+    "COORDINATOR_NODE_RLIMIT_NOFILE_HARD": "{{coordinator_nodes.rlimits.rlimit_nofile.hard}}",
+
+    "PROMETHEUS_EXPORTER_READINESS_CHECK_INTERVAL": "{{prometheus_exporter.readiness_check.interval}}",
+    "PROMETHEUS_EXPORTER_READINESS_CHECK_DELAY": "{{prometheus_exporter.readiness_check.delay}}",
+    "PROMETHEUS_EXPORTER_READINESS_CHECK_TIMEOUT": "{{prometheus_exporter.readiness_check.timeout}}",
+    "PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS": "{{prometheus_exporter.configuration_options}}"
   },
   "fetch": [
     { "uri": "{{resource.assets.uris.bootstrap-zip}}", "cache": true },
