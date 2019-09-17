@@ -124,9 +124,7 @@ def _test_upgrade(
 @pytest.fixture(autouse=True)
 def pre_test_setup() -> None:
     sdk_tasks.check_running(service_name, current_expected_task_count)
-    config.wait_for_expected_nodes_to_exist(
-        service_name=service_name, task_count=current_expected_task_count
-    )
+    config.wait_for_expected_nodes_to_exist(service_name=service_name)
 
 
 @pytest.fixture
