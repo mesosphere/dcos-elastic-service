@@ -140,8 +140,6 @@ def default_populated_index() -> None:
 @pytest.mark.recovery
 @pytest.mark.sanity
 def test_pod_replace_then_immediate_config_update() -> None:
-    sdk_install.uninstall(kibana_package_name, kibana_package_name)
-    sdk_install.uninstall(package_name, service_name)
     sdk_cmd.svc_cli(package_name, service_name, "pod replace data-0")
 
     plugins = "analysis-phonetic"
