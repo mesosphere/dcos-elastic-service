@@ -150,12 +150,12 @@ def test_custom_yaml_base64() -> None:
     #   routing:
     #     allocation:
     #       node_initial_primaries_recoveries: 3
-    # script.allowed_contexts: ["search", "update"]
+    # script.allowed_contexts: ["score", "update"]
     base64_elasticsearch_yml = "".join(
         [
-            "Y2x1c3RlcjoKICByb3V0aW5nOgogICAgYWxsb2NhdGlvbjoKICAgICAgbm9kZV9pbml0aWFsX3By",
-            "aW1hcmllc19yZWNvdmVyaWVzOiAzCnNjcmlwdC5hbGxvd2VkX2NvbnRleHRzOiBbInNlYXJjaCIs",
-            "ICJ1cGRhdGUiXQ==",
+            "Y2x1c3RlcjoKICByb3V0aW5nOgogICAgYWxsb2NhdGlvbjoKICAgICAgbm9kZV9pbml0aWFsX3Bya",
+            "W1hcmllc19yZWNvdmVyaWVzOiAzCnNjcmlwdC5hbGxvd2VkX2NvbnRleHRzOiBbInNjb3JlIiwgInV",
+            "wZGF0ZSJd",
         ]
     )
 
