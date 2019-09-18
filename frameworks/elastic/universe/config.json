@@ -696,41 +696,6 @@
           "type": "boolean",
           "default": true
         },
-        "searchguard_enabled": {
-          "description": "Set it to true to enable the Search Guard plugin for Elastic. Defaults to false.",
-          "type": "boolean",
-          "default": false
-        },
-        "searchguard_internal_users": {
-          "type": "string",
-          "description": "The path in the DC/OS Secret Store to retrieve the Searchguard internal user database.",
-          "default": ""
-        },
-        "searchguard_config": {
-          "type": "string",
-          "description": "The path in the DC/OS Secret Store to retrieve the Searchguard authenticators and authorisation backends configuration.",
-          "default": ""
-        },
-        "searchguard_action_groups": {
-          "type": "string",
-          "description": "The path in the DC/OS Secret Store to retrieve the Searchguard named permission groups.",
-          "default": ""
-        },
-        "searchguard_roles": {
-          "type": "string",
-          "description": "The path in the DC/OS Secret Store to retrieve the Searchguard defined roles and the associated permissions.",
-          "default": ""
-        },
-        "searchguard_roles_mapping": {
-          "type": "string",
-          "description": "The path in the DC/OS Secret Store to retrieve the Searchguard mapping of backend roles, hosts and users to roles.",
-          "default": ""
-        },
-        "searchguard_tenants": {
-          "type": "string",
-          "description": "The path in the DC/OS Secret Store to retrieve the Searchguard tenants for configuring Kibana access.",
-          "default": ""
-        },
         "action_destructive_requires_name": {
           "description": "In order to disable allowing to delete indices via wildcards or _all, set it as true.",
           "type": "boolean",
@@ -1345,6 +1310,48 @@
           "description": "[DEPRECATED] X-Pack is enabled by default on Elastic 6.3+. Changing this setting has no effect.",
           "type": "boolean",
           "default": true
+        },
+        "searchguard": {
+          "type": "object",
+          "description": "Searchguard plugin configuration properties",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "description": "Set it to true to enable the Search Guard plugin for Elastic. Defaults to false.",
+              "type": "boolean",
+              "default": false
+            },
+            "internal_users": {
+              "type": "string",
+              "description": "The path in the DC/OS Secret Store to retrieve the Searchguard internal user database.",
+              "default": ""
+            },
+            "config": {
+              "type": "string",
+              "description": "The path in the DC/OS Secret Store to retrieve the Searchguard authenticators and authorisation backends configuration.",
+              "default": ""
+            },
+            "action_groups": {
+              "type": "string",
+              "description": "The path in the DC/OS Secret Store to retrieve the Searchguard named permission groups.",
+              "default": ""
+            },
+            "roles": {
+              "type": "string",
+              "description": "The path in the DC/OS Secret Store to retrieve the Searchguard defined roles and the associated permissions.",
+              "default": ""
+            },
+            "roles_mapping": {
+              "type": "string",
+              "description": "The path in the DC/OS Secret Store to retrieve the Searchguard mapping of backend roles, hosts and users to roles.",
+              "default": ""
+            },
+            "tenants": {
+              "type": "string",
+              "description": "The path in the DC/OS Secret Store to retrieve the Searchguard tenants for configuring Kibana access.",
+              "default": ""
+            }
+          }
         }
       }
     }

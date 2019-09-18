@@ -64,10 +64,10 @@ def elastic_service(service_account: Dict[str, Any], sg_internal_users_path: str
                     "security": {"transport_encryption": {"enabled": True}},
                 },
                 "elasticsearch": {
-                    "searchguard_enabled": True,
+                    "searchguard.enabled": True,
                     "health_user": "admin",
                     "health_user_password": "admin_password",
-                    "searchguard_internal_users": sg_internal_users_secret_name,
+                    "searchguard.internal_users": sg_internal_users_secret_name,
                 },
             },
         )
