@@ -594,8 +594,8 @@ def test_xpack_security_enabled_update(
     test_upgrade(
         PACKAGE_NAME,
         service_name,
-        expected_running_tasks_before_upgrade = DEFAULT_NODES_COUNT,
-        expected_running_tasks_after_upgrade = DEFAULT_TASK_COUNT,
+        expected_running_tasks_before_upgrade=DEFAULT_NODES_COUNT,
+        expected_running_tasks_after_upgrade=DEFAULT_TASK_COUNT,
         from_options={"elasticsearch": {"xpack_security_enabled": from_xpack_security_enabled}},
         to_options={
             "service": {"update_strategy": "parallel"},
@@ -771,16 +771,16 @@ def _master_zero_http_port(service_name: str) -> int:
 # Use sdk_upgrade.test_upgrade instead of this function after
 # it will be upgraded to accept different number of expecting tasks for install and upgrade
 def test_upgrade(
-        package_name: str,
-        service_name: str,
-        expected_running_tasks_before_upgrade: int,
-        expected_running_tasks_after_upgrade: int,
-        from_version: str = None,
-        from_options: Dict[str, Any] = {},
-        to_version: str = None,
-        to_options: Optional[Dict[str, Any]] = None,
-        timeout_seconds: int = sdk_upgrade.TIMEOUT_SECONDS,
-        wait_for_deployment: bool = True,
+    package_name: str,
+    service_name: str,
+    expected_running_tasks_before_upgrade: int,
+    expected_running_tasks_after_upgrade: int,
+    from_version: str = None,
+    from_options: Dict[str, Any] = {},
+    to_version: str = None,
+    to_options: Optional[Dict[str, Any]] = None,
+    timeout_seconds: int = sdk_upgrade.TIMEOUT_SECONDS,
+    wait_for_deployment: bool = True,
 ) -> None:
     sdk_install.uninstall(package_name, service_name)
 
@@ -834,5 +834,4 @@ def test_upgrade(
         expected_running_tasks_after_upgrade,
         wait_for_deployment,
         timeout_seconds,
-        )
-
+    )
