@@ -1,0 +1,4 @@
+rootProject.name = 'dcos-commons'
+
+include 'frameworks/elastic'
+project(':frameworks/elastic').name = 'elastic'
