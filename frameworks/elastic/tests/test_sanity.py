@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Iterator, List, Set, Optional
+from typing import Any, Dict, Iterator, List, Set
 
 from toolz import get_in
 import pytest
@@ -12,9 +12,7 @@ import sdk_networks
 import sdk_plan
 import sdk_service
 import sdk_tasks
-import sdk_upgrade
 import sdk_utils
-import sdk_repository
 from tests import config
 
 log = logging.getLogger(__name__)

@@ -9,6 +9,7 @@ import sdk_cmd
 import sdk_hosts
 import sdk_install
 import sdk_networks
+import sdk_repository
 import sdk_service
 import sdk_upgrade
 import sdk_utils
