@@ -180,7 +180,7 @@ def test_custom_yaml_base64() -> None:
     # results in a valid elasticsearch.yml file, but with a trickier compilation case due to the
     # setting value being an array of strings.
     config.check_custom_elasticsearch_cluster_setting(
-        service_name, ["script", "allowed_contexts"], ["search", "update"]
+        service_name, ["script", "allowed_contexts"], ["score", "update"]
     )
 
 
