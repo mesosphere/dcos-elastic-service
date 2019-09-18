@@ -164,10 +164,10 @@ def check_kibana_plugin_installed(plugin_name: str, service_name: str = SERVICE_
 def check_elasticsearch_plugin_installed(
     plugin_name: str,
     service_name: str = SERVICE_NAME,
-    expected_task_count: int = DEFAULT_TASK_COUNT,
+    expected_nodes_count: int = DEFAULT_NODES_COUNT,
 ) -> bool:
     result = _get_hosts_with_plugin(service_name, plugin_name)
-    return result is not None and len(result) == expected_task_count
+    return result is not None and len(result) == expected_nodes_count
 
 
 @retrying.retry(
@@ -591,10 +591,11 @@ def test_xpack_enabled_update(
 def test_xpack_security_enabled_update(
     service_name: str, from_xpack_security_enabled: bool, to_xpack_security_enabled: bool
 ) -> None:
-    sdk_upgrade.test_upgrade(
+    test_upgrade(
         PACKAGE_NAME,
         service_name,
-        DEFAULT_TASK_COUNT,
+        expected_running_tasks_before_upgrade = DEFAULT_NODES_COUNT,
+        expected_running_tasks_after_upgrade = DEFAULT_TASK_COUNT,
         from_options={"elasticsearch": {"xpack_security_enabled": from_xpack_security_enabled}},
         to_options={
             "service": {"update_strategy": "parallel"},
@@ -765,3 +766,73 @@ def _master_zero_http_port(service_name: str) -> int:
     port = dns[0].split(":")[-1]
     log.info("Extracted {} as port for {}".format(port, dns[0]))
     return int(port)
+
+
+# Use sdk_upgrade.test_upgrade instead of this function after
+# it will be upgraded to accept different number of expecting tasks for install and upgrade
+def test_upgrade(
+        package_name: str,
+        service_name: str,
+        expected_running_tasks_before_upgrade: int,
+        expected_running_tasks_after_upgrade: int,
+        from_version: str = None,
+        from_options: Dict[str, Any] = {},
+        to_version: str = None,
+        to_options: Optional[Dict[str, Any]] = None,
+        timeout_seconds: int = sdk_upgrade.TIMEOUT_SECONDS,
+        wait_for_deployment: bool = True,
+) -> None:
+    sdk_install.uninstall(package_name, service_name)
+
+    log.info(
+        "Called with 'from' version '{}' and 'to' version '{}'".format(from_version, to_version)
+    )
+
+    universe_version = None
+    try:
+        # Move the Universe repo to the top of the repo list so that we can first install the latest
+        # released version.
+        test_version, universe_version = sdk_repository.move_universe_repo(
+            package_name, universe_repo_index=0
+        )
+        log.info("Found 'test' version: {}".format(test_version))
+        log.info("Found 'universe' version: {}".format(universe_version))
+
+        from_version = from_version or universe_version
+        to_version = to_version or test_version
+
+        log.info(
+            "Will upgrade {} from version '{}' to '{}'".format(
+                package_name, from_version, to_version
+            )
+        )
+
+        log.info("Installing {} 'from' version: {}".format(package_name, from_version))
+        sdk_install.install(
+            package_name,
+            service_name,
+            expected_running_tasks_before_upgrade,
+            package_version=from_version,
+            additional_options=from_options,
+            timeout_seconds=timeout_seconds,
+            wait_for_deployment=wait_for_deployment,
+        )
+    finally:
+        if universe_version:
+            # Return the Universe repo back to the bottom of the repo list so that we can upgrade to
+            # the build version.
+            sdk_repository.move_universe_repo(package_name)
+
+    log.info(
+        "Upgrading {} from version '{}' to '{}'".format(package_name, from_version, to_version)
+    )
+    sdk_upgrade.update_or_upgrade_or_downgrade(
+        package_name,
+        service_name,
+        to_version,
+        to_options or from_options,
+        expected_running_tasks_after_upgrade,
+        wait_for_deployment,
+        timeout_seconds,
+        )
+

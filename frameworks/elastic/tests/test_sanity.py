@@ -37,7 +37,7 @@ def configure_package(configure_security: None) -> Iterator[None]:
         sdk_install.uninstall(kibana_package_name, kibana_package_name)
         sdk_install.uninstall(package_name, service_name)
 
-        _test_upgrade(
+        config.test_upgrade(
             package_name,
             service_name,
             config.DEFAULT_NODES_COUNT,
@@ -50,75 +50,6 @@ def configure_package(configure_security: None) -> Iterator[None]:
         log.info("Clean up elasticsearch and kibana...")
         sdk_install.uninstall(kibana_package_name, kibana_package_name)
         sdk_install.uninstall(package_name, service_name)
-
-
-# Use sdk_upgrade.test_upgrade instead of this function after
-# it will be upgraded to accept different number of expecting tasks for install and upgrade
-def _test_upgrade(
-    package_name: str,
-    service_name: str,
-    expected_running_tasks_before_upgrade: int,
-    expected_running_tasks_after_upgrade: int,
-    from_version: str = None,
-    from_options: Dict[str, Any] = {},
-    to_version: str = None,
-    to_options: Optional[Dict[str, Any]] = None,
-    timeout_seconds: int = sdk_upgrade.TIMEOUT_SECONDS,
-    wait_for_deployment: bool = True,
-) -> None:
-    sdk_install.uninstall(package_name, service_name)
-
-    log.info(
-        "Called with 'from' version '{}' and 'to' version '{}'".format(from_version, to_version)
-    )
-
-    universe_version = None
-    try:
-        # Move the Universe repo to the top of the repo list so that we can first install the latest
-        # released version.
-        test_version, universe_version = sdk_repository.move_universe_repo(
-            package_name, universe_repo_index=0
-        )
-        log.info("Found 'test' version: {}".format(test_version))
-        log.info("Found 'universe' version: {}".format(universe_version))
-
-        from_version = from_version or universe_version
-        to_version = to_version or test_version
-
-        log.info(
-            "Will upgrade {} from version '{}' to '{}'".format(
-                package_name, from_version, to_version
-            )
-        )
-
-        log.info("Installing {} 'from' version: {}".format(package_name, from_version))
-        sdk_install.install(
-            package_name,
-            service_name,
-            expected_running_tasks_before_upgrade,
-            package_version=from_version,
-            additional_options=from_options,
-            timeout_seconds=timeout_seconds,
-            wait_for_deployment=wait_for_deployment,
-        )
-    finally:
-        if universe_version:
-            # Return the Universe repo back to the bottom of the repo list so that we can upgrade to
-            # the build version.
-            sdk_repository.move_universe_repo(package_name)
-
-    log.info(
-        "Upgrading {} from version '{}' to '{}'".format(package_name, from_version, to_version)
-    )
-    sdk_upgrade.update_or_upgrade_or_downgrade(
-        package_name,
-        service_name,
-        to_version,
-        to_options or from_options,
-        expected_running_tasks_after_upgrade,
-        wait_for_deployment,
-        timeout_seconds,
-    )
 
 
 @pytest.fixture(autouse=True)
@@ -463,7 +394,7 @@ def test_plugin_install_via_proxy() -> None:
         )
 
         config.check_elasticsearch_plugin_installed(
-            plugin_name, service_name=service_name, expected_task_count=current_expected_task_count
+            plugin_name, service_name=service_name
         )
         _check_proxy_was_used()
 
