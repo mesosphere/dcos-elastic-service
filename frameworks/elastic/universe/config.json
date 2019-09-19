@@ -1310,6 +1310,11 @@
           "description": "[DEPRECATED] X-Pack is enabled by default on Elastic 6.3+. Changing this setting has no effect.",
           "type": "boolean",
           "default": true
+        },
+        "bootstrap_memory_lock": {
+          "description": "Try to lock the process address space into RAM using mlockall, preventing any Elasticsearch memory from being swapped out.",
+          "type": "boolean",
+          "default": true
         }
       }
     }
