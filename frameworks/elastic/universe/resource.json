@@ -9,7 +9,7 @@
       "elasticsearch-jre-tar-gz": "{{jre-url}}",
       "elasticsearch-tar-gz": "https://downloads.mesosphere.com/elastic/assets/elasticsearch-{{elastic-version}}.tar.gz",
       "diagnostics-zip": "https://downloads.mesosphere.com/elastic/assets/support-diagnostics-{{support-diagnostics-version}}-dist.zip",
-      "searchguard-sgadmin-zip": "https://downloads.mesosphere.io/elastic/assets/search-guard-6-{{elastic-version}}-{{searchguard-elastic-version}}.zip"
+      "searchguard-sgadmin-zip": "https://downloads.mesosphere.io/elastic/assets/search-guard-{{searchguard-elastic-version}}.zip"
     }
   },
   "images": {

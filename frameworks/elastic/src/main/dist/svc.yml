@@ -473,12 +473,12 @@ pods:
              ln -sf $MESOS_SANDBOX/$sg_config_file sgconfig/$sg_config_file
            fi
          done
-         chmod +x elasticsearch-{{ELASTIC_VERSION}}/plugins/search-guard-6/tools/sgadmin.sh
+         chmod +x elasticsearch-{{ELASTIC_VERSION}}/plugins/search-guard-*/tools/sgadmin.sh
 
          cat > sgadmin.sh << 'EOF'
          #!/bin/bash
          openssl pkcs8 -in node.key -topk8 -nocrypt -out node.key.pkcs8
-         elasticsearch-{{ELASTIC_VERSION}}/plugins/search-guard-6/tools/sgadmin.sh -key node.key.pkcs8 -cert node.crt -cacert node.ca -cd sgconfig -cn elastic -h master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory
+         elasticsearch-{{ELASTIC_VERSION}}/plugins/search-guard-*/tools/sgadmin.sh -key node.key.pkcs8 -cert node.crt -cacert node.ca -cd sgconfig -cn elastic -h master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory
          EOF
 
          chmod +x sgadmin.sh
