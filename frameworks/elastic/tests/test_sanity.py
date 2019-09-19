@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 package_name = config.PACKAGE_NAME
 service_name = sdk_utils.get_foldered_name(config.SERVICE_NAME)
 current_expected_task_count = config.DEFAULT_TASK_COUNT
+current_non_node_task_count = config.DEFAULT_TASK_COUNT - config.DEFAULT_NODES_COUNT
 kibana_package_name = config.KIBANA_PACKAGE_NAME
 kibana_service_name = config.KIBANA_SERVICE_NAME
 kibana_timeout = config.KIBANA_DEFAULT_TIMEOUT
@@ -53,7 +54,10 @@ def configure_package(configure_security: None) -> Iterator[None]:
 @pytest.fixture(autouse=True)
 def pre_test_setup() -> None:
     sdk_tasks.check_running(service_name, current_expected_task_count)
-    config.wait_for_expected_nodes_to_exist(service_name=service_name)
+    config.wait_for_expected_nodes_to_exist(
+        service_name=service_name,
+        task_count=current_expected_task_count - current_non_node_task_count,
+    )
 
 
 @pytest.fixture
