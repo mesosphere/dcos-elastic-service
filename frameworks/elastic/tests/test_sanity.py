@@ -395,7 +395,11 @@ def test_plugin_install_via_proxy() -> None:
             config.DEFAULT_TASK_COUNT,
         )
 
-        config.check_elasticsearch_plugin_installed(plugin_name, service_name=service_name)
+        config.check_elasticsearch_plugin_installed(
+            plugin_name,
+            service_name=service_name,
+            expected_task_count=current_expected_task_count - current_non_node_task_count,
+        )
         _check_proxy_was_used()
 
         sdk_service.update_configuration(
