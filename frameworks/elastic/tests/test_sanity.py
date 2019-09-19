@@ -476,3 +476,13 @@ def test_kibana_plugin_installation():
     finally:
         log.info("Ensure elasticsearch and kibana are uninstalled.")
         sdk_install.uninstall(kibana_package_name, kibana_package_name)
+
+
+@pytest.mark.incremental
+@pytest.mark.sanity
+def test_bootstrap_memory_lock() -> None:
+    bootstrap_memory_lock_response = config._curl_query(
+        service_name, "GET", "_nodes?filter_path=**.mlockall"
+    )
+    for (k, v) in bootstrap_memory_lock_response["nodes"].items():
+        assert v["process"]["mlockall"] is True
