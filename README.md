@@ -163,10 +163,11 @@ Example output of thing:
     {
       "a": 2
     }
-```
+
 
 Please look into http://www.somewebsite.com/details-about-thing
 for more context.
+```
 
 #### Merging pull requests
 

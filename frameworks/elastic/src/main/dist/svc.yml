@@ -20,6 +20,11 @@ pods:
       - {{SEARCHGUARD_SGADMIN_URI}}
       {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
     rlimits:
+      {{#TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
+      RLIMIT_MEMLOCK:
+        soft: -1
+        hard: -1
+      {{/TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
       RLIMIT_NOFILE:
         soft: {{MASTER_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{MASTER_NODE_RLIMIT_NOFILE_HARD}}
@@ -120,6 +125,11 @@ pods:
       - {{SEARCHGUARD_SGADMIN_URI}}
       {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
     rlimits:
+      {{#TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
+      RLIMIT_MEMLOCK:
+        soft: -1
+        hard: -1
+      {{/TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
       RLIMIT_NOFILE:
         soft: {{DATA_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{DATA_NODE_RLIMIT_NOFILE_HARD}}
@@ -218,6 +228,11 @@ pods:
       - {{SEARCHGUARD_SGADMIN_URI}}
       {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
     rlimits:
+      {{#TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
+      RLIMIT_MEMLOCK:
+        soft: -1
+        hard: -1
+      {{/TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
       RLIMIT_NOFILE:
         soft: {{INGEST_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{INGEST_NODE_RLIMIT_NOFILE_HARD}}
@@ -317,6 +332,11 @@ pods:
       - {{SEARCHGUARD_SGADMIN_URI}}
       {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
     rlimits:
+      {{#TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
+      RLIMIT_MEMLOCK:
+        soft: -1
+        hard: -1
+      {{/TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
       RLIMIT_NOFILE:
         soft: {{COORDINATOR_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{COORDINATOR_NODE_RLIMIT_NOFILE_HARD}}
