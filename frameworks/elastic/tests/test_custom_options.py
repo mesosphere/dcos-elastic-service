@@ -48,9 +48,9 @@ def test_xmx_and_xms_flags(configure_security):
         flag_xmx = "Xmx"
         exit_code, stdout, stderr = sdk_cmd.service_task_exec(config.SERVICE_NAME, task, cmd)
 
-        assert str(stdout).count(flag_xms) == 1, "Default xms flag prefix should appear once"
-
-        assert str(stdout).count(flag_xmx) == 1, "Default xmx flag prefix should appear once"
+        if not str(task).count("exporter"):
+            assert str(stdout).count(flag_xms) == 1, "Default xms flag prefix should appear once"
+            assert str(stdout).count(flag_xmx) == 1, "Default xmx flag prefix should appear once"
 
         if str(task).count("master"):
             master_xms = flag_xms + str(MASTER_NODE_HEAP)

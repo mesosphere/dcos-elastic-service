@@ -27,7 +27,7 @@ def configure_package(configure_security: None) -> Iterator[None]:
 @pytest.fixture(autouse=True)
 def pre_test_setup() -> None:
     sdk_tasks.check_running(config.SERVICE_NAME, config.DEFAULT_TASK_COUNT)
-    config.wait_for_expected_nodes_to_exist(task_count=config.DEFAULT_TASK_COUNT)
+    config.wait_for_expected_nodes_to_exist(task_count=config.DEFAULT_NODES_COUNT)
 
 
 @pytest.fixture

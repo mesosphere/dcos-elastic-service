@@ -112,11 +112,6 @@
           "type": "integer",
           "default": 2048
         },
-        "xpack_enabled": {
-          "description": "[DEPRECATED] X-Pack is enabled by default on Kibana 6.3+. Changing this setting now has no effect.",
-          "type": "boolean",
-          "default": true
-        },
         "custom_kibana_yml": {
           "description": "Custom YAML to be appended to kibana.yml. This field must be base64 encoded.",
           "type": "string",
@@ -125,6 +120,11 @@
             "type": "application/x-yaml"
           },
           "default": ""
+        },
+        "xpack_enabled": {
+          "description": "[DEPRECATED in 2.5.0-6.3.2] X-Pack is enabled by default. Changing this setting has no effect.",
+          "type": "boolean",
+          "default": true
         }
       },
       "required": [

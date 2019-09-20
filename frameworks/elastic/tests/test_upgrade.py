@@ -10,7 +10,6 @@ from tests import config
 log = logging.getLogger(__name__)
 
 foldered_name = sdk_utils.get_foldered_name(config.SERVICE_NAME)
-expected_task_count = config.DEFAULT_TASK_COUNT
 
 
 @pytest.fixture(scope="module", autouse=True)

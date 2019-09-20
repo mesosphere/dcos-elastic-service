@@ -1,5 +1,5 @@
 import logging
-from typing import Iterator, List
+from typing import Any, Dict, Iterator, List, Set
 
 from toolz import get_in
 import pytest
@@ -12,7 +12,6 @@ import sdk_networks
 import sdk_plan
 import sdk_service
 import sdk_tasks
-import sdk_upgrade
 import sdk_utils
 from tests import config
 
@@ -21,6 +20,7 @@ log = logging.getLogger(__name__)
 package_name = config.PACKAGE_NAME
 service_name = sdk_utils.get_foldered_name(config.SERVICE_NAME)
 current_expected_task_count = config.DEFAULT_TASK_COUNT
+current_non_node_task_count = config.DEFAULT_TASK_COUNT - config.DEFAULT_NODES_COUNT
 kibana_package_name = config.KIBANA_PACKAGE_NAME
 kibana_service_name = config.KIBANA_SERVICE_NAME
 kibana_timeout = config.KIBANA_DEFAULT_TIMEOUT
@@ -36,9 +36,10 @@ def configure_package(configure_security: None) -> Iterator[None]:
         sdk_install.uninstall(kibana_package_name, kibana_package_name)
         sdk_install.uninstall(package_name, service_name)
 
-        sdk_upgrade.test_upgrade(
+        config.test_upgrade(
             package_name,
             service_name,
+            config.DEFAULT_NODES_COUNT,
             current_expected_task_count,
             from_options={"service": {"name": service_name}},
         )
@@ -54,7 +55,8 @@ def configure_package(configure_security: None) -> Iterator[None]:
 def pre_test_setup() -> None:
     sdk_tasks.check_running(service_name, current_expected_task_count)
     config.wait_for_expected_nodes_to_exist(
-        service_name=service_name, task_count=current_expected_task_count
+        service_name=service_name,
+        task_count=current_expected_task_count - current_non_node_task_count,
     )
 
 
@@ -115,35 +117,32 @@ def test_indexing(default_populated_index: None) -> None:
     sdk_plan.wait_for_completed_recovery(service_name)
 
 
-@pytest.mark.incremental
 @pytest.mark.sanity
-@pytest.mark.dcos_min_version("1.9")
+@pytest.mark.dcos_min_version("1.13")
 def test_metrics() -> None:
-    expected_metrics = [
-        "node.data-0-node.fs.total.total_in_bytes",
-        "node.data-0-node.jvm.mem.pools.old.peak_used_in_bytes",
-        "node.data-0-node.jvm.threads.count",
-    ]
+    metrics = sdk_metrics.wait_for_metrics_from_cli("exporter-0-node", 60)
 
-    def expected_metrics_exist(emitted_metrics: List[str]) -> bool:
-        # Elastic metrics are also dynamic and based on the service name# For eg:
-        # elasticsearch.test__integration__elastic.node.data-0-node.thread_pool.listener.completed
-        # To prevent this from breaking we drop the service name from the metric name
-        # => data-0-node.thread_pool.listener.completed
-        metric_names = [".".join(metric_name.split(".")[2:]) for metric_name in emitted_metrics]
-        return sdk_metrics.check_metrics_presence(metric_names, expected_metrics)
+    elastic_metrics = list(non_zero_elastic_metrics(metrics))
+    assert len(elastic_metrics) > 0
 
-    sdk_metrics.wait_for_service_metrics(
-        package_name,
-        service_name,
-        "data-0",
-        "data-0-node",
-        config.DEFAULT_TIMEOUT,
-        expected_metrics_exist,
-    )
+    node_types = ["master", "data", "coordinator"]
+    node_names = get_node_names_from_metrics(elastic_metrics)
+    for node_type in node_types:
+        assert len(list(filter(lambda x: x.startswith(node_type), node_names))) > 0
 
-    sdk_plan.wait_for_completed_deployment(service_name)
-    sdk_plan.wait_for_completed_recovery(service_name)
+
+def non_zero_elastic_metrics(metrics: List[Dict[Any, Any]]):
+    for metric in metrics:
+        if metric["name"].startswith("elasticsearch") and metric["value"] != 0:
+            yield metric
+
+
+def get_node_names_from_metrics(metrics: List[Dict[Any, Any]]) -> Set[str]:
+    names = set()
+    for metric in metrics:
+        if "name" in metric["tags"]:
+            names.add(metric["tags"]["name"])
+    return names
 
 
 @pytest.mark.incremental
@@ -155,12 +154,12 @@ def test_custom_yaml_base64() -> None:
     #   routing:
     #     allocation:
     #       node_initial_primaries_recoveries: 3
-    # script.allowed_contexts: ["search", "update"]
+    # script.allowed_contexts: ["score", "update"]
     base64_elasticsearch_yml = "".join(
         [
-            "Y2x1c3RlcjoKICByb3V0aW5nOgogICAgYWxsb2NhdGlvbjoKICAgICAgbm9kZV9pbml0aWFsX3By",
-            "aW1hcmllc19yZWNvdmVyaWVzOiAzCnNjcmlwdC5hbGxvd2VkX2NvbnRleHRzOiBbInNlYXJjaCIs",
-            "ICJ1cGRhdGUiXQ==",
+            "Y2x1c3RlcjoKICByb3V0aW5nOgogICAgYWxsb2NhdGlvbjoKICAgICAgbm9kZV9pbml0aWFsX3Bya",
+            "W1hcmllc19yZWNvdmVyaWVzOiAzCnNjcmlwdC5hbGxvd2VkX2NvbnRleHRzOiBbInNjb3JlIiwgInV",
+            "wZGF0ZSJd",
         ]
     )
 
@@ -185,7 +184,7 @@ def test_custom_yaml_base64() -> None:
     # results in a valid elasticsearch.yml file, but with a trickier compilation case due to the
     # setting value being an array of strings.
     config.check_custom_elasticsearch_cluster_setting(
-        service_name, ["script", "allowed_contexts"], ["search", "update"]
+        service_name, ["script", "allowed_contexts"], ["score", "update"]
     )
 
 
@@ -378,7 +377,7 @@ def test_plugin_install_via_proxy() -> None:
         _install_and_run_proxy(proxy_host, proxy_port)
 
         plugin_name = "analysis-ukrainian"
-        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-6.8.1.zip"
+        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-7.3.0.zip"
         _check_proxy_healthy(proxy_host, proxy_port, plugins)
 
         sdk_service.update_configuration(
@@ -397,7 +396,9 @@ def test_plugin_install_via_proxy() -> None:
         )
 
         config.check_elasticsearch_plugin_installed(
-            plugin_name, service_name=service_name, expected_task_count=current_expected_task_count
+            plugin_name,
+            service_name=service_name,
+            expected_nodes_count=current_expected_task_count - current_non_node_task_count,
         )
         _check_proxy_was_used()
 
@@ -459,7 +460,7 @@ def test_kibana_plugin_installation():
             0,
             {
                 "kibana": {
-                    "plugins": "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/Logtrail-6.6.1-0.1.31,https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/own_home-6.6.1-1.zip",
+                    "plugins": "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/logtrail-7.3.0-0.1.31.zip,https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/own_home-7.1.1.zip",
                     "elasticsearch_url": elasticsearch_url,
                 }
             },
