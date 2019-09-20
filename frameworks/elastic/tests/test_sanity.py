@@ -3,6 +3,7 @@ from typing import Iterator, List
 
 from toolz import get_in
 import pytest
+import base64
 
 import sdk_cmd
 import sdk_hosts
@@ -485,3 +486,33 @@ def test_bootstrap_memory_lock() -> None:
     )
     for (k, v) in bootstrap_memory_lock_response["nodes"].items():
         assert v["process"]["mlockall"] is True
+
+
+@pytest.mark.incremental
+@pytest.mark.sanity
+def test_custom_log4j2_properties_base64() -> None:
+    try:
+        decoded_base_64_log4j2_properties = "rootLogger.level = debug"
+        base_64_log4j2_properties = base64.b64encode(
+            decoded_base_64_log4j2_properties.encode("utf-8")
+        ).decode("utf-8")
+
+        sdk_service.update_configuration(
+            package_name,
+            service_name,
+            {"elasticsearch": {"custom_log4j2_properties": base_64_log4j2_properties}},
+            current_expected_task_count,
+        )
+
+        cmd = "bash -c 'grep \"{}\" elasticsearch-*/config/log4j2.properties'".format(
+            decoded_base_64_log4j2_properties
+        )
+        rc, stdout, stderr = sdk_cmd.service_task_exec(service_name, "master-0-node", cmd)
+        assert rc == 0 and decoded_base_64_log4j2_properties in stdout
+    finally:
+        sdk_service.update_configuration(
+            package_name,
+            service_name,
+            {"elasticsearch": {"custom_log4j2_properties": ""}},
+            current_expected_task_count,
+        )

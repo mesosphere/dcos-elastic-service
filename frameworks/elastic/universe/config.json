@@ -606,6 +606,15 @@
             "type": "application/x-yaml"
           }
         },
+        "custom_log4j2_properties": {
+          "description": "Custom log4j2 properties to be appended to log4j2.properties on each node. This field must be base64 encoded.",
+          "type": "string",
+          "default": "",
+          "media": {
+            "binaryEncoding": "base64",
+            "type": "application/x-yaml"
+          }
+        },
         "health_user": {
           "description": "Elastic username to use for X-Pack authentication, if enabled",
           "type": "string",
