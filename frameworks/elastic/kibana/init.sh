@@ -53,7 +53,6 @@ if [ "${SEARCHGUARD_ENABLED}" = "true" ]; then
   export NODE_OPTIONS="--max-old-space-size=8192"
 
   cat <<-EOF >> "${KIBANA_YML_PATH}"
-		elasticsearch.hosts: "${ELASTICSEARCH_URL}"
 		xpack.security.enabled: false
 	EOF
 
