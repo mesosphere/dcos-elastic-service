@@ -24,13 +24,20 @@ pytestmark = [
 def sg_internal_users_path(tmp_path) -> str:
     path = tmp_path / "sg_internal_users.yml"
     sg_internal_users_config = (
-        # password: admin_password
-        "admin.readonly: true\n"
-        'admin.hash: "$2y$12$Pd3kIQD1WgaKpekPyMkUi.jmBDF3QDmPIEUg37wXCRufZZQOnYYYW"\n'
-        "admin.roles: [ admin ]\n"
-        # password: kibanaserver_password
-        "kibanaserver.readonly: true\n"
-        'kibanaserver.hash: "$2y$12$lrwJYnjrlTGgOcf7Kd6xXOHIbkqFWBO3qgqyLYlEwIuRM3CfgL5fG"\n'
+    '_sg_meta:\n'
+    '  type: "internalusers"\n'
+    '  config_version: 2\n'
+
+    'admin:\n'
+    # password: admin_password
+    '  hash: "$2y$12$Pd3kIQD1WgaKpekPyMkUi.jmBDF3QDmPIEUg37wXCRufZZQOnYYYW"\n'
+    '  reserved: true\n'
+    '  backend_roles: ["admin"]\n'
+
+    'kibanaserver:\n'
+    # password: kibanaserver_password
+    '  hash: "$2y$12$lrwJYnjrlTGgOcf7Kd6xXOHIbkqFWBO3qgqyLYlEwIuRM3CfgL5fG"\n' 
+    '  reserved: true\n'
     )
 
     path.write_text(sg_internal_users_config)
