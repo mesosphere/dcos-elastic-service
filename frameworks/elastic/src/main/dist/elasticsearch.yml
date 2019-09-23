@@ -1,8 +1,11 @@
-discovery.zen.ping.unicast.hosts:
+discovery.seed_hosts:
   - "master-0-node.{{FRAMEWORK_HOST}}:{{MASTER_NODE_TRANSPORT_PORT}}"
   - "master-1-node.{{FRAMEWORK_HOST}}:{{MASTER_NODE_TRANSPORT_PORT}}"
   - "master-2-node.{{FRAMEWORK_HOST}}:{{MASTER_NODE_TRANSPORT_PORT}}"
-discovery.zen.minimum_master_nodes: 2
+cluster.initial_master_nodes:
+   - master-0-node
+   - master-1-node
+   - master-2-node
 network.bind_host:
   - {{MESOS_CONTAINER_IP}}
   - _local_
@@ -16,8 +19,6 @@ path.logs: "{{MESOS_SANDBOX}}/container-path/logs"
 http.port: {{PORT_HTTP}}
 transport.tcp.port: {{PORT_TRANSPORT}}
 bootstrap.memory_lock: {{BOOTSTRAP_MEMORY_LOCK}}
-metrics.statsd.host: {{STATSD_UDP_HOST}}
-metrics.statsd.port: {{STATSD_UDP_PORT}}
 
 {{#ZONE}}
 node.attr.zone: {{ZONE}}
@@ -40,20 +41,28 @@ node.master: false
 node.data: {{DATA_ENABLED}}
 node.ingest: {{INGEST_ENABLED}}
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/6.8/security-settings.html
 {{#SECURITY_ENABLED}}
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.3/security-settings.html
 xpack.security.enabled: true
-# https://www.elastic.co/guide/en/elasticsearch/reference/6.8/security-settings.html#ssl-tls-settings
-xpack.ssl.key: {{MESOS_SANDBOX}}/node.key
-xpack.ssl.certificate: {{MESOS_SANDBOX}}/node.crt
-xpack.ssl.certificate_authorities: [ "{{MESOS_SANDBOX}}/node.ca" ]
-xpack.ssl.client_authentication: optional
+
 # Node to node encryption.
 xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.key: {{MESOS_SANDBOX}}/node.key
+xpack.security.transport.ssl.certificate: {{MESOS_SANDBOX}}/node.crt
+xpack.security.transport.ssl.certificate_authorities: ["{{MESOS_SANDBOX}}/node.ca"]
+xpack.security.transport.ssl.client_authentication: optional
+
 # Client encryption.
 xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.certificate: {{MESOS_SANDBOX}}/node.crt
 xpack.security.http.ssl.client_authentication: none
+xpack.security.http.ssl.key: {{MESOS_SANDBOX}}/node.key
 {{/SECURITY_ENABLED}}
+
+{{#NODE_STORE_ALLOW_MMAP}}
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.3/index-modules-store.html
+node.store.allow_mmap: {{NODE_STORE_ALLOW_MMAP}}
+{{/NODE_STORE_ALLOW_MMAP}}
 
 {{#SCRIPT_ALLOWED_CONTEXTS}}
 script.allowed_contexts: {{SCRIPT_ALLOWED_CONTEXTS}}
@@ -76,7 +85,6 @@ network.tcp.receive_buffer_size: {{NETWORK_TCP_RECEIVE_BUFFER_SIZE}}
 transport.tcp.connect_timeout: {{TRANSPORT_TCP_CONNECT_TIMEOUT}}
 transport.tcp.compress: {{TRANSPORT_TCP_COMPRESS}}
 transport.ping_schedule: {{TRANSPORT_PING_SCHEDULE}}
-http.enabled: {{HTTP_ENABLED}}
 http.max_content_length: {{HTTP_MAX_CONTENT_LENGTH}}
 http.max_initial_line_length: {{HTTP_MAX_INITIAL_LINE_LENGTH}}
 http.max_header_size: {{HTTP_MAX_HEADER_SIZE}}
@@ -91,24 +99,52 @@ http.cors.allow-methods: {{HTTP_CORS_ALLOW_METHODS}}
 http.cors.allow-headers: {{HTTP_CORS_ALLOW_HEADERS}}
 http.cors.allow-credentials: {{HTTP_CORS_ALLOW_CREDENTIALS}}
 http.detailed_errors.enabled: {{HTTP_DETAILED_ERRORS_ENABLED}}
-http.pipelining: {{HTTP_PIPELINING}}
 http.pipelining.max_events: {{HTTP_PIPELINING_MAX_EVENTS}}
 {{#THREAD_POOL_SEARCH_SIZE}}
 thread_pool.search.size: {{THREAD_POOL_SEARCH_SIZE}}
 {{/THREAD_POOL_SEARCH_SIZE}}
 thread_pool.search.queue_size: {{THREAD_POOL_SEARCH_QUEUE_SIZE}}
-{{#THREAD_POOL_INDEX_SIZE}}
-thread_pool.index.size: {{THREAD_POOL_INDEX_SIZE}}
-{{/THREAD_POOL_INDEX_SIZE}}
-thread_pool.index.queue_size: {{THREAD_POOL_INDEX_QUEUE_SIZE}}
 {{#THREAD_POOL_GET_SIZE}}
 thread_pool.get.size: {{THREAD_POOL_GET_SIZE}}
 {{/THREAD_POOL_GET_SIZE}}
 thread_pool.get.queue_size: {{THREAD_POOL_GET_QUEUE_SIZE}}
+
+{{!
+  `thread_pool.bulk.size` was deprecated in favor of `thread_pool.write.size` on
+  Elasticsearch 7.0:
+
+  https://www.elastic.co/guide/en/elasticsearch/reference/current/breaking-changes-7.0.html#write-thread-pool-fallback
+
+  Use the value coming from `THREAD_POOL_BULK_SIZE` for `thread_pool.write.size`
+  if `THREAD_POOL_WRITE_SIZE` isn't available.
+}}
+{{#THREAD_POOL_WRITE_SIZE}}
+thread_pool.write.size: {{THREAD_POOL_WRITE_SIZE}}
+{{/THREAD_POOL_WRITE_SIZE}}
+{{^THREAD_POOL_WRITE_SIZE}}
 {{#THREAD_POOL_BULK_SIZE}}
-thread_pool.bulk.size: {{THREAD_POOL_BULK_SIZE}}
+thread_pool.write.size: {{THREAD_POOL_BULK_SIZE}}
 {{/THREAD_POOL_BULK_SIZE}}
-thread_pool.bulk.queue_size: {{THREAD_POOL_BULK_QUEUE_SIZE}}
+{{/THREAD_POOL_WRITE_SIZE}}
+
+{{!
+  `thread_pool.bulk.queue_size` was deprecated in favor of `thread_pool.write.queue_size` on
+  Elasticsearch 7.0:
+
+  https://www.elastic.co/guide/en/elasticsearch/reference/current/breaking-changes-7.0.html#write-thread-pool-fallback
+
+  Use the value coming from `THREAD_POOL_BULK_QUEUE_SIZE` for `thread_pool.write.queue_size`
+  if `THREAD_POOL_WRITE_QUEUE_SIZE` isn't available.
+}}
+{{#THREAD_POOL_WRITE_QUEUE_SIZE}}
+thread_pool.write.queue_size: {{THREAD_POOL_WRITE_QUEUE_SIZE}}
+{{/THREAD_POOL_WRITE_QUEUE_SIZE}}
+{{^THREAD_POOL_WRITE_QUEUE_SIZE}}
+{{#THREAD_POOL_BULK_QUEUE_SIZE}}
+thread_pool.write.queue_size: {{THREAD_POOL_BULK_QUEUE_SIZE}}
+{{/THREAD_POOL_BULK_QUEUE_SIZE}}
+{{/THREAD_POOL_WRITE_QUEUE_SIZE}}
+
 {{#THREAD_POOL_LISTENER_SIZE}}
 thread_pool.listener.size: {{THREAD_POOL_LISTENER_SIZE}}
 {{/THREAD_POOL_LISTENER_SIZE}}
@@ -345,12 +381,6 @@ xpack.watcher.history.cleaner_service.enabled: {{XPACK_WATCHER_HISTORY_CLEANER_S
 {{#XPACK_SECURITY_AUDIT_ENABLED}}
 xpack.security.audit.enabled: {{XPACK_SECURITY_AUDIT_ENABLED}}
 {{/XPACK_SECURITY_AUDIT_ENABLED}}
-{{#XPACK_SECURITY_AUDIT_INDEX_FLUSH_INTERVAL}}
-xpack.security.audit.index.flush_interval: {{XPACK_SECURITY_AUDIT_INDEX_FLUSH_INTERVAL}}
-{{/XPACK_SECURITY_AUDIT_INDEX_FLUSH_INTERVAL}}
-{{#XPACK_SECURITY_AUDIT_INDEX_ROLLOVER}}
-xpack.security.audit.index.rollover: {{XPACK_SECURITY_AUDIT_INDEX_ROLLOVER}}
-{{/XPACK_SECURITY_AUDIT_INDEX_ROLLOVER}}
 {{#XPACK_SQL_ENABLED}}
 xpack.sql.enabled: {{XPACK_SQL_ENABLED}}
 {{/XPACK_SQL_ENABLED}}
@@ -384,4 +414,5 @@ script.max_size_in_bytes: {{SCRIPT_MAX_SIZE_IN_BYTES}}
 {{#SCRIPT_PAINLESS_REGEX_ENABLED}}
 script.painless.regex.enabled: {{SCRIPT_PAINLESS_REGEX_ENABLED}}
 {{/SCRIPT_PAINLESS_REGEX_ENABLED}}
+
 {{{CUSTOM_YAML_BLOCK}}}

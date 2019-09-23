@@ -15,7 +15,6 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
-      - {{STATSD_URI}}
     rlimits:
       {{#TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
       RLIMIT_MEMLOCK:
@@ -65,7 +64,6 @@ pods:
 
           chmod -R +x scripts
 
-          ./scripts/java-dns-ttl.sh
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
@@ -79,7 +77,6 @@ pods:
           DATA_ENABLED: false
           INGEST_ENABLED: false
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
-          ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           jvm.options:
             template: jvm.options
@@ -100,7 +97,7 @@ pods:
             template: customize-log4j2.sh
             dest: scripts/customize-log4j2.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
           interval: {{MASTER_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{MASTER_NODE_READINESS_CHECK_DELAY}}
           timeout: {{MASTER_NODE_READINESS_CHECK_TIMEOUT}}
@@ -121,7 +118,6 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
-      - {{STATSD_URI}}
     rlimits:
       {{#TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
       RLIMIT_MEMLOCK:
@@ -171,7 +167,6 @@ pods:
 
           chmod -R +x scripts
 
-          ./scripts/java-dns-ttl.sh
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
@@ -183,7 +178,6 @@ pods:
           DATA_ENABLED: true
           INGEST_ENABLED: false
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
-          ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           jvm.options:
             template: jvm.options
@@ -204,7 +198,7 @@ pods:
             template: customize-log4j2.sh
             dest: scripts/customize-log4j2.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
           interval: {{DATA_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{DATA_NODE_READINESS_CHECK_DELAY}}
           timeout: {{DATA_NODE_READINESS_CHECK_TIMEOUT}}
@@ -225,7 +219,6 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
-      - {{STATSD_URI}}
     rlimits:
       {{#TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
       RLIMIT_MEMLOCK:
@@ -275,7 +268,6 @@ pods:
 
           chmod -R +x scripts
 
-          ./scripts/java-dns-ttl.sh
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
@@ -287,7 +279,6 @@ pods:
           DATA_ENABLED: false
           INGEST_ENABLED: true
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
-          ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           jvm.options:
             template: jvm.options
@@ -308,10 +299,61 @@ pods:
             template: customize-log4j2.sh
             dest: scripts/customize-log4j2.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
           interval: {{INGEST_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{INGEST_NODE_READINESS_CHECK_DELAY}}
           timeout: {{INGEST_NODE_READINESS_CHECK_TIMEOUT}}
+        {{#TASKCFG_ALL_SECURITY_ENABLED}}
+        transport-encryption:
+          - name: node
+            type: TLS
+        {{/TASKCFG_ALL_SECURITY_ENABLED}}
+  exporter:
+    {{#PROMETHEUS_EXPORTER_ENABLED}}
+    count: 1
+    {{/PROMETHEUS_EXPORTER_ENABLED}}
+    {{^PROMETHEUS_EXPORTER_ENABLED}}
+    count: 0
+    {{/PROMETHEUS_EXPORTER_ENABLED}}
+    allow-decommission: true
+    {{#ENABLE_VIRTUAL_NETWORK}}
+    networks:
+      {{VIRTUAL_NETWORK_NAME}}:
+        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
+    {{/ENABLE_VIRTUAL_NETWORK}}
+    uris:
+      - {{ELASTICSEARCH_JAVA_URI}}
+      - {{PROMETHEUS_EXPORTER_URI}}
+    tasks:
+      node:
+        goal: RUNNING
+        cpus: {{PROMETHEUS_EXPORTER_CPUS}}
+        memory: {{PROMETHEUS_EXPORTER_MEM}}
+        labels: "DCOS_METRICS_FORMAT:prometheus,DCOS_METRICS_PORT_INDEX:0,DCOS_METRICS_ENDPOINT:/metrics"
+        ports:
+          exporter:
+            port: 9114
+        volume:
+          path: "container-path"
+          type: {{PROMETHEUS_EXPORTER_DISK_TYPE}}
+          size: {{PROMETHEUS_EXPORTER_DISK}}
+          {{#PROMETHEUS_EXPORTER_VOLUME_PROFILE}}
+            profiles:
+              - {{PROMETHEUS_EXPORTER_VOLUME_PROFILE}}
+          {{/PROMETHEUS_EXPORTER_VOLUME_PROFILE}}
+        cmd: |
+          set -ex
+          export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
+          exec ./elasticsearch_exporter-{{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}.linux-amd64/elasticsearch_exporter \
+            --es.uri="{{ELASTICSEARCH_HTTP_PROTOCOL}}://master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
+            {{{PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS}}}
+        env:
+          ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION: {{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}
+        readiness-check:
+          cmd: "curl --silent --output /dev/null --fail --write-out %{http_code} localhost:9114/health"
+          interval: {{PROMETHEUS_EXPORTER_READINESS_CHECK_INTERVAL}}
+          delay: {{PROMETHEUS_EXPORTER_READINESS_CHECK_DELAY}}
+          timeout: {{PROMETHEUS_EXPORTER_READINESS_CHECK_TIMEOUT}}
         {{#TASKCFG_ALL_SECURITY_ENABLED}}
         transport-encryption:
           - name: node
@@ -330,7 +372,6 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{ELASTICSEARCH_URI}}
       - {{DIAGNOSTICS_URI}}
-      - {{STATSD_URI}}
     rlimits:
       {{#TASKCFG_ALL_BOOTSTRAP_MEMORY_LOCK}}
       RLIMIT_MEMLOCK:
@@ -380,7 +421,6 @@ pods:
 
           chmod -R +x scripts
 
-          ./scripts/java-dns-ttl.sh
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
@@ -392,7 +432,6 @@ pods:
           DATA_ENABLED: false
           INGEST_ENABLED: false
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
-          ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           jvm.options:
             template: jvm.options
@@ -413,7 +452,7 @@ pods:
             template: customize-log4j2.sh
             dest: scripts/customize-log4j2.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
           interval: {{COORDINATOR_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{COORDINATOR_NODE_READINESS_CHECK_DELAY}}
           timeout: {{COORDINATOR_NODE_READINESS_CHECK_TIMEOUT}}
@@ -438,6 +477,9 @@ plans:
       coordinator-deploy:
         strategy: {{DEPLOY_STRATEGY}}
         pod: coordinator
+      exporter-deploy:
+        strategy: {{DEPLOY_STRATEGY}}
+        pod: exporter
   update:
     strategy: {{UPDATE_STRATEGY}}
     phases:
@@ -453,3 +495,6 @@ plans:
       coordinator-update:
         strategy: {{UPDATE_STRATEGY}}
         pod: coordinator
+      exporter-deploy:
+        strategy: {{UPDATE_STRATEGY}}
+        pod: exporter

@@ -592,6 +592,75 @@
         "count"
       ]
     },
+    "prometheus_exporter": {
+      "description": "Elasticsearch prometheus exporter configuration properties",
+      "type": "object",
+      "properties": {
+        "prometheus_exporter_enabled": {
+          "description": "By default, Prometheus exporter is enabled for Elasticsearch. Set to false to disable metrics collection.",
+          "type": "boolean",
+          "default": true
+        },
+        "configuration_options": {
+          "description": "Command line arguments for exporter",
+          "type": "string",
+          "default": "--es.all --es.indices --es.shards"
+        },
+        "cpus": {
+          "description": "Prometheus exporter cpu requirements",
+          "type": "number",
+          "default": 1.0
+        },
+        "mem": {
+          "description": "Prometheus exporter mem requirements",
+          "type": "integer",
+          "default": 128
+        },
+        "disk": {
+          "description": "Prometheus exporter disk requirements (only respected with persistent volumes)",
+          "type": "integer",
+          "default": 256
+        },
+        "disk_type": {
+          "type": "string",
+          "description": "Disk type to be used for storing data. [ROOT, MOUNT]",
+          "default": "ROOT"
+        },
+        "volume_profile": {
+          "type": "string",
+          "description": "Volume profile to be used for storing Prometheus exporter data."
+        },
+        "readiness_check": {
+          "description": "Readiness check settings. Exercise caution when modifying these default values as it can lead to spurious task failures.",
+          "type": "object",
+          "properties": {
+            "interval": {
+              "type": "integer",
+              "description": "The period in seconds to wait after the last readiness check has completed to start the next check.",
+              "default": 5,
+              "minimum": 5
+            },
+            "delay": {
+              "type": "integer",
+              "description": "An amount of time in seconds to wait before starting the readiness check attempts.",
+              "default": 0,
+              "minimum": 0
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "An amount of time in seconds to wait for a readiness check to succeed.",
+              "default": 10,
+              "minimum": 10
+            }
+          }
+        }
+      },
+      "required": [
+        "cpus",
+        "mem",
+        "disk"
+      ]
+    },
     "elasticsearch": {
       "description": "Elasticsearch service configuration properties",
       "type": "object",
@@ -679,11 +748,6 @@
           "description": "By default, Monitoring feature is enabled in Elastic Stack. Set to false to disable monitoring features.",
           "type": "boolean",
           "default": true
-        },
-        "xpack_monitoring_default_exporter_use_ingest": {
-          "description": "Whether to supply a placeholder pipeline to the cluster and a pipeline processor with every bulk request. Defaults to false.",
-          "type": "boolean",
-          "default": false
         },
         "xpack_security_audit_enabled": {
           "description": "Set to true to enable auditing on the node. Defaults to false.",
@@ -920,11 +984,6 @@
           "type": "boolean",
           "default": true
         },
-        "http_enabled": {
-          "description": "The http module can be completely disabled and not started by setting http.enabled to false. Default is true.",
-          "type": "boolean",
-          "default": true
-        },
         "http_max_content_length": {
           "description": "The max content of an HTTP request. Defaults to 100mb. If set to greater than Integer.MAX_VALUE, it will be reset to 100mb.",
           "type": "string",
@@ -939,11 +998,6 @@
           "description": "The max length of an HTTP URL. Defaults to 4kb.",
           "type": "string",
           "default": "4kb"
-        },
-        "http_pipelining": {
-          "description": "Enable or disable HTTP pipelining, defaults to true.",
-          "type": "boolean",
-          "default": true
         },
         "http_pipelining_max_events": {
           "description": "The maximum number of events to be queued up in memory before a HTTP connection is closed, defaults to 10000.",
@@ -1045,6 +1099,11 @@
           "type": "string",
           "default": ""
         },
+        "node_store_allow_mmap": {
+          "description": "Indicats whether or not memory-mapping is allowed. The default is to allow it. This setting is useful, for example, if you are in an environment where you can not control the ability to create a lot of memory maps so you need disable the ability to use memory-mapping.",
+          "type": "string",
+          "default": "true"
+        },
         "repositories_url_allowed_urls": {
           "description": "URL Repository supports the following protocols: \"http\", \"https\", \"ftp\", \"file\" and \"jar\". URL repositories with http:, https:, and ftp: URLs have to be whitelisted by specifying allowed URLs in the repositories_url_allowed_urls setting. This setting supports wildcards in the place of host, path, query, and fragment.",
           "type": "string",
@@ -1105,16 +1164,6 @@
           "type": "string",
           "default": ""
         },
-        "thread_pool_bulk_queue_size": {
-          "description": "For bulk operations. The queue_size allows to control the size of the queue of pending requests that have no threads to execute them.  -1 means its unbounded. Defaults to 1000.",
-          "type": "integer",
-          "default": 200
-        },
-        "thread_pool_bulk_size": {
-          "description": "For bulk operations. Thread pool type is fixed with a size of # of available processors. The size parameter controls the number of threads. Empty means do not explicity set.",
-          "type": "string",
-          "default": ""
-        },
         "thread_pool_generic_core": {
           "description": "For generic operations (e.g., background node discovery). The scaling thread pool holds a dynamic number of threads. This number is proportional to the workload and varies between the value of the core and max parameters. Empty means do not explicity set.",
           "type": "string",
@@ -1137,16 +1186,6 @@
         },
         "thread_pool_get_size": {
           "description": "For get operations. Thread pool type is fixed with a size of # of available processors. The size parameter controls the number of threads. Empty means do not explicity set.",
-          "type": "string",
-          "default": ""
-        },
-        "thread_pool_index_queue_size": {
-          "description": "For index/delete operations. The queue_size allows to control the size of the queue of pending requests that have no threads to execute them.  -1 means its unbounded. Defaults to 200.",
-          "type": "integer",
-          "default": 200
-        },
-        "thread_pool_index_size": {
-          "description": "For index/delete operations. Thread pool type is fixed with a size of # of available processors. The size parameter controls the number of threads. Empty means do not explicity set.",
           "type": "string",
           "default": ""
         },
@@ -1236,12 +1275,12 @@
           "default": ""
         },
         "thread_pool_write_queue_size": {
-          "description": "For single-document index/delete/update and bulk requests. Thread pool type is fixed with a queue_size of 200.",
+          "description": "Controls the size of the queue of pending requests that have no threads to execute them. By default, it is set to -1 which means its unbounded. When a request comes in and the queue is full, it will abort the request. The 'write' pool is for single-document index/delete/update and bulk requests. Thread pool type is fixed with a size of # of available processors, queue_size of 200. The maximum size for this pool is 1 + # of available processors.",
           "type": "string",
           "default": ""
         },
         "thread_pool_write_size": {
-          "description": "For single-document index/delete/update and bulk requests. Thread pool type is fixed with a size of # of available processors.",
+          "description": "Controls the number of threads, and defaults to the number of cores times 5. The 'write' pool is for single-document index/delete/update and bulk requests. Thread pool type is fixed with a size of # of available processors, queue_size of 200. The maximum size for this pool is 1 + # of available processors.",
           "type": "string",
           "default": ""
         },
@@ -1290,20 +1329,15 @@
           "type": "integer",
           "default": 2
         },
+        "xpack_monitoring_default_exporter_use_ingest": {
+          "description": "Whether to supply a placeholder pipeline to the cluster and a pipeline processor with every bulk request. Defaults to false.",
+          "type": "boolean",
+          "default": false
+        },
         "xpack_monitoring_elasticsearch_collection_enabled": {
           "description": "Controls whether statistics about your Elasticsearch cluster should be collected. Defaults to true.",
           "type": "boolean",
           "default": true
-        },
-        "xpack_security_audit_index_flush_interval": {
-          "description": "Controls how often buffered events are flushed to the index. Defaults to 1s.",
-          "type": "string",
-          "default": "1s"
-        },
-        "xpack_security_audit_index_rollover": {
-          "description": "Controls how often to roll over to a new index: hourly, daily, weekly, or monthly. Defaults to daily.",
-          "type": "string",
-          "default": "daily"
         },
         "xpack_watcher_history_cleaner_service_enabled": {
           "description": "Set to true (default) to enable the cleaner service.",
@@ -1311,14 +1345,54 @@
           "default": true
         },
         "http_content_type_required": {
-          "description": "[DEPRECATED] Starting from Elasticseach 6.0, this setting is no longer configurable and defaults to true. Changing this setting has no effect.",
+          "description": "[DEPRECATED][DEPRECATED in 2.5.0-6.3.2] Changing this setting has no effect.",
           "type": "boolean",
           "default": true
         },
-        "xpack_enabled": {
-          "description": "[DEPRECATED] X-Pack is enabled by default on Elastic 6.3+. Changing this setting has no effect.",
+        "http_enabled": {
+          "description": "[DEPRECATED in 3.0.0-7.3.0] Changing this setting has no effect.",
           "type": "boolean",
           "default": true
+        },
+        "http_pipelining": {
+          "description": "[DEPRECATED in 3.0.0-7.3.0] Changing this setting has no effect.",
+          "type": "boolean",
+          "default": true
+        },
+        "thread_pool_bulk_queue_size": {
+          "description": "[DEPRECATED in 3.0.0-7.3.0] Changing this setting has no effect.",
+          "type": "integer",
+          "default": 200
+        },
+        "thread_pool_bulk_size": {
+          "description": "[DEPRECATED in 3.0.0-7.3.0] Changing this setting has no effect.",
+          "type": "string",
+          "default": ""
+        },
+        "thread_pool_index_queue_size": {
+          "description": "[DEPRECATED in 3.0.0-7.3.0] Changing this setting has no effect.",
+          "type": "integer",
+          "default": 200
+        },
+        "thread_pool_index_size": {
+          "description": "[DEPRECATED in 3.0.0-7.3.0] Changing this setting has no effect.",
+          "type": "string",
+          "default": ""
+        },
+        "xpack_enabled": {
+          "description": "[DEPRECATED in 2.5.0-6.3.2] X-Pack is enabled by default. Changing this setting has no effect.",
+          "type": "boolean",
+          "default": true
+        },
+        "xpack_security_audit_index_flush_interval": {
+          "description": "[DEPRECATED in 3.0.0-7.3.0] Changing this setting has no effect.",
+          "type": "string",
+          "default": "1s"
+        },
+        "xpack_security_audit_index_rollover": {
+          "description": "[DEPRECATED in 3.0.0-7.3.0] Changing this setting has no effect.",
+          "type": "string",
+          "default": "daily"
         },
         "bootstrap_memory_lock": {
           "description": "Try to lock the process address space into RAM using mlockall, preventing any Elasticsearch memory from being swapped out.",
