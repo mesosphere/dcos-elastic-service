@@ -50,7 +50,7 @@ if [ "${KIBANA_ELASTICSEARCH_TLS}" = "true" ]; then
 fi
 
 if [ "${SEARCHGUARD_ENABLED}" = "true" ]; then
-  export NODE_OPTIONS="--max-old-space-size=8192"
+  export NODE_OPTIONS="--max-old-space-size=${NODE_OPTIONS_MAX_OLD_SPACE_SIZE}"
 
   cat <<-EOF >> "${KIBANA_YML_PATH}"
 		xpack.security.enabled: false

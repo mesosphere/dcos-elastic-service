@@ -43,21 +43,22 @@
     "FRAMEWORK_USER": "{{service.user}}",
     "KIBANA_PLUGINS": "{{kibana.plugins}}",
     "ELASTICSEARCH_URL": "{{kibana.elasticsearch_url}}",
-    "SEARCHGUARD_ENABLED": "{{kibana.searchguard_enabled}}",
-    {{#kibana.searchguard_enabled}}
+    "SEARCHGUARD_ENABLED": "{{kibana.searchguard.enabled}}",
+    {{#kibana.searchguard.enabled}}
     "SEARCHGUARD_PLUGIN_URI": "{{resource.assets.uris.kibana-searchguard-plugin-zip}}",
-    {{/kibana.searchguard_enabled}}
+    {{/kibana.searchguard.enabled}}
     {{#kibana.elasticsearch_tls}}
     "KIBANA_ELASTICSEARCH_TLS": "{{kibana.elasticsearch_tls}}",
     {{/kibana.elasticsearch_tls}}
     "KIBANA_USER": "{{kibana.user}}",
-    "KIBANA_PASSWORD": "{{kibana.password}}",
+    "a": "{{kibana.password}}",
     {{#service.virtual_network_enabled}}
     "VIRTUAL_NETWORK_ENABLED": "true",
     {{^service.virtual_network_plugin_labels.isEmpty}}
     "VIRTUAL_NETWORK_PLUGIN_LABELS": "{{#service.virtual_network_plugin_labels}}{{key}}:{{value}},{{/service.virtual_network_plugin_labels}}",
     {{/service.virtual_network_plugin_labels.isEmpty}}
     {{/service.virtual_network_enabled}}
+    "NODE_OPTIONS_MAX_OLD_SPACE_SIZE": "{{kibana.searchguard.node_options_max_old_space_size}}",
     "CUSTOM_YAML_BLOCK_BASE64": "{{kibana.custom_kibana_yml}}"
   },
   "fetch": [

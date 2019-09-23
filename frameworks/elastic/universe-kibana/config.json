@@ -75,11 +75,6 @@
           "type": "boolean",
           "default": false
         },
-        "searchguard_enabled": {
-          "description": "Whether or not to enable the commercial Search Guard plugin for Kibana",
-          "type": "boolean",
-          "default": false
-        },
         "user": {
           "description": "Kibana username to use for authentication, if enabled",
           "type": "string",
@@ -125,6 +120,22 @@
           "description": "[DEPRECATED in 2.5.0-6.3.2] X-Pack is enabled by default. Changing this setting has no effect.",
           "type": "boolean",
           "default": true
+        },
+        "searchguard": {
+          "type": "object",
+          "description": "Searchguard plugin configuration properties",
+          "properties": {
+            "enabled": {
+              "description": "Whether or not to enable the commercial Search Guard plugin for Kibana",
+              "type": "boolean",
+              "default": false
+            },
+            "node_options_max_old_space_size": {
+              "description": "max-old-space-size Node.js option for installing Searchguard",
+              "type": "integer",
+              "default": 2048
+            }
+          }
         }
       },
       "required": [
