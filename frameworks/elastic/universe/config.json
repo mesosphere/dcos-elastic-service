@@ -759,6 +759,36 @@
           "type": "boolean",
           "default": false
         },
+        "xpack_security_transport_ssl_client_authentication": {
+          "description": "Controls the server’s behavior in regard to requesting a certificate from client connections.",
+          "type": "string",
+          "enum": [
+            "required",
+            "optional",
+            "none"
+          ],
+          "default": "optional"
+        },
+        "xpack_security_transport_ssl_verification_mode": {
+          "description": "Controls the verification of certificates.",
+          "type": "string",
+          "enum": [
+            "certificate",
+            "full",
+            "none"
+          ],
+          "default": "full"
+        },
+        "xpack_security_http_ssl_client_authentication": {
+          "description": "Controls the server’s behavior in regard to requesting a certificate from client connections.",
+          "type": "string",
+          "enum": [
+            "required",
+            "optional",
+            "none"
+          ],
+          "default": "none"
+        },
         "xpack_sql_enabled": {
           "description": "Set to false to disable SQL Access on the node. SQL Access is enabled by default",
           "type": "boolean",
