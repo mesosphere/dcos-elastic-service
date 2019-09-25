@@ -3,6 +3,7 @@ from typing import Any, Dict, Iterator, List, Set
 
 from toolz import get_in
 import pytest
+import base64
 
 import sdk_cmd
 import sdk_hosts
@@ -377,7 +378,7 @@ def test_plugin_install_via_proxy() -> None:
         _install_and_run_proxy(proxy_host, proxy_port)
 
         plugin_name = "analysis-ukrainian"
-        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-7.3.0.zip"
+        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-7.3.2.zip"
         _check_proxy_healthy(proxy_host, proxy_port, plugins)
 
         sdk_service.update_configuration(
@@ -460,7 +461,7 @@ def test_kibana_plugin_installation():
             0,
             {
                 "kibana": {
-                    "plugins": "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/logtrail-7.3.0-0.1.31.zip,https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/own_home-7.1.1.zip",
+                    "plugins": "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/logtrail-7.3.2-0.1.31.zip,https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/own_home-7.1.1.zip",
                     "elasticsearch_url": elasticsearch_url,
                 }
             },
@@ -486,3 +487,33 @@ def test_bootstrap_memory_lock() -> None:
     )
     for (k, v) in bootstrap_memory_lock_response["nodes"].items():
         assert v["process"]["mlockall"] is True
+
+
+@pytest.mark.incremental
+@pytest.mark.sanity
+def test_custom_log4j2_properties_base64() -> None:
+    try:
+        decoded_base_64_log4j2_properties = "rootLogger.level = debug"
+        base_64_log4j2_properties = base64.b64encode(
+            decoded_base_64_log4j2_properties.encode("utf-8")
+        ).decode("utf-8")
+
+        sdk_service.update_configuration(
+            package_name,
+            service_name,
+            {"elasticsearch": {"custom_log4j2_properties": base_64_log4j2_properties}},
+            current_expected_task_count,
+        )
+
+        cmd = "bash -c 'grep \"{}\" elasticsearch-*/config/log4j2.properties'".format(
+            decoded_base_64_log4j2_properties
+        )
+        rc, stdout, stderr = sdk_cmd.service_task_exec(service_name, "master-0-node", cmd)
+        assert rc == 0 and decoded_base_64_log4j2_properties in stdout
+    finally:
+        sdk_service.update_configuration(
+            package_name,
+            service_name,
+            {"elasticsearch": {"custom_log4j2_properties": ""}},
+            current_expected_task_count,
+        )

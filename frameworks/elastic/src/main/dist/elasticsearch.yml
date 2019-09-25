@@ -44,17 +44,19 @@ node.ingest: {{INGEST_ENABLED}}
 {{#SECURITY_ENABLED}}
 # https://www.elastic.co/guide/en/elasticsearch/reference/7.3/security-settings.html
 xpack.security.enabled: {{XPACK_SECURITY_ENABLED}}
+
 # Node to node encryption.
 xpack.security.transport.ssl.enabled: true
 xpack.security.transport.ssl.key: {{MESOS_SANDBOX}}/node.key
 xpack.security.transport.ssl.certificate: {{MESOS_SANDBOX}}/node.crt
 xpack.security.transport.ssl.certificate_authorities: ["{{MESOS_SANDBOX}}/node.ca"]
-xpack.security.transport.ssl.client_authentication: optional
+xpack.security.transport.ssl.client_authentication:  {{XPACK_SECURITY_TRANSPORT_SSL_CLIENT_AUTHENTICATION}}
+xpack.security.transport.ssl.verification_mode: {{XPACK_SECURITY_TRANSPORT_SSL_VERIFICATION_MODE}}
 
 # Client encryption.
 xpack.security.http.ssl.enabled: true
 xpack.security.http.ssl.certificate: {{MESOS_SANDBOX}}/node.crt
-xpack.security.http.ssl.client_authentication: none
+xpack.security.http.ssl.client_authentication: {{XPACK_SECURITY_HTTP_SSL_CLIENT_AUTHENTICATION}}
 xpack.security.http.ssl.key: {{MESOS_SANDBOX}}/node.key
 {{/SECURITY_ENABLED}}
 

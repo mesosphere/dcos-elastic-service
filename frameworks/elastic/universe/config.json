@@ -675,6 +675,15 @@
             "type": "application/x-yaml"
           }
         },
+        "custom_log4j2_properties": {
+          "description": "Custom log4j2 properties to be appended to log4j2.properties on each node. This field must be base64 encoded.",
+          "type": "string",
+          "default": "",
+          "media": {
+            "binaryEncoding": "base64",
+            "type": "application/x-yaml"
+          }
+        },
         "health_user": {
           "description": "Elastic username to use for X-Pack authentication, if enabled",
           "type": "string",
@@ -749,6 +758,36 @@
           "description": "Set it to true to enable X-Pack security on all nodes. Defaults to false.",
           "type": "boolean",
           "default": false
+        },
+        "xpack_security_transport_ssl_client_authentication": {
+          "description": "Controls the server’s behavior in regard to requesting a certificate from client connections.",
+          "type": "string",
+          "enum": [
+            "required",
+            "optional",
+            "none"
+          ],
+          "default": "optional"
+        },
+        "xpack_security_transport_ssl_verification_mode": {
+          "description": "Controls the verification of certificates.",
+          "type": "string",
+          "enum": [
+            "certificate",
+            "full",
+            "none"
+          ],
+          "default": "full"
+        },
+        "xpack_security_http_ssl_client_authentication": {
+          "description": "Controls the server’s behavior in regard to requesting a certificate from client connections.",
+          "type": "string",
+          "enum": [
+            "required",
+            "optional",
+            "none"
+          ],
+          "default": "none"
         },
         "xpack_sql_enabled": {
           "description": "Set to false to disable SQL Access on the node. SQL Access is enabled by default",
