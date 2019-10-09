@@ -344,9 +344,18 @@ pods:
         cmd: |
           set -ex
           export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
+
+        {{#TASKCFG_ALL_SECURITY_ENABLED}}
+          exec ./elasticsearch_exporter-{{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}.linux-amd64/elasticsearch_exporter \
+            --es.uri="{{ELASTICSEARCH_HTTP_PROTOCOL}}://{{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}}@master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
+            --es.ca="exporter.ca" --es.client-private-key="exporter.key" --es.client-cert="exporter.crt" \
+            {{{PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS}}}
+        {{/TASKCFG_ALL_SECURITY_ENABLED}}
+        {{^TASKCFG_ALL_SECURITY_ENABLED}}
           exec ./elasticsearch_exporter-{{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}.linux-amd64/elasticsearch_exporter \
             --es.uri="{{ELASTICSEARCH_HTTP_PROTOCOL}}://master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
             {{{PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS}}}
+        {{/TASKCFG_ALL_SECURITY_ENABLED}}
         env:
           ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION: {{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}
         readiness-check:
@@ -356,7 +365,7 @@ pods:
           timeout: {{PROMETHEUS_EXPORTER_READINESS_CHECK_TIMEOUT}}
         {{#TASKCFG_ALL_SECURITY_ENABLED}}
         transport-encryption:
-          - name: node
+          - name: exporter
             type: TLS
         {{/TASKCFG_ALL_SECURITY_ENABLED}}
   coordinator:

@@ -461,7 +461,7 @@ def test_kibana_plugin_installation():
             0,
             {
                 "kibana": {
-                    "plugins": "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/logtrail-7.3.2-0.1.31.zip,https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/own_home-7.1.1.zip",
+                    "plugins": "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/logtrail-7.3.2-0.1.31.zip",
                     "elasticsearch_url": elasticsearch_url,
                 }
             },
@@ -470,7 +470,6 @@ def test_kibana_plugin_installation():
             insert_strict_options=False,
         )
         assert config.check_kibana_plugin_installed("logtrail", kibana_service_name)
-        assert config.check_kibana_plugin_installed("own_home", kibana_service_name)
 
     except Exception:
         log.exception(Exception)
