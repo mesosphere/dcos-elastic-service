@@ -25,7 +25,7 @@ if [ -n  "${CUSTOM_YAML_BLOCK_BASE64}" ]; then
 fi
 
 cat <<-EOF > "${KIBANA_YML_PATH}"
-	elasticsearch.url: "${ELASTICSEARCH_URL}"
+	elasticsearch.hosts: ["${ELASTICSEARCH_URL}"]
 	elasticsearch.username: "${KIBANA_USER}"
 	elasticsearch.password: "${KIBANA_PASSWORD}"
 
@@ -42,13 +42,13 @@ cat <<-EOF > "${KIBANA_YML_PATH}"
 	${CUSTOM_YAML_BLOCK}
 EOF
 
-if [ -n "$KIBANA_PLUGINS" ]; then 
+if [ -n "$KIBANA_PLUGINS" ]; then
   echo 'Installing Kibana plugins.'
   IFS=',' read -ra PLUGINS <<< "$KIBANA_PLUGINS"
   for plugin in "${PLUGINS[@]}"; do
-    echo "Installing plugin: ${plugin}" 
+    echo "Installing plugin: ${plugin}"
     ${KIBANA_PATH}/bin/kibana-plugin install "$plugin"
-  done; 
+  done;
 fi
 
 if [ "${KIBANA_ELASTICSEARCH_TLS}" = "true" ]; then

@@ -1,0 +1,1 @@
+../dist/customize-log4j2.sh

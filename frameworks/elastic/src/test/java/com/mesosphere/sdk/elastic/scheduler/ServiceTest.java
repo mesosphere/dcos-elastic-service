@@ -83,7 +83,9 @@ public class ServiceTest {
             "ZONE", "us-east-1a")
         .setBuildTemplateParams(
             "elastic-version", "1.2.3",
-            "elastic-statsd-version", "1.2.3.0", // NOPMD
-            "support-diagnostics-version", "1.2");
+            "elastic-statsd-version", "1.2.3.0",
+            "elasticsearch-openjdk-version", "1.2.3", // NOPMD
+            "support-diagnostics-version", "1.2",
+            "elasticsearch-prometheus-exporter-version", "1.2");
   }
 }
