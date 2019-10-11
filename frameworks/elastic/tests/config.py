@@ -96,6 +96,7 @@ def check_elasticsearch_index_health(
     service_name: str = SERVICE_NAME,
     http_user: Optional[str] = None,
     http_password: Optional[str] = None,
+    https: bool = False,
 ) -> bool:
     result = _curl_query(
         service_name,
@@ -103,6 +104,7 @@ def check_elasticsearch_index_health(
         "_cluster/health/{}?pretty".format(index_name),
         http_user=http_user,
         http_password=http_password,
+        https=https,
     )
     return bool(result and result["status"] == color)
 
