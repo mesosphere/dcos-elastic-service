@@ -1,17 +1,17 @@
 import pytest
-import retrying
 import os
 from typing import Iterator
 import sdk_install
 import sdk_cmd
 import sdk_tasks
 from tests import config
-import re
+
 
 @pytest.fixture(scope="module", autouse=True)
 def configure_package(configure_security: None) -> Iterator[None]:
+
     try:
-        service_options={"elasticsearch": {"plugins": "repository-s3"}}
+        service_options = {"elasticsearch": {"plugins": "repository-s3"}}
         sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
         sdk_install.install(
             config.PACKAGE_NAME,
@@ -30,6 +30,7 @@ def pre_test_setup() -> None:
     sdk_tasks.check_running(config.SERVICE_NAME, config.DEFAULT_TASK_COUNT)
     config.wait_for_expected_nodes_to_exist(task_count=config.DEFAULT_TASK_COUNT)
 
+
 @pytest.mark.aws
 @pytest.mark.sanity
 def test_backup_restore():
@@ -38,8 +39,8 @@ def test_backup_restore():
         assert (
             False
         ), 'AWS credentials are required for this test. Disable test with e.g. TEST_TYPES="sanity and not aws"'
-    master_0_node_id=sdk_tasks.get_task_ids(config.SERVICE_NAME, "master-0-node")
-    task_list=sdk_tasks.get_task_ids(config.SERVICE_NAME)
+    master_0_node_id = sdk_tasks.get_task_ids(config.SERVICE_NAME, "master-0-node")
+    task_list = sdk_tasks.get_task_ids(config.SERVICE_NAME)
     for id in task_list:
         sdk_cmd.run_cli("task exec {} bash -c \"export JAVA_HOME=\$(ls -d \$MESOS_SANDBOX/jdk*/);  echo '{}' | ./elasticsearch-*/bin/elasticsearch-keystore add --stdin s3.client.default.access_key\"".format(id, os.getenv("AWS_ACCESS_KEY_ID")))
         sdk_cmd.run_cli("task exec {} bash -c \"export JAVA_HOME=\$(ls -d \$MESOS_SANDBOX/jdk*/);  echo '{}' | ./elasticsearch-*/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key\"".format(id, os.getenv("AWS_SECRET_ACCESS_KEY")))
@@ -58,7 +59,7 @@ def test_backup_restore():
 
     # restore data
     sdk_cmd.run_cli("task exec {} /opt/mesosphere/bin/curl -i -XPOST -H 'Content-type: application/json' \"http://coordinator.elastic.l4lb.thisdcos.directory:9200/_snapshot/s3_repo/snap1/_restore\"".format(master_0_node_id[0]))
-    
-    _, output, _=sdk_cmd.run_cli("task exec {} /opt/mesosphere/bin/curl -i -u elastic:changeme -H 'Content-type: application/json' \"http://coordinator.elastic.l4lb.thisdcos.directory:9200/customer/entry/99?pretty\"".format(master_0_node_id[0]))
+
+    _, output, _ = sdk_cmd.run_cli("task exec {} /opt/mesosphere/bin/curl -i -u elastic:changeme -H 'Content-type: application/json' \"http://coordinator.elastic.l4lb.thisdcos.directory:9200/customer/entry/99?pretty\"".format(master_0_node_id[0]))
 
     assert '"name" : "Niharika"' in output
