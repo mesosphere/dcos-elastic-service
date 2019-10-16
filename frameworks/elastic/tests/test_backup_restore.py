@@ -43,22 +43,22 @@ def test_backup_restore():
     task_list = sdk_tasks.get_task_ids(config.SERVICE_NAME)
     for id in task_list:
         sdk_cmd.run_cli(
-            "task exec {} bash -c \"export JAVA_HOME=\$(ls -d \$MESOS_SANDBOX/jdk*/);  echo '{}' | ./elasticsearch-*/bin/elasticsearch-keystore add --stdin s3.client.default.access_key\"".format(
+            "task exec {} bash -c \"export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/);  echo '{}' | ./elasticsearch-*/bin/elasticsearch-keystore add --stdin s3.client.default.access_key\"".format(
                 id, os.getenv("AWS_ACCESS_KEY_ID")
             )
         )
         sdk_cmd.run_cli(
-            "task exec {} bash -c \"export JAVA_HOME=\$(ls -d \$MESOS_SANDBOX/jdk*/);  echo '{}' | ./elasticsearch-*/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key\"".format(
+            "task exec {} bash -c \"export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/);  echo '{}' | ./elasticsearch-*/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key\"".format(
                 id, os.getenv("AWS_SECRET_ACCESS_KEY")
             )
         )
         sdk_cmd.run_cli(
-            "task exec {} bash -c \"export JAVA_HOME=\$(ls -d \$MESOS_SANDBOX/jdk*/);  echo '{}' | ./elasticsearch-*/bin/elasticsearch-keystore add --stdin s3.client.default.session_token\"".format(
+            "task exec {} bash -c \"export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/);  echo '{}' | ./elasticsearch-*/bin/elasticsearch-keystore add --stdin s3.client.default.session_token\"".format(
                 id, os.getenv("AWS_SESSION_TOKEN")
             )
         )
         sdk_cmd.run_cli(
-            'task exec {} bash -c "export JAVA_HOME=\$(ls -d \$MESOS_SANDBOX/jdk*/); ./elasticsearch-*/bin/elasticsearch-keystore list"'.format(
+            'task exec {} bash -c "export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/); ./elasticsearch-*/bin/elasticsearch-keystore list"'.format(
                 id
             )
         )
