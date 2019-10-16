@@ -39,13 +39,22 @@ def _elastic_service_impl(
         # Set up passwords. Basic HTTP credentials will have to be used in HTTP requests to
         # Elasticsearch from now on.
         passwords = config.setup_passwords(service_name, https=True)
+        http_password = passwords["elastic"]
 
         # Set up healthcheck basic HTTP credentials.
         sdk_service.update_configuration(
             package_name,
             service_name,
-            {"elasticsearch": {"health_user_password": passwords["elastic"]}},
+            {"elasticsearch": {"health_user_password": http_password}},
             expected_running_tasks,
+        )
+
+        config.check_elasticsearch_index_health(
+            ".security-7",
+            "green",
+            service_name=service_name,
+            http_password=http_password,
+            https=True,
         )
 
         yield {**configuration, **{"package_name": package_name, "passwords": passwords}}
