@@ -22,7 +22,9 @@ def _elastic_service_impl(
 ) -> Iterator[Dict[str, Any]]:
     package_name = config.PACKAGE_NAME
     service_name = config.SERVICE_NAME
-    expected_running_tasks = config.DEFAULT_TASK_COUNT
+
+    # Additional 1 data node
+    expected_running_tasks = config.DEFAULT_TASK_COUNT + 1
 
     try:
         sdk_install.uninstall(package_name, service_name)
