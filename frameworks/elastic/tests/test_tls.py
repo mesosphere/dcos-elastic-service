@@ -119,9 +119,9 @@ def test_tls_recovery(elastic_service: Dict[str, Any], service_account: Dict[str
         sdk_recovery.check_permanent_recovery(
             package_name, service_name, pod, recovery_timeout_s=25 * 60
         )
-        # Remove before merge
-        config.check_elasticsearch_health(
+        config.check_elasticsearch_index_health(
             ".security-7",
+            "green",
             service_name=service_name,
             http_password=elastic_service["passwords"]["elastic"],
             https=True,
