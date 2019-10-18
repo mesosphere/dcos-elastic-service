@@ -98,6 +98,8 @@ def check_elasticsearch_index_health(
     http_password: Optional[str] = None,
     https: bool = False,
 ) -> bool:
+    check_elasticsearch_health(index_name, service_name, http_user, http_password, https)
+
     result = _curl_query(
         service_name,
         "GET",
