@@ -49,6 +49,7 @@ def elastic_service(service_account: Dict[str, Any]) -> Iterator[Dict[str, Any]]
     yield from tls._elastic_service_impl(
         service_account,
         {
+            "data_nodes": {"count": 3},
             "service": {
                 "name": config.SERVICE_NAME,
                 "service_account": service_account["name"],
