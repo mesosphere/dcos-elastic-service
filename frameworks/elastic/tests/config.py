@@ -109,6 +109,73 @@ def check_elasticsearch_index_health(
     return bool(result and result["status"] == color)
 
 
+def check_elasticsearch_health(
+    index_name: str,
+    service_name: str = SERVICE_NAME,
+    http_user: Optional[str] = None,
+    http_password: Optional[str] = None,
+    https: bool = False,
+) -> None:
+    _curl_query(
+        service_name,
+        "GET",
+        "_cat/indices?v&s=index",
+        http_user=http_user,
+        http_password=http_password,
+        https=https,
+        return_json=False,
+    )
+
+    _curl_query(
+        service_name,
+        "GET",
+        "_cat/allocation?v",
+        http_user=http_user,
+        http_password=http_password,
+        https=https,
+        return_json=False,
+    )
+
+    _curl_query(
+        service_name,
+        "GET",
+        "{}/_shard_stores?pretty".format(index_name),
+        http_user=http_user,
+        http_password=http_password,
+        https=https,
+        return_json=False,
+    )
+
+    _curl_query(
+        service_name,
+        "GET",
+        "{}?pretty".format(index_name),
+        http_user=http_user,
+        http_password=http_password,
+        https=https,
+        return_json=False,
+    )
+
+    _curl_query(
+        service_name,
+        "GET",
+        "_cluster/allocation/explain?pretty",
+        http_user=http_user,
+        http_password=http_password,
+        https=https,
+        return_json=False,
+    )
+
+    _curl_query(
+        service_name,
+        "GET",
+        "_cluster/health/{}?pretty".format(index_name),
+        http_user=http_user,
+        http_password=http_password,
+        https=https,
+    )
+
+
 @retrying.retry(wait_fixed=1000, stop_max_delay=5 * 1000, retry_on_result=lambda res: not res)
 def check_custom_elasticsearch_cluster_setting(
     service_name: str = SERVICE_NAME,
