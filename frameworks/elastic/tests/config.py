@@ -98,59 +98,6 @@ def check_elasticsearch_index_health(
     http_password: Optional[str] = None,
     https: bool = False,
 ) -> bool:
-    print("-------------------------------")
-    print("-------------------------------")
-    print("------------START--------------")
-    print("-------------------------------")
-    print("")
-    _curl_query(
-        service_name,
-        "GET",
-        "_cat/indices?v&s=index",
-        http_user=http_user,
-        http_password=http_password,
-        https=https,
-        return_json=False,
-    )
-
-    _curl_query(
-        service_name,
-        "GET",
-        "_cat/allocation?v",
-        http_user=http_user,
-        http_password=http_password,
-        https=https,
-        return_json=False,
-    )
-
-    _curl_query(
-        service_name,
-        "GET",
-        "{}/_shard_stores?pretty".format(index_name),
-        http_user=http_user,
-        http_password=http_password,
-        https=https,
-        return_json=False,
-    )
-    _curl_query(
-        service_name,
-        "GET",
-        "{}?pretty".format(index_name),
-        http_user=http_user,
-        http_password=http_password,
-        https=https,
-        return_json=False,
-    )
-    _curl_query(
-        service_name,
-        "GET",
-        "_cluster/allocation/explain?pretty",
-        http_user=http_user,
-        http_password=http_password,
-        https=https,
-        return_json=False,
-    )
-
     result = _curl_query(
         service_name,
         "GET",
@@ -159,13 +106,6 @@ def check_elasticsearch_index_health(
         http_password=http_password,
         https=https,
     )
-
-    print("")
-    print("-------------------------------")
-    print("-------------------------------")
-    print("-----------END-----------------")
-    print("-------------------------------")
-
     return bool(result and result["status"] == color)
 
 

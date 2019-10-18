@@ -117,5 +117,5 @@ def test_tls_recovery(elastic_service: Dict[str, Any], service_account: Dict[str
 
     for pod in json.loads(stdout):
         sdk_recovery.check_permanent_recovery(
-            package_name, service_name, pod, recovery_timeout_s=60 * 60
+            package_name, service_name, pod, recovery_timeout_s=25 * 60
         )

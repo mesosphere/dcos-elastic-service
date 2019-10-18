@@ -51,14 +51,6 @@ def _elastic_service_impl(
             expected_running_tasks,
         )
 
-        config.check_elasticsearch_index_health(
-            ".security-7",
-            "green",
-            service_name=service_name,
-            http_password=http_password,
-            https=True,
-        )
-
         yield {**configuration, **{"package_name": package_name, "passwords": passwords}}
     finally:
         sdk_install.uninstall(package_name, service_name)
