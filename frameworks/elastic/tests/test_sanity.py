@@ -378,7 +378,7 @@ def test_plugin_install_via_proxy() -> None:
         _install_and_run_proxy(proxy_host, proxy_port)
 
         plugin_name = "analysis-ukrainian"
-        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-7.3.2.zip"
+        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-7.4.1.zip"
         _check_proxy_healthy(proxy_host, proxy_port, plugins)
 
         sdk_service.update_configuration(
@@ -461,7 +461,7 @@ def test_kibana_plugin_installation():
             0,
             {
                 "kibana": {
-                    "plugins": "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/logtrail-7.3.2-0.1.31.zip",
+                    "plugins": "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/logtrail-7.4.0-0.1.31.zip",
                     "elasticsearch_url": elasticsearch_url,
                 }
             },
