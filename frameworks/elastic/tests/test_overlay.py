@@ -1,8 +1,9 @@
 import pytest
 import retrying
-from typing import Iterator
+from typing import Any, Dict, Iterator, List, Set
 
 import sdk_install
+import sdk_metrics
 import sdk_networks
 import sdk_tasks
 from tests import config
@@ -90,3 +91,32 @@ def test_endpoints_on_overlay() -> None:
         sdk_networks.check_endpoint_on_overlay(
             config.PACKAGE_NAME, config.SERVICE_NAME, endpoint_name, expected_count
         )
+
+
+@pytest.mark.sanity
+@pytest.mark.overlay
+@pytest.mark.dcos_min_version("1.13")
+def test_metrics() -> None:
+    metrics = sdk_metrics.wait_for_metrics_from_cli("exporter-0-node", 60)
+
+    elastic_metrics = list(non_zero_elastic_metrics(metrics))
+    assert len(elastic_metrics) > 0
+
+    node_types = ["master", "data", "coordinator"]
+    node_names = get_node_names_from_metrics(elastic_metrics)
+    for node_type in node_types:
+        assert len(list(filter(lambda x: x.startswith(node_type), node_names))) > 0
+
+
+def non_zero_elastic_metrics(metrics: List[Dict[Any, Any]]):
+    for metric in metrics:
+        if metric["name"].startswith("elasticsearch") and metric["value"] != 0:
+            yield metric
+
+
+def get_node_names_from_metrics(metrics: List[Dict[Any, Any]]) -> Set[str]:
+    names = set()
+    for metric in metrics:
+        if "name" in metric["tags"]:
+            names.add(metric["tags"]["name"])
+    return names
