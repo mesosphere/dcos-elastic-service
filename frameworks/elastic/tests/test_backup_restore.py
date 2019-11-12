@@ -2,6 +2,7 @@ import pytest
 import os
 from typing import Iterator
 import sdk_install
+import sdk_hosts
 import sdk_cmd
 import sdk_tasks
 from tests import config
@@ -64,46 +65,31 @@ def test_backup_restore():
         )
 
     sdk_cmd.run_cli(
-        "task exec {} /opt/mesosphere/bin/curl -i -XPOST -H 'Content-type: application/json' \"http://coordinator.elastic.l4lb.thisdcos.directory:9200/_nodes/reload_secure_settings\"".format(
-            master_0_node_id[0]
-        )
+            "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -XPOST -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/_nodes/reload_secure_settings\"")
+    sdk_cmd.run_cli(
+        "task exec "
+        + master_0_node_id[0]
+        + '  /opt/mesosphere/bin/curl -i -XPOST -H \'Content-type: application/json\' -d \'{"name": "SwamiVivekananda"}\' "http://' + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + '/customer/entry/99?pretty"'
     )
     sdk_cmd.run_cli(
         "task exec "
         + master_0_node_id[0]
-        + '  /opt/mesosphere/bin/curl -i -XPOST -H \'Content-type: application/json\' -d \'{"name": "Niharika"}\' "http://coordinator.elastic.l4lb.thisdcos.directory:9200/customer/entry/99?pretty"'
-    )
-    sdk_cmd.run_cli(
-        "task exec "
-        + master_0_node_id[0]
-        + ' /opt/mesosphere/bin/curl -i -XPUT -H \'Content-type: application/json\' -d \'{"type": "s3", "settings": {"bucket": "elastic-bkp-bucket", "region": "us-east-1"} }\' "http://coordinator.elastic.l4lb.thisdcos.directory:9200/_snapshot/s3_repo?verify=false&pretty"'
+        + ' /opt/mesosphere/bin/curl -i -XPUT -H \'Content-type: application/json\' -d \'{"type": "s3", "settings": {"bucket": "elastic-bkp-bucket", "region": "us-east-1"} }\' "http://' + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + '/_snapshot/s3_repo?verify=false&pretty"'
     )
 
     # take backup
     sdk_cmd.run_cli(
-        "task exec {} /opt/mesosphere/bin/curl -i -XPUT -H 'Content-type: application/json' \"http://coordinator.elastic.l4lb.thisdcos.directory:9200/_snapshot/s3_repo/snap1?\"".format(
-            master_0_node_id[0]
-        )
-    )
+            "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -XPUT -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/_snapshot/s3_repo/snap1?\"")
 
     # Delete data before executing restore
     sdk_cmd.run_cli(
-        "task exec {} /opt/mesosphere/bin/curl -i -XDELETE -H 'Content-type: application/json' \"http://coordinator.elastic.l4lb.thisdcos.directory:9200/*\"".format(
-            master_0_node_id[0]
-        )
-    )
+        "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -XDELETE -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/*\"")
 
     # restore data
     sdk_cmd.run_cli(
-        "task exec {} /opt/mesosphere/bin/curl -i -XPOST -H 'Content-type: application/json' \"http://coordinator.elastic.l4lb.thisdcos.directory:9200/_snapshot/s3_repo/snap1/_restore\"".format(
-            master_0_node_id[0]
-        )
-    )
+        "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -XPOST -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/_snapshot/s3_repo/snap1/_restore\"")
 
     _, output, _ = sdk_cmd.run_cli(
-        "task exec {} /opt/mesosphere/bin/curl -i -u elastic:changeme -H 'Content-type: application/json' \"http://coordinator.elastic.l4lb.thisdcos.directory:9200/customer/entry/99?pretty\"".format(
-            master_0_node_id[0]
-        )
-    )
+        "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -u elastic:changeme -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/customer/entry/99?pretty\"")
 
-    assert '"name" : "Niharika"' in output
+    assert '"name" : "SwamiVivekananda"' in output
