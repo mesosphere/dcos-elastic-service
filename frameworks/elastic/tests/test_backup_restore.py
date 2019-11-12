@@ -65,31 +65,60 @@ def test_backup_restore():
         )
 
     sdk_cmd.run_cli(
-            "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -XPOST -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/_nodes/reload_secure_settings\"")
-    sdk_cmd.run_cli(
         "task exec "
         + master_0_node_id[0]
-        + '  /opt/mesosphere/bin/curl -i -XPOST -H \'Content-type: application/json\' -d \'{"name": "SwamiVivekananda"}\' "http://' + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + '/customer/entry/99?pretty"'
+        + " /opt/mesosphere/bin/curl -i -XPOST -H 'Content-type: application/json' \"http://"
+        + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
+        + '/_nodes/reload_secure_settings"'
     )
     sdk_cmd.run_cli(
         "task exec "
         + master_0_node_id[0]
-        + ' /opt/mesosphere/bin/curl -i -XPUT -H \'Content-type: application/json\' -d \'{"type": "s3", "settings": {"bucket": "elastic-bkp-bucket", "region": "us-east-1"} }\' "http://' + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + '/_snapshot/s3_repo?verify=false&pretty"'
+        + '  /opt/mesosphere/bin/curl -i -XPOST -H \'Content-type: application/json\' -d \'{"name": "SwamiVivekananda"}\' "http://'
+        + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
+        + '/customer/entry/99?pretty"'
+    )
+    sdk_cmd.run_cli(
+        "task exec "
+        + master_0_node_id[0]
+        + ' /opt/mesosphere/bin/curl -i -XPUT -H \'Content-type: application/json\' -d \'{"type": "s3", "settings": {"bucket": "elastic-bkp-bucket", "region": "us-east-1"} }\' "http://'
+        + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
+        + '/_snapshot/s3_repo?verify=false&pretty"'
     )
 
     # take backup
     sdk_cmd.run_cli(
-            "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -XPUT -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/_snapshot/s3_repo/snap1?\"")
+        "task exec "
+        + master_0_node_id[0]
+        + " /opt/mesosphere/bin/curl -i -XPUT -H 'Content-type: application/json' \"http://"
+        + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
+        + '/_snapshot/s3_repo/snap1?"'
+    )
 
     # Delete data before executing restore
     sdk_cmd.run_cli(
-        "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -XDELETE -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/*\"")
+        "task exec "
+        + master_0_node_id[0]
+        + " /opt/mesosphere/bin/curl -i -XDELETE -H 'Content-type: application/json' \"http://"
+        + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
+        + '/*"'
+    )
 
     # restore data
     sdk_cmd.run_cli(
-        "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -XPOST -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/_snapshot/s3_repo/snap1/_restore\"")
+        "task exec "
+        + master_0_node_id[0]
+        + " /opt/mesosphere/bin/curl -i -XPOST -H 'Content-type: application/json' \"http://"
+        + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
+        + '/_snapshot/s3_repo/snap1/_restore"'
+    )
 
     _, output, _ = sdk_cmd.run_cli(
-        "task exec " + master_0_node_id[0] + " /opt/mesosphere/bin/curl -i -u elastic:changeme -H 'Content-type: application/json' \"http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200) + "/customer/entry/99?pretty\"")
+        "task exec "
+        + master_0_node_id[0]
+        + " /opt/mesosphere/bin/curl -i -u elastic:changeme -H 'Content-type: application/json' \"http://"
+        + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
+        + '/customer/entry/99?pretty"'
+    )
 
     assert '"name" : "SwamiVivekananda"' in output
