@@ -35,7 +35,7 @@ KIBANA_DEFAULT_TIMEOUT = 5 * 60
 # - coordinator: 1
 DEFAULT_NODES_COUNT = 6
 # - exporter 1
-DEFAULT_TASK_COUNT = DEFAULT_NODES_COUNT
+DEFAULT_TASK_COUNT = DEFAULT_NODES_COUNT + 1
 # TODO: add and use throughout a method to determine expected task count based on options.
 #       the method should provide for use cases:
 #         * total count, ie 6
