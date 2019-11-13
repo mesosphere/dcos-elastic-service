@@ -67,6 +67,7 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
+          ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch-keystore create
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
@@ -170,6 +171,7 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
+          ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch-keystore create
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
@@ -271,6 +273,7 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
+          ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch-keystore create
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
@@ -433,6 +436,7 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
+          ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch-keystore create
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
