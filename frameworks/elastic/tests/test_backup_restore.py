@@ -107,7 +107,7 @@ def test_backup_restore():
         " /opt/mesosphere/bin/curl -i -XDELETE -H 'Content-type: application/json' \"http://"
         + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
         + '/*"',
-    ) 
+    )
 
     _, output, _ = sdk_cmd.service_task_exec(
         config.SERVICE_NAME,
