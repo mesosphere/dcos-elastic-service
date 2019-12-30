@@ -378,9 +378,7 @@ def test_plugin_install_via_proxy() -> None:
         _install_and_run_proxy(proxy_host, proxy_port)
 
         plugin_name = "analysis-ukrainian"
-        plugins = (
-            "https://elastic-artifacts.s3-us-west-2.amazonaws.com/analysis-ukrainian-7.5.1.zip"
-        )
+        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-7.5.1.zip"
         _check_proxy_healthy(proxy_host, proxy_port, plugins)
 
         sdk_service.update_configuration(
