@@ -65,7 +65,7 @@ http {
       # For more details see DCOS-46801.
       proxy_set_header Authorization "";
 
-      proxy_pass ${MARATHON_APP_LABEL_DCOS_SERVICE_SCHEME}://0.0.0.0:${PORT_KIBANA}$uri;
+      proxy_pass ${MARATHON_APP_LABEL_DCOS_SERVICE_SCHEME}://0.0.0.0:${PORT_KIBANA}$uri$is_args$args;
     }
   }
 }
