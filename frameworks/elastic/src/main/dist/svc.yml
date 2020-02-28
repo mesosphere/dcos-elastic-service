@@ -316,11 +316,7 @@ pods:
     count: 0
     {{/PROMETHEUS_EXPORTER_ENABLED}}
     allow-decommission: true
-    {{#ENABLE_VIRTUAL_NETWORK}}
-    networks:
-      {{VIRTUAL_NETWORK_NAME}}:
-        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
-    {{/ENABLE_VIRTUAL_NETWORK}}
+    # TODO: Apply network labels after adding port labels support in SDK
     uris:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{PROMETHEUS_EXPORTER_URI}}
@@ -329,10 +325,11 @@ pods:
         goal: RUNNING
         cpus: {{PROMETHEUS_EXPORTER_CPUS}}
         memory: {{PROMETHEUS_EXPORTER_MEM}}
-        labels: "DCOS_METRICS_FORMAT:prometheus,DCOS_METRICS_PORT_INDEX:0,DCOS_METRICS_ENDPOINT:/metrics"
+        labels: "DCOS_METRICS_FORMAT:prometheus,DCOS_METRICS_PORT_NAME:exporter,DCOS_METRICS_ENDPOINT:/metrics"
         ports:
           exporter:
-            port: 9114
+            port: 0
+            env-key: METRICS_PORT
         volume:
           path: "container-path"
           type: {{PROMETHEUS_EXPORTER_DISK_TYPE}}
@@ -349,17 +346,19 @@ pods:
           exec ./elasticsearch_exporter-{{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}.linux-amd64/elasticsearch_exporter \
             --es.uri="{{ELASTICSEARCH_HTTP_PROTOCOL}}://{{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}}@master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
             --es.ca="exporter.ca" --es.client-private-key="exporter.key" --es.client-cert="exporter.crt" \
+            --web.listen-address=:$METRICS_PORT \
             {{{PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS}}}
         {{/TASKCFG_ALL_SECURITY_ENABLED}}
         {{^TASKCFG_ALL_SECURITY_ENABLED}}
           exec ./elasticsearch_exporter-{{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}.linux-amd64/elasticsearch_exporter \
             --es.uri="{{ELASTICSEARCH_HTTP_PROTOCOL}}://master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
+            --web.listen-address=:$METRICS_PORT \
             {{{PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS}}}
         {{/TASKCFG_ALL_SECURITY_ENABLED}}
         env:
           ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION: {{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}
         readiness-check:
-          cmd: "curl --silent --output /dev/null --fail --write-out %{http_code} localhost:9114/health"
+          cmd: "curl --silent --output /dev/null --fail --write-out %{http_code} localhost:$METRICS_PORT/health"
           interval: {{PROMETHEUS_EXPORTER_READINESS_CHECK_INTERVAL}}
           delay: {{PROMETHEUS_EXPORTER_READINESS_CHECK_DELAY}}
           timeout: {{PROMETHEUS_EXPORTER_READINESS_CHECK_TIMEOUT}}
