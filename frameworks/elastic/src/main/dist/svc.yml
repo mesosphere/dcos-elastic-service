@@ -316,7 +316,11 @@ pods:
     count: 0
     {{/PROMETHEUS_EXPORTER_ENABLED}}
     allow-decommission: true
-    # TODO: Apply network labels after adding port labels support in SDK
+    {{#ENABLE_VIRTUAL_NETWORK}}
+    networks:
+      {{VIRTUAL_NETWORK_NAME}}:
+        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
+    {{/ENABLE_VIRTUAL_NETWORK}}
     uris:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{PROMETHEUS_EXPORTER_URI}}
@@ -330,6 +334,9 @@ pods:
           exporter:
             port: 0
             env-key: METRICS_PORT
+            vip:
+              prefix: exporter
+              port: 9114
         volume:
           path: "container-path"
           type: {{PROMETHEUS_EXPORTER_DISK_TYPE}}
