@@ -25,7 +25,7 @@ if [ -n  "${CUSTOM_YAML_BLOCK_BASE64}" ]; then
 fi
 
 cat <<-EOF > "${KIBANA_YML_PATH}"
-	elasticsearch.url: "${ELASTICSEARCH_URL}"
+	elasticsearch.hosts: ["${ELASTICSEARCH_URL}"]
 	elasticsearch.username: "${KIBANA_USER}"
 	elasticsearch.password: "${KIBANA_PASSWORD}"
 
