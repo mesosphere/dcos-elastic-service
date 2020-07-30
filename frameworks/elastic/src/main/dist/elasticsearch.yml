@@ -55,6 +55,7 @@ xpack.security.transport.ssl.verification_mode: {{XPACK_SECURITY_TRANSPORT_SSL_V
 
 # Client encryption.
 xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.supported_protocols: ["TLSv1.2","TLSv1.1"]
 xpack.security.http.ssl.certificate: {{MESOS_SANDBOX}}/node.crt
 xpack.security.http.ssl.client_authentication: {{XPACK_SECURITY_HTTP_SSL_CLIENT_AUTHENTICATION}}
 xpack.security.http.ssl.key: {{MESOS_SANDBOX}}/node.key
