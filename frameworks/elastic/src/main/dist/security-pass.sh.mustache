@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+{{#SECURITY_ENABLED}}
+printf {{ELASTICSEARCH_HEALTH_USER_PASSWORD}} | .${MESOS_SANDBOX}/elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch-keystore add -x
+curl -u{{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} -XPUT -H 'Content-Type: application/json' '{{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP/_xpack/security/user/kibana/_password 75' -d '{ "password":{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} }'
+curl -u{{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} -XPUT -H 'Content-Type: application/json' '{{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP/_xpack/security/user/elastic/_password 75' -d '{ "password":{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} }'
+{{/SECURITY_ENABLED}}
