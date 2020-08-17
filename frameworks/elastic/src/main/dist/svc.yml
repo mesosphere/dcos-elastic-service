@@ -101,7 +101,7 @@ pods:
             template: security-pass.sh.mustache
             dest: scripts/security-pass.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
           interval: {{MASTER_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{MASTER_NODE_READINESS_CHECK_DELAY}}
           timeout: {{MASTER_NODE_READINESS_CHECK_TIMEOUT}}
@@ -206,7 +206,7 @@ pods:
             template: security-pass.sh.mustache
             dest: scripts/security-pass.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
           interval: {{DATA_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{DATA_NODE_READINESS_CHECK_DELAY}}
           timeout: {{DATA_NODE_READINESS_CHECK_TIMEOUT}}
@@ -311,7 +311,7 @@ pods:
             template: security-pass.sh.mustache
             dest: scripts/security-pass.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
           interval: {{INGEST_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{INGEST_NODE_READINESS_CHECK_DELAY}}
           timeout: {{INGEST_NODE_READINESS_CHECK_TIMEOUT}}
@@ -363,14 +363,14 @@ pods:
 
         {{#TASKCFG_ALL_SECURITY_ENABLED}}
           exec ./elasticsearch_exporter-{{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}.linux-amd64/elasticsearch_exporter \
-            --es.uri="{{ELASTICSEARCH_HTTP_PROTOCOL}}://{{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}}@master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
+            --es.uri="{{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}@master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
             --es.ca="exporter.ca" --es.client-private-key="exporter.key" --es.client-cert="exporter.crt" \
             --web.listen-address=:$METRICS_PORT \
             {{{PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS}}}
         {{/TASKCFG_ALL_SECURITY_ENABLED}}
         {{^TASKCFG_ALL_SECURITY_ENABLED}}
           exec ./elasticsearch_exporter-{{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}.linux-amd64/elasticsearch_exporter \
-            --es.uri="{{ELASTICSEARCH_HTTP_PROTOCOL}}://master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
+            --es.uri="{{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
             --web.listen-address=:$METRICS_PORT \
             {{{PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS}}}
         {{/TASKCFG_ALL_SECURITY_ENABLED}}
@@ -483,7 +483,7 @@ pods:
             template: security-pass.sh.mustache
             dest: scripts/security-pass.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
           interval: {{COORDINATOR_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{COORDINATOR_NODE_READINESS_CHECK_DELAY}}
           timeout: {{COORDINATOR_NODE_READINESS_CHECK_TIMEOUT}}
