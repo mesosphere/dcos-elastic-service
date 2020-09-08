@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+{{#SECURITY_ENABLED}}
+ELASTIC_USER={{ELASTICSEARCH_HEALTH_USER}}
+ELASTIC_PASS={{ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+PROTOCOL={{ELASTICSEARCH_HTTP_PROTOCOL}}
+VERSION={{ELASTIC_VERSION}}
+EPWD_PATH=/_xpack/security/user/elastic/_password
+KPWD_PATH=/_xpack/security/user/kibana/_password
+
+if [ "$CURL_SUCCESSFUL" = "false" ]; then
+    curl -u ${ELASTIC_USER}:${ELASTIC_PASS} -XPUT -H "Content-Type: application/json" "${PROTOCOL}://${TASK_NAME}.${FRAMEWORK_HOST}:${PORT_HTTP}${KPWD_PATH}" -d '{ "password":"${ELASTIC_PASS}" }'
+    curl -u ${ELASTIC_USER}:${ELASTIC_PASS} -XPUT -H "Content-Type: application/json" "${PROTOCOL}://${TASK_NAME}.${FRAMEWORK_HOST}:${PORT_HTTP}${EPWD_PATH}" -d '{ "password":"${ELASTIC_PASS}" }'
+    if [ $? -eq 0 ]; then
+        echo "Elastic superuser password is set successfully."
+        CURL_SUCCESSFUL="true"
+        exit 0
+    else
+        echo "Unable to set password for elastic superuser."
+        exit 1
+    fi
+fi
+{{/SECURITY_ENABLED}}
+
+{{^SECURITY_ENABLED}}
+echo "Security is disabled. Skipping the password setting process."
+{{/SECURITY_ENABLED}}
