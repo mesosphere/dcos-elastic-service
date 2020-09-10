@@ -184,6 +184,27 @@
           "type": "string",
           "description": "Volume profile to be used for storing Master Node data."
         },
+        "external_volume": {
+          "type": "object",
+          "description": "The Master node's external volume configuration.\nOnly Portworx external volumes are supported.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If true, external profile will be used.",
+              "default": false
+            },
+            "portworx_volume_options": {
+              "type": "string",
+              "default": "size=50",
+              "description": "Volume options."
+            },
+            "volume_name": {
+              "type": "string",
+              "description": "Volume name. If empty service path will be used.",
+              "default": ""
+            }
+          }
+        },
         "transport_port": {
           "description": "Transport port for master nodes to listen on.",
           "type": "integer",
@@ -302,6 +323,27 @@
           "type": "string",
           "description": "Volume profile to be used for storing Data Node data."
         },
+        "external_volume": {
+          "type": "object",
+          "description": "The Data node's external volume configuration.\nOnly Portworx external volumes are supported.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If true, external profile will be used.",
+              "default": false
+            },
+            "portworx_volume_options": {
+              "type": "string",
+              "default": "size=100",
+              "description": "Volume options."
+            },
+            "volume_name": {
+              "type": "string",
+              "description": "Volume name. If empty service path will be used.",
+              "default": ""
+            }
+          }
+        },
         "placement": {
           "description": "Placement constraints for data nodes (e.g., [[\"hostname\", \"UNIQUE\"]]).",
           "type": "string",
@@ -415,6 +457,27 @@
           "type": "string",
           "description": "Volume profile to be used for storing Ingest Node data."
         },
+        "external_volume": {
+          "type": "object",
+          "description": "The Ingest node's external volume configuration.\nOnly Portworx external volumes are supported.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If true, external profile will be used.",
+              "default": false
+            },
+            "portworx_volume_options": {
+              "type": "string",
+              "default": "size=20",
+              "description": "Volume options."
+            },
+            "volume_name": {
+              "type": "string",
+              "description": "Volume name. If empty service path will be used.",
+              "default": ""
+            }
+          }
+        },
         "placement": {
           "description": "Placement constraints for ingest nodes (e.g., [[\"hostname\", \"UNIQUE\"]]).",
           "type": "string",
@@ -527,6 +590,27 @@
         "volume_profile": {
           "type": "string",
           "description": "Volume profile to be used for storing Coordinator Node data."
+        },
+        "external_volume": {
+          "type": "object",
+          "description": "The Coordinator node's external volume configuration.\nOnly Portworx external volumes are supported.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If true, external profile will be used.",
+              "default": false
+            },
+            "portworx_volume_options": {
+              "type": "string",
+              "default": "size=20",
+              "description": "Volume options."
+            },
+            "volume_name": {
+              "type": "string",
+              "description": "Volume name. If empty service path will be used.",
+              "default": ""
+            }
+          }
         },
         "placement": {
           "description": "Placement constraints for coordinator nodes (e.g., [[\"hostname\", \"UNIQUE\"]]).",
