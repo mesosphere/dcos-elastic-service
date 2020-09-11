@@ -685,14 +685,17 @@
           }
         },
         "health_user": {
-          "description": "Elastic username to use for X-Pack authentication, if enabled",
+          "description": "Elastic username to use for X-Pack authentication, if enabled. Do not alter this.",
           "type": "string",
           "default": "elastic"
         },
         "health_user_password": {
-          "description": "Password to use with health_user for X-Pack authentication, if enabled. Note that you are not setting the password here. You are telling the framework the credentials to use when sending in health check requests.",
+          "description": "Sets the password for default superuser 'elastic'. Also, password to use with health_user for X-Pack authentication, if enabled.",
           "type": "string",
-          "default": "changeme"
+          "default": "changeme",
+          "media": {
+            "type": "application/x-secret+string"
+          }
         },
         "plugins": {
           "description": "Comma-separated list of plugins to install",

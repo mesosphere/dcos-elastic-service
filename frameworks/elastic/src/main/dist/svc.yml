@@ -25,6 +25,14 @@ pods:
         soft: {{MASTER_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{MASTER_NODE_RLIMIT_NOFILE_HARD}}
     placement: '{{{MASTER_NODE_PLACEMENT}}}'
+    {{#TASKCFG_ALL_SECURITY_ENABLED}}
+    secrets:
+      {{#TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+      elasticHealthPassword:
+        secret: {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+        env-key: ELASTIC_PASS
+      {{/TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+    {{/TASKCFG_ALL_SECURITY_ENABLED}}
     tasks:
       node:
         goal: RUNNING
@@ -106,11 +114,14 @@ pods:
             dest: scripts/elastic-pass.sh
         readiness-check:
           cmd: |
+            {{^TASKCFG_ALL_SECURITY_ENABLED}}
+            export ELASTIC_PASS={{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+            {{/TASKCFG_ALL_SECURITY_ENABLED}}
             # set the elastic superuser pass
             ./scripts/elastic-pass.sh
             
             # check the readiness of elastic service
-            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
+            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:${ELASTIC_PASS} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
           interval: {{MASTER_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{MASTER_NODE_READINESS_CHECK_DELAY}}
           timeout: {{MASTER_NODE_READINESS_CHECK_TIMEOUT}}
@@ -141,6 +152,14 @@ pods:
         soft: {{DATA_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{DATA_NODE_RLIMIT_NOFILE_HARD}}
     placement: '{{{DATA_NODE_PLACEMENT}}}'
+    {{#TASKCFG_ALL_SECURITY_ENABLED}}
+    secrets:
+      {{#TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+      elasticHealthPassword:
+        secret: {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+        env-key: ELASTIC_PASS
+      {{/TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+    {{/TASKCFG_ALL_SECURITY_ENABLED}}
     tasks:
       node:
         goal: RUNNING
@@ -220,11 +239,14 @@ pods:
             dest: scripts/elastic-pass.sh
         readiness-check:
           cmd: |
+            {{^TASKCFG_ALL_SECURITY_ENABLED}}
+            export ELASTIC_PASS={{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+            {{/TASKCFG_ALL_SECURITY_ENABLED}}
             # set the elastic superuser pass
             ./scripts/elastic-pass.sh
 
             # check the readiness of elastic service
-            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
+            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:${ELASTIC_PASS} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
           interval: {{DATA_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{DATA_NODE_READINESS_CHECK_DELAY}}
           timeout: {{DATA_NODE_READINESS_CHECK_TIMEOUT}}
@@ -255,6 +277,14 @@ pods:
         soft: {{INGEST_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{INGEST_NODE_RLIMIT_NOFILE_HARD}}
     placement: '{{{INGEST_NODE_PLACEMENT}}}'
+    {{#TASKCFG_ALL_SECURITY_ENABLED}}
+    secrets:
+      {{#TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+      elasticHealthPassword:
+        secret: {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+        env-key: ELASTIC_PASS
+      {{/TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+    {{/TASKCFG_ALL_SECURITY_ENABLED}}
     tasks:
       node:
         goal: RUNNING
@@ -334,11 +364,14 @@ pods:
             dest: scripts/elastic-pass.sh
         readiness-check:
           cmd: |
+            {{^TASKCFG_ALL_SECURITY_ENABLED}}
+            export ELASTIC_PASS={{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+            {{/TASKCFG_ALL_SECURITY_ENABLED}}
             # set the elastic superuser pass
             ./scripts/elastic-pass.sh
 
             # check the readiness of elastic service
-            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
+            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:${ELASTIC_PASS} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
           interval: {{INGEST_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{INGEST_NODE_READINESS_CHECK_DELAY}}
           timeout: {{INGEST_NODE_READINESS_CHECK_TIMEOUT}}
@@ -436,6 +469,14 @@ pods:
         soft: {{COORDINATOR_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{COORDINATOR_NODE_RLIMIT_NOFILE_HARD}}
     placement: '{{{COORDINATOR_NODE_PLACEMENT}}}'
+    {{#TASKCFG_ALL_SECURITY_ENABLED}}
+    secrets:
+      {{#TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+      elasticHealthPassword:
+        secret: {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+        env-key: ELASTIC_PASS
+      {{/TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+    {{/TASKCFG_ALL_SECURITY_ENABLED}}
     tasks:
       node:
         goal: RUNNING
@@ -515,11 +556,14 @@ pods:
             template: elastic-pass.sh.mustache
         readiness-check:
           cmd: |
+            {{^TASKCFG_ALL_SECURITY_ENABLED}}
+            export ELASTIC_PASS={{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+            {{/TASKCFG_ALL_SECURITY_ENABLED}}
             # set the elastic superuser pass
             ./scripts/elastic-pass.sh
           
             # check the readiness of elastic service
-            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
+            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:${ELASTIC_PASS} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
           interval: {{COORDINATOR_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{COORDINATOR_NODE_READINESS_CHECK_DELAY}}
           timeout: {{COORDINATOR_NODE_READINESS_CHECK_TIMEOUT}}
