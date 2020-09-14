@@ -9,6 +9,7 @@ import sdk_cmd
 import sdk_hosts
 import sdk_install
 import sdk_networks
+import sdk_security
 import sdk_repository
 import sdk_service
 import sdk_upgrade
@@ -88,7 +89,9 @@ def check_kibana_adminrouter_integration(path: str) -> bool:
 
 
 @retrying.retry(
-    wait_fixed=1000, stop_max_delay=DEFAULT_TIMEOUT * 1000, retry_on_result=lambda res: not res
+    wait_fixed=1000,
+    stop_max_delay=DEFAULT_TIMEOUT * 1000,
+    retry_on_result=lambda res: not res,
 )
 def check_elasticsearch_index_health(
     index_name: str,
@@ -109,33 +112,43 @@ def check_elasticsearch_index_health(
     return bool(result and result["status"] == color)
 
 
-@retrying.retry(wait_fixed=1000, stop_max_delay=5 * 1000, retry_on_result=lambda res: not res)
+@retrying.retry(
+    wait_fixed=1000, stop_max_delay=5 * 1000, retry_on_result=lambda res: not res
+)
 def check_custom_elasticsearch_cluster_setting(
     service_name: str = SERVICE_NAME,
     setting_path: Optional[str] = None,
     expected_value: Optional[str] = None,
 ) -> bool:
-    settings = _curl_query(service_name, "GET", "_cluster/settings?include_defaults=true")[
-        "defaults"
-    ]
+    settings = _curl_query(
+        service_name, "GET", "_cluster/settings?include_defaults=true"
+    )["defaults"]
     if not settings:
         return False
     actual_value = get_in(setting_path, settings)
     log.info(
-        "Expected '{}' to be '{}', got '{}'".format(setting_path, expected_value, actual_value)
+        "Expected '{}' to be '{}', got '{}'".format(
+            setting_path, expected_value, actual_value
+        )
     )
     return bool(expected_value == actual_value)
 
 
 @retrying.retry(
-    wait_fixed=1000, stop_max_delay=DEFAULT_TIMEOUT * 1000, retry_on_result=lambda res: not res
+    wait_fixed=1000,
+    stop_max_delay=DEFAULT_TIMEOUT * 1000,
+    retry_on_result=lambda res: not res,
 )
 def wait_for_expected_nodes_to_exist(
     service_name: str = SERVICE_NAME, task_count: int = DEFAULT_NODES_COUNT
 ) -> bool:
     result = _curl_query(service_name, "GET", "_cluster/health")
     if not result or "number_of_nodes" not in result:
-        log.warning("Missing 'number_of_nodes' key in cluster health response: {}".format(result))
+        log.warning(
+            "Missing 'number_of_nodes' key in cluster health response: {}".format(
+                result
+            )
+        )
         return False
     node_count = result["number_of_nodes"]
     log.info("Waiting for {} healthy nodes, got {}".format(task_count, node_count))
@@ -143,9 +156,13 @@ def wait_for_expected_nodes_to_exist(
 
 
 @retrying.retry(
-    wait_fixed=1000, stop_max_delay=DEFAULT_TIMEOUT * 1000, retry_on_result=lambda res: not res
+    wait_fixed=1000,
+    stop_max_delay=DEFAULT_TIMEOUT * 1000,
+    retry_on_result=lambda res: not res,
 )
-def check_kibana_plugin_installed(plugin_name: str, service_name: str = SERVICE_NAME) -> bool:
+def check_kibana_plugin_installed(
+    plugin_name: str, service_name: str = SERVICE_NAME
+) -> bool:
     task_sandbox = sdk_cmd.get_task_sandbox_path(service_name)
     # Environment variables aren't available on DC/OS 1.9 so we manually inject MESOS_SANDBOX (and
     # can't use ELASTIC_VERSION).
@@ -162,7 +179,9 @@ def check_kibana_plugin_installed(plugin_name: str, service_name: str = SERVICE_
 
 
 @retrying.retry(
-    wait_fixed=1000, stop_max_delay=DEFAULT_TIMEOUT * 1000, retry_on_result=lambda res: not res
+    wait_fixed=1000,
+    stop_max_delay=DEFAULT_TIMEOUT * 1000,
+    retry_on_result=lambda res: not res,
 )
 def check_elasticsearch_plugin_installed(
     plugin_name: str,
@@ -174,7 +193,9 @@ def check_elasticsearch_plugin_installed(
 
 
 @retrying.retry(
-    wait_fixed=1000, stop_max_delay=DEFAULT_TIMEOUT * 1000, retry_on_result=lambda res: not res
+    wait_fixed=1000,
+    stop_max_delay=DEFAULT_TIMEOUT * 1000,
+    retry_on_result=lambda res: not res,
 )
 def check_elasticsearch_plugin_uninstalled(
     plugin_name: str, service_name: str = SERVICE_NAME
@@ -190,7 +211,9 @@ def _get_hosts_with_plugin(service_name: str, plugin_name: str) -> Optional[List
     return [host for host in output.split("\n") if plugin_name in host]
 
 
-@retrying.retry(wait_fixed=1000, stop_max_delay=120 * 1000, retry_on_result=lambda res: not res)
+@retrying.retry(
+    wait_fixed=1000, stop_max_delay=120 * 1000, retry_on_result=lambda res: not res
+)
 def get_elasticsearch_master(service_name: str = SERVICE_NAME) -> Optional[str]:
     output = _curl_query(service_name, "GET", "_cat/master", return_json=False)
     assert isinstance(output, str)
@@ -199,7 +222,9 @@ def get_elasticsearch_master(service_name: str = SERVICE_NAME) -> Optional[str]:
     return None
 
 
-@retrying.retry(wait_fixed=1000, stop_max_delay=30 * 1000, retry_on_result=lambda res: not res)
+@retrying.retry(
+    wait_fixed=1000, stop_max_delay=30 * 1000, retry_on_result=lambda res: not res
+)
 def verify_graph_explore_endpoint(
     is_expected_to_be_enabled: bool,
     service_name: str = SERVICE_NAME,
@@ -223,11 +248,18 @@ def verify_graph_explore_endpoint(
     }
 
     response = explore_graph(
-        service_name, index_name, query, http_user=http_user, http_password=http_password
+        service_name,
+        index_name,
+        query,
+        http_user=http_user,
+        http_password=http_password,
     )
 
     delete_index(
-        index_name, service_name=service_name, http_user=http_user, http_password=http_password
+        index_name,
+        service_name=service_name,
+        http_user=http_user,
+        http_password=http_password,
     )
 
     return is_expected_to_be_enabled == is_graph_explore_endpoint_active(response)
@@ -309,23 +341,33 @@ def get_xpack_license(
     http_password: Optional[str] = None,
 ) -> Dict[str, Any]:
     result = _curl_query(
-        service_name, "GET", "_xpack/license", http_user=http_user, http_password=http_password
+        service_name,
+        "GET",
+        "_xpack/license",
+        http_user=http_user,
+        http_password=http_password,
     )
     assert isinstance(result, dict)
     return result
 
 
-@retrying.retry(wait_fixed=1000, stop_max_delay=120 * 1000, retry_on_result=lambda res: not res)
+@retrying.retry(
+    wait_fixed=1000, stop_max_delay=120 * 1000, retry_on_result=lambda res: not res
+)
 def verify_xpack_license(
     license_type: str,
     service_name: str = SERVICE_NAME,
     http_user: Optional[str] = None,
     http_password: Optional[str] = None,
 ) -> bool:
-    response = get_xpack_license(service_name, http_user=http_user, http_password=http_password)
+    response = get_xpack_license(
+        service_name, http_user=http_user, http_password=http_password
+    )
 
     if "license" not in response:
-        log.warning("Missing 'license' key in _xpack/license response: {}".format(response))
+        log.warning(
+            "Missing 'license' key in _xpack/license response: {}".format(response)
+        )
         return False  # retry
 
     assert response["license"]["status"] == "active"
@@ -340,12 +382,14 @@ def verify_xpack_license(
     retry_on_result=lambda return_value: not return_value,
 )
 def setup_passwords(
-    service_name: str = SERVICE_NAME, task_name: str = "master-0-node", https: bool = False
+    service_name: str = SERVICE_NAME,
+    task_name: str = "master-0-node",
+    https: bool = False,
 ) -> Union[bool, Dict[str, str]]:
     if https:
-        master_0_node_dns = sdk_networks.get_endpoint(PACKAGE_NAME, service_name, "master-http")[
-            "dns"
-        ][0]
+        master_0_node_dns = sdk_networks.get_endpoint(
+            PACKAGE_NAME, service_name, "master-http"
+        )["dns"][0]
         url = "--url https://{}".format(master_0_node_dns)
     else:
         url = ""
@@ -398,7 +442,9 @@ def explore_graph(
     return result
 
 
-def start_trial_license(service_name: str = SERVICE_NAME, https: bool = False) -> Dict[str, Any]:
+def start_trial_license(
+    service_name: str = SERVICE_NAME, https: bool = False
+) -> Dict[str, Any]:
     result = _curl_query(
         service_name, "POST", "_xpack/license/start_trial?acknowledge=true", https=https
     )
@@ -507,7 +553,9 @@ def get_elasticsearch_nodes_info(service_name: str = SERVICE_NAME) -> Dict[str, 
 # Here we only retry if the command itself failed, or if the data couldn't be parsed as JSON when
 # return_json=True. Upstream callers may want to have their own retry loop against the content of
 # the returned data (e.g. expected field is missing).
-@retrying.retry(wait_fixed=1000, stop_max_delay=120 * 1000, retry_on_result=lambda res: res is None)
+@retrying.retry(
+    wait_fixed=1000, stop_max_delay=120 * 1000, retry_on_result=lambda res: res is None
+)
 def _curl_query(
     service_name: str,
     method: str,
@@ -534,25 +582,37 @@ def _curl_query(
             )
         credentials = ""
 
-    host = sdk_hosts.autoip_host(service_name, task, _master_zero_http_port(service_name))
+    host = sdk_hosts.autoip_host(
+        service_name, task, _master_zero_http_port(service_name)
+    )
 
     curl_cmd = "/opt/mesosphere/bin/curl -sS {} -X{} '{}://{}/{}'".format(
         credentials, method, protocol, host, endpoint
     )
 
     if json_body:
-        json_body_value = json_body if isinstance(json_body, str) else json.dumps(json_body)
-        curl_cmd += " -H 'Content-type: application/json' -d '{}'".format(json_body_value)
+        json_body_value = (
+            json_body if isinstance(json_body, str) else json.dumps(json_body)
+        )
+        curl_cmd += " -H 'Content-type: application/json' -d '{}'".format(
+            json_body_value
+        )
 
     task_name = "master-0-node"
-    exit_code, stdout, stderr = sdk_cmd.service_task_exec(service_name, task_name, curl_cmd)
+    exit_code, stdout, stderr = sdk_cmd.service_task_exec(
+        service_name, task_name, curl_cmd
+    )
 
     def build_errmsg(msg: str) -> str:
-        return "{}\nCommand:\n{}\nstdout:\n{}\nstderr:\n{}".format(msg, curl_cmd, stdout, stderr)
+        return "{}\nCommand:\n{}\nstdout:\n{}\nstderr:\n{}".format(
+            msg, curl_cmd, stdout, stderr
+        )
 
     if exit_code:
         log.warning(
-            build_errmsg("Failed to run command on {}, retrying or giving up.".format(task_name))
+            build_errmsg(
+                "Failed to run command on {}, retrying or giving up.".format(task_name)
+            )
         )
         return None
 
@@ -564,7 +624,9 @@ def _curl_query(
         assert isinstance(result, dict)
         return result
     except Exception:
-        log.warning(build_errmsg("Failed to parse stdout as JSON, retrying or giving up."))
+        log.warning(
+            build_errmsg("Failed to parse stdout as JSON, retrying or giving up.")
+        )
         return None
 
 
@@ -592,14 +654,18 @@ def test_xpack_enabled_update(
 
 
 def test_xpack_security_enabled_update(
-    service_name: str, from_xpack_security_enabled: bool, to_xpack_security_enabled: bool
+    service_name: str,
+    from_xpack_security_enabled: bool,
+    to_xpack_security_enabled: bool,
 ) -> None:
     test_upgrade(
         PACKAGE_NAME,
         service_name,
         expected_running_tasks_before_upgrade=DEFAULT_NODES_COUNT,
         expected_running_tasks_after_upgrade=DEFAULT_TASK_COUNT,
-        from_options={"elasticsearch": {"xpack_security_enabled": from_xpack_security_enabled}},
+        from_options={
+            "elasticsearch": {"xpack_security_enabled": from_xpack_security_enabled}
+        },
         to_options={
             "service": {"update_strategy": "parallel"},
             "elasticsearch": {"xpack_security_enabled": to_xpack_security_enabled},
@@ -633,7 +699,10 @@ def test_upgrade_from_xpack_enabled(
     )
 
     document_es_5_id = 1
-    document_es_5_fields = {"name": "Elasticsearch 5: X-Pack enabled", "role": "search engine"}
+    document_es_5_fields = {
+        "name": "Elasticsearch 5: X-Pack enabled",
+        "role": "search engine",
+    }
     create_document(
         DEFAULT_INDEX_NAME,
         DEFAULT_INDEX_TYPE,
@@ -712,7 +781,9 @@ def test_upgrade_from_xpack_enabled(
 
     # After upgrading the indices, we're now safe to do the actual configuration update, possibly
     # enabling X-Pack security.
-    sdk_service.update_configuration(package_name, service_name, options, expected_task_count)
+    sdk_service.update_configuration(
+        package_name, service_name, options, expected_task_count
+    )
 
     document_es_6_post_update_id = 3
     document_es_6_post_update_fields = {
@@ -788,7 +859,9 @@ def test_upgrade(
     sdk_install.uninstall(package_name, service_name)
 
     log.info(
-        "Called with 'from' version '{}' and 'to' version '{}'".format(from_version, to_version)
+        "Called with 'from' version '{}' and 'to' version '{}'".format(
+            from_version, to_version
+        )
     )
 
     universe_version = None
@@ -827,7 +900,9 @@ def test_upgrade(
             sdk_repository.move_universe_repo(package_name)
 
     log.info(
-        "Upgrading {} from version '{}' to '{}'".format(package_name, from_version, to_version)
+        "Upgrading {} from version '{}' to '{}'".format(
+            package_name, from_version, to_version
+        )
     )
     sdk_upgrade.update_or_upgrade_or_downgrade(
         package_name,
@@ -837,4 +912,17 @@ def test_upgrade(
         expected_running_tasks_after_upgrade,
         wait_for_deployment,
         timeout_seconds,
+    )
+
+
+def install_security_secrets():
+    """Creates secrets for elastic service when security is enabled."""
+    # install enterprise cli if not already installed.
+    sdk_security.install_enterprise_cli(False)
+
+    # create health user password secret
+    sdk_cmd.run_cli(
+        "security secrets  create -v {} elastic/healthUserPassword".format(
+            DEFAULT_ELASTICSEARCH_PASSWORD
+        )
     )

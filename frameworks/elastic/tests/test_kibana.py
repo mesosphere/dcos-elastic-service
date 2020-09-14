@@ -9,6 +9,7 @@ import sdk_install
 import sdk_marathon
 import sdk_networks
 import sdk_service
+import sdk_security
 from security import transport_encryption
 import sdk_utils
 
@@ -46,6 +47,8 @@ def service_account(configure_security: None) -> Iterator[Dict[str, Any]]:
 
 @pytest.fixture
 def elastic_service(service_account: Dict[str, Any]) -> Iterator[Dict[str, Any]]:
+    # create secret before installing elastic with security enabled
+    config.install_security_secrets()
     yield from tls._elastic_service_impl(
         service_account,
         {
@@ -56,7 +59,10 @@ def elastic_service(service_account: Dict[str, Any]) -> Iterator[Dict[str, Any]]
                 "security": {"transport_encryption": {"enabled": True}},
                 "virtual_network_enabled": True,
             },
-            "elasticsearch": {"xpack_security_enabled": True},
+            "elasticsearch": {
+                "health_user_password": "elastic/healthUserPassword",
+                "xpack_security_enabled": True,
+            },
         },
     )
 
@@ -76,7 +82,9 @@ def kibana_application(elastic_service: Dict[str, Any]) -> Iterator[Dict[str, An
             "kibana": {
                 "elasticsearch_tls": True,
                 "elasticsearch_url": "https://"
-                + sdk_hosts.vip_host(elastic_service["service"]["name"], "coordinator", 9200),
+                + sdk_hosts.vip_host(
+                    elastic_service["service"]["name"], "coordinator", 9200
+                ),
                 "elasticsearch_xpack_security_enabled": True,
                 "password": elastic_service["passwords"]["kibana"],
             },
@@ -94,13 +102,20 @@ def test_config_with_custom_yml(configure_package) -> None:
 
     decoded_base_64_yml = "logging.json: true"
     base_64_yml = base64.b64encode(decoded_base_64_yml.encode("utf-8")).decode("utf-8")
-    elasticsearch_url = "http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
+    elasticsearch_url = "http://" + sdk_hosts.vip_host(
+        config.SERVICE_NAME, "coordinator", 9200
+    )
 
     sdk_install.install(
         config.KIBANA_PACKAGE_NAME,
         config.KIBANA_SERVICE_NAME,
         0,
-        {"kibana": {"elasticsearch_url": elasticsearch_url, "custom_kibana_yml": base_64_yml}},
+        {
+            "kibana": {
+                "elasticsearch_url": elasticsearch_url,
+                "custom_kibana_yml": base_64_yml,
+            }
+        },
         wait_for_deployment=False,
         insert_strict_options=False,
     )
@@ -109,7 +124,9 @@ def test_config_with_custom_yml(configure_package) -> None:
     rc, stdout, stderr = sdk_cmd.marathon_task_exec(config.KIBANA_SERVICE_NAME, cmd)
     assert rc == 0 and decoded_base_64_yml in stdout
 
-    config.check_kibana_adminrouter_integration("service/{}/".format(config.KIBANA_SERVICE_NAME))
+    config.check_kibana_adminrouter_integration(
+        "service/{}/".format(config.KIBANA_SERVICE_NAME)
+    )
 
 
 @pytest.mark.sanity
@@ -131,7 +148,9 @@ def test_config_with_custom_placement(configure_package):
         insert_strict_options=False,
     )
 
-    marathon_constraints = sdk_marathon.get_config(config.KIBANA_SERVICE_NAME)["constraints"]
+    marathon_constraints = sdk_marathon.get_config(config.KIBANA_SERVICE_NAME)[
+        "constraints"
+    ]
 
     assert marathon_constraints == non_default_placement
     assert config.check_kibana_adminrouter_integration(
@@ -148,7 +167,9 @@ def test_virtual_network(configure_package) -> None:
         additional_options=sdk_networks.ENABLE_VIRTUAL_NETWORKS_OPTIONS,
     )
 
-    elasticsearch_url = "http://" + sdk_hosts.vip_host(config.SERVICE_NAME, "coordinator", 9200)
+    elasticsearch_url = "http://" + sdk_hosts.vip_host(
+        config.SERVICE_NAME, "coordinator", 9200
+    )
     sdk_install.install(
         config.KIBANA_PACKAGE_NAME,
         config.KIBANA_SERVICE_NAME,
@@ -186,13 +207,16 @@ def test_virtual_network_tls(
 @pytest.mark.timeout(60 * 60)
 @sdk_utils.dcos_ee_only
 @pytest.mark.skipif(
-    sdk_utils.dcos_version_less_than("1.12"), reason="Kibana service URL won't work on DC/OS 1.11"
+    sdk_utils.dcos_version_less_than("1.12"),
+    reason="Kibana service URL won't work on DC/OS 1.11",
 )
 def test_security_toggle_with_kibana() -> None:
     try:
         sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
         sdk_install.uninstall(config.KIBANA_PACKAGE_NAME, config.KIBANA_SERVICE_NAME)
-        service_account_info = transport_encryption.setup_service_account(config.SERVICE_NAME)
+        service_account_info = transport_encryption.setup_service_account(
+            config.SERVICE_NAME
+        )
 
         sdk_install.install(
             config.PACKAGE_NAME,
@@ -212,7 +236,10 @@ def test_security_toggle_with_kibana() -> None:
         # Write some data with security disabled, enabled security, and afterwards verify that we can
         # still read what we wrote.
         document_security_disabled_id = 1
-        document_security_disabled_fields = {"name": "Elasticsearch", "role": "search engine"}
+        document_security_disabled_fields = {
+            "name": "Elasticsearch",
+            "role": "search engine",
+        }
         config.create_document(
             config.DEFAULT_INDEX_NAME,
             config.DEFAULT_INDEX_TYPE,
@@ -266,7 +293,10 @@ def test_security_toggle_with_kibana() -> None:
         # Write some data with security enabled, disable security, and afterwards verify that we can
         # still read what we wrote.
         document_security_enabled_id = 2
-        document_security_enabled_fields = {"name": "X-Pack", "role": "commercial plugin"}
+        document_security_enabled_fields = {
+            "name": "X-Pack",
+            "role": "commercial plugin",
+        }
         config.create_document(
             config.DEFAULT_INDEX_NAME,
             config.DEFAULT_INDEX_TYPE,
@@ -344,12 +374,15 @@ def test_security_toggle_with_kibana() -> None:
             service_name=config.SERVICE_NAME,
         )
         assert (
-            document_security_enabled["_source"]["name"] == document_security_enabled_fields["name"]
+            document_security_enabled["_source"]["name"]
+            == document_security_enabled_fields["name"]
         )
     finally:
         sdk_install.uninstall(config.KIBANA_PACKAGE_NAME, config.KIBANA_SERVICE_NAME)
         sdk_install.uninstall(config.PACKAGE_NAME, config.SERVICE_NAME)
-        transport_encryption.cleanup_service_account(config.SERVICE_NAME, service_account_info)
+        transport_encryption.cleanup_service_account(
+            config.SERVICE_NAME, service_account_info
+        )
 
 
 @pytest.mark.sanity
@@ -362,7 +395,9 @@ def test_admin_router_with_folder_name() -> None:
         sdk_install.uninstall(config.KIBANA_PACKAGE_NAME, kibana_service_name)
         sdk_install.uninstall(config.PACKAGE_NAME, elastic_service_name)
 
-        service_account_info = transport_encryption.setup_service_account(elastic_service_name)
+        service_account_info = transport_encryption.setup_service_account(
+            elastic_service_name
+        )
         sdk_install.install(
             config.PACKAGE_NAME,
             service_name=elastic_service_name,
@@ -400,11 +435,15 @@ def test_admin_router_with_folder_name() -> None:
     finally:
         sdk_install.uninstall(config.KIBANA_PACKAGE_NAME, kibana_service_name)
         sdk_install.uninstall(config.PACKAGE_NAME, elastic_service_name)
-        transport_encryption.cleanup_service_account(elastic_service_name, service_account_info)
+        transport_encryption.cleanup_service_account(
+            elastic_service_name, service_account_info
+        )
 
 
 def _check_cni_working(expected_labels: Dict[str, str]) -> None:
-    config.check_kibana_adminrouter_integration("service/{}/".format(config.KIBANA_SERVICE_NAME))
+    config.check_kibana_adminrouter_integration(
+        "service/{}/".format(config.KIBANA_SERVICE_NAME)
+    )
     kibana_config = sdk_marathon.get_config(config.KIBANA_SERVICE_NAME)
     actual_labels = kibana_config["networks"][0]["labels"]
 
