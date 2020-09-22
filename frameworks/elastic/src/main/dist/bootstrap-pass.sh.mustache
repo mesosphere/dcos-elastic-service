@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+{{#SECURITY_ENABLED}}
+JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/)
+ELASTIC_PASS={{ELASTICSEARCH_HEALTH_USER_PASSWORD}}
+VERSION={{ELASTIC_VERSION}}
+
+# set bootstrap password in elastic keystore
+printf ${ELASTIC_PASS} | ./elasticsearch-${VERSION}/bin/elasticsearch-keystore add -f -x "bootstrap.password"
+{{/SECURITY_ENABLED}}
+
+{{^SECURITY_ENABLED}}
+echo "Security is disabled. Skipping the password setting process."
+{{/SECURITY_ENABLED}}

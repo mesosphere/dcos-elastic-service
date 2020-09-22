@@ -14,7 +14,9 @@ def _service_account_impl(configure_security: None) -> Iterator[Dict[str, Any]]:
 
         yield service_account_info
     finally:
-        transport_encryption.cleanup_service_account(config.SERVICE_NAME, service_account_info)
+        transport_encryption.cleanup_service_account(
+            config.SERVICE_NAME, service_account_info
+        )
 
 
 def _elastic_service_impl(
@@ -50,14 +52,17 @@ def _elastic_service_impl(
         )
 
         config.check_elasticsearch_index_health(
-            ".security-7",
+            "",
             "green",
             service_name=service_name,
             http_password=http_password,
             https=True,
         )
 
-        yield {**configuration, **{"package_name": package_name, "passwords": passwords}}
+        yield {
+            **configuration,
+            **{"package_name": package_name, "passwords": passwords},
+        }
     finally:
         sdk_install.uninstall(package_name, service_name)
 
@@ -80,6 +85,9 @@ def _kibana_application_impl(
             wait_for_deployment=False,
         )
 
-        yield {**configuration, **{"package_name": package_name, "elastic": elastic_service}}
+        yield {
+            **configuration,
+            **{"package_name": package_name, "elastic": elastic_service},
+        }
     finally:
         sdk_install.uninstall(package_name, service_name)

@@ -52,7 +52,9 @@ def kibana_application(elastic_service: Dict[str, Any]) -> Iterator[Dict[str, An
             "kibana": {
                 "elasticsearch_tls": True,
                 "elasticsearch_url": "https://"
-                + sdk_hosts.vip_host(elastic_service["service"]["name"], "coordinator", 9200),
+                + sdk_hosts.vip_host(
+                    elastic_service["service"]["name"], "coordinator", 9200
+                ),
                 "elasticsearch_xpack_security_enabled": True,
                 "password": elastic_service["passwords"]["kibana"],
             },
@@ -72,7 +74,11 @@ def test_crud_over_tls(elastic_service: Dict[str, Any]) -> None:
     document_id = 1
 
     config.create_index(
-        index_name, index, service_name=service_name, https=True, http_password=http_password
+        index_name,
+        index,
+        service_name=service_name,
+        https=True,
+        http_password=http_password,
     )
 
     config.create_document(
@@ -95,7 +101,8 @@ def test_crud_over_tls(elastic_service: Dict[str, Any]) -> None:
 @pytest.mark.tls
 @pytest.mark.sanity
 @pytest.mark.skipif(
-    sdk_utils.dcos_version_less_than("1.12"), reason="Kibana service URL won't work on DC/OS 1.11"
+    sdk_utils.dcos_version_less_than("1.12"),
+    reason="Kibana service URL won't work on DC/OS 1.11",
 )
 def test_kibana_tls(kibana_application: Dict[str, Any]) -> None:
     service_name = kibana_application["service"]["name"]
@@ -106,7 +113,9 @@ def test_kibana_tls(kibana_application: Dict[str, Any]) -> None:
 @pytest.mark.tls
 @pytest.mark.sanity
 @pytest.mark.recovery
-def test_tls_recovery(elastic_service: Dict[str, Any], service_account: Dict[str, Any]) -> None:
+def test_tls_recovery(
+    elastic_service: Dict[str, Any], service_account: Dict[str, Any]
+) -> None:
     service_name = elastic_service["service"]["name"]
     package_name = elastic_service["package_name"]
 

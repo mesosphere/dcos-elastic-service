@@ -67,6 +67,7 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
+          ./scripts/bootstrap-pass.sh
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
@@ -77,6 +78,7 @@ pods:
           DATA_ENABLED: false
           INGEST_ENABLED: false
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
+          CURL_SUCCESSFUL: false
         configs:
           jvm.options:
             template: jvm.options
@@ -96,8 +98,19 @@ pods:
           customize-log4j2.sh:
             template: customize-log4j2.sh
             dest: scripts/customize-log4j2.sh
+          bootstrap-pass.sh:
+            template: bootstrap-pass.sh.mustache
+            dest: scripts/bootstrap-pass.sh
+          elastic-pass.sh:
+            template: elastic-pass.sh.mustache
+            dest: scripts/elastic-pass.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: |
+            # set the elastic superuser pass
+            ./scripts/elastic-pass.sh
+            
+            # check the readiness of elastic service
+            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
           interval: {{MASTER_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{MASTER_NODE_READINESS_CHECK_DELAY}}
           timeout: {{MASTER_NODE_READINESS_CHECK_TIMEOUT}}
@@ -170,6 +183,7 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
+          ./scripts/bootstrap-pass.sh
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
@@ -178,6 +192,7 @@ pods:
           DATA_ENABLED: true
           INGEST_ENABLED: false
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
+          CURL_SUCCESSFUL: false
         configs:
           jvm.options:
             template: jvm.options
@@ -197,8 +212,19 @@ pods:
           customize-log4j2.sh:
             template: customize-log4j2.sh
             dest: scripts/customize-log4j2.sh
+          bootstrap-pass.sh:
+            template: bootstrap-pass.sh.mustache
+            dest: scripts/bootstrap-pass.sh
+          elastic-pass.sh:
+            template: elastic-pass.sh.mustache
+            dest: scripts/elastic-pass.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: |
+            # set the elastic superuser pass
+            ./scripts/elastic-pass.sh
+
+            # check the readiness of elastic service
+            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
           interval: {{DATA_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{DATA_NODE_READINESS_CHECK_DELAY}}
           timeout: {{DATA_NODE_READINESS_CHECK_TIMEOUT}}
@@ -271,6 +297,7 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
+          ./scripts/bootstrap-pass.sh
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
@@ -279,6 +306,7 @@ pods:
           DATA_ENABLED: false
           INGEST_ENABLED: true
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
+          CURL_SUCCESSFUL: false
         configs:
           jvm.options:
             template: jvm.options
@@ -298,8 +326,19 @@ pods:
           customize-log4j2.sh:
             template: customize-log4j2.sh
             dest: scripts/customize-log4j2.sh
+          bootstrap-pass.sh:
+            template: bootstrap-pass.sh.mustache
+            dest: scripts/bootstrap-pass.sh
+          elastic-pass.sh:
+            template: elastic-pass.sh.mustache
+            dest: scripts/elastic-pass.sh
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: |
+            # set the elastic superuser pass
+            ./scripts/elastic-pass.sh
+
+            # check the readiness of elastic service
+            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
           interval: {{INGEST_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{INGEST_NODE_READINESS_CHECK_DELAY}}
           timeout: {{INGEST_NODE_READINESS_CHECK_TIMEOUT}}
@@ -351,14 +390,14 @@ pods:
 
         {{#TASKCFG_ALL_SECURITY_ENABLED}}
           exec ./elasticsearch_exporter-{{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}.linux-amd64/elasticsearch_exporter \
-            --es.uri="{{ELASTICSEARCH_HTTP_PROTOCOL}}://{{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}}@master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
+            --es.uri="{{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}}@master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
             --es.ca="exporter.ca" --es.client-private-key="exporter.key" --es.client-cert="exporter.crt" \
             --web.listen-address=:$METRICS_PORT \
             {{{PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS}}}
         {{/TASKCFG_ALL_SECURITY_ENABLED}}
         {{^TASKCFG_ALL_SECURITY_ENABLED}}
           exec ./elasticsearch_exporter-{{ELASTICSEARCH_PROMETHEUS_EXPORTER_VERSION}}.linux-amd64/elasticsearch_exporter \
-            --es.uri="{{ELASTICSEARCH_HTTP_PROTOCOL}}://master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
+            --es.uri="{{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://master.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory:9200" \
             --web.listen-address=:$METRICS_PORT \
             {{{PROMETHEUS_EXPORTER_CONFIGURATION_OPTIONS}}}
         {{/TASKCFG_ALL_SECURITY_ENABLED}}
@@ -439,6 +478,7 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
+          ./scripts/bootstrap-pass.sh
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
@@ -447,6 +487,7 @@ pods:
           DATA_ENABLED: false
           INGEST_ENABLED: false
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
+          CURL_SUCCESSFUL: false
         configs:
           jvm.options:
             template: jvm.options
@@ -466,8 +507,19 @@ pods:
           customize-log4j2.sh:
             template: customize-log4j2.sh
             dest: scripts/customize-log4j2.sh
+          bootstrap-pass.sh:
+            template: bootstrap-pass.sh.mustache
+            dest: scripts/bootstrap-pass.sh
+          elastic-pass.sh:
+            dest: scripts/elastic-pass.sh
+            template: elastic-pass.sh.mustache
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: |
+            # set the elastic superuser pass
+            ./scripts/elastic-pass.sh
+          
+            # check the readiness of elastic service
+            curl -k -I -s -f -u {{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER}}:{{TASKCFG_ALL_ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{TASKCFG_ALL_ELASTICSEARCH_HTTP_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP
           interval: {{COORDINATOR_NODE_READINESS_CHECK_INTERVAL}}
           delay: {{COORDINATOR_NODE_READINESS_CHECK_DELAY}}
           timeout: {{COORDINATOR_NODE_READINESS_CHECK_TIMEOUT}}

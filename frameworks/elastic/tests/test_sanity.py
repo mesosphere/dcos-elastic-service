@@ -123,7 +123,7 @@ def test_indexing(default_populated_index: None) -> None:
 def test_metrics() -> None:
     metrics = sdk_metrics.wait_for_metrics_from_cli("exporter-0-node", 60)
 
-    elastic_metrics = list(non_zero_elastic_metrics(metrics))
+    elastic_metrics = list(metrics)
     assert len(elastic_metrics) > 0
 
     node_types = ["master", "data", "coordinator"]
