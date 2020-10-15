@@ -82,10 +82,6 @@ pods:
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
 
-          if [ "${MASTER_NODE_EXTERNAL_VOLUME_ENABLED}" = true ]; then
-          sudo chown {{FRAMEWORK_USER}} $MESOS_SANDBOX/container-path -R
-          fi
-
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
           {{#MASTER_NODE_EXTERNAL_VOLUME_ENABLED}}
@@ -206,10 +202,6 @@ pods:
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
 
-          if [ "${DATA_NODE_EXTERNAL_VOLUME_ENABLED}" = true ]; then
-          sudo chown {{FRAMEWORK_USER}} $MESOS_SANDBOX/container-path -R
-          fi
-
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
           {{#DATA_NODE_EXTERNAL_VOLUME_ENABLED}}
@@ -327,10 +319,6 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
-
-          if [ "${INGEST_NODE_EXTERNAL_VOLUME_ENABLED}" = true ]; then
-          sudo chown {{FRAMEWORK_USER}} $MESOS_SANDBOX/container-path -R
-          fi
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
@@ -516,10 +504,6 @@ pods:
           ./scripts/install-plugins.sh
           ./scripts/setup-java-policy.sh
           ./scripts/customize-log4j2.sh
-
-          if [ "${COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED}" = true ]; then
-          sudo chown {{FRAMEWORK_USER}} $MESOS_SANDBOX/container-path -R
-          fi
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
