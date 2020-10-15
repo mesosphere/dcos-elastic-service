@@ -48,6 +48,8 @@
     "FRAMEWORK_PRINCIPAL": "{{service.service_account}}",
     "FRAMEWORK_LOG_LEVEL": "{{service.log_level}}",
     "PROMETHEUS_EXPORTER_URI" : "{{resource.assets.uris.prometheus-exporter-tar-gz}}",
+    "CONTAINER_LOGGER_LOGROTATE_MAX_STDOUT_SIZE": "{{service.logrotate_options.stdout_max_size}}",
+    "CONTAINER_LOGGER_LOGROTATE_MAX_STDERR_SIZE": "{{service.logrotate_options.stderr_max_size}}",
     {{#service.service_account_secret}}
     "DCOS_SERVICE_ACCOUNT_CREDENTIAL": "secrets/service-account.json",
     "MESOS_MODULES": "{\"libraries\":[{\"file\":\"libmesos-bundle\/lib\/mesos\/libdcos_security.so\",\"modules\":[{\"name\": \"com_mesosphere_dcos_ClassicRPCAuthenticatee\",\"parameters\":[{\"key\":\"service_account_credential\",\"value\":\"file://secrets/service-account.json\"}]},{\"name\":\"com_mesosphere_dcos_http_Authenticatee\",\"parameters\":[{\"key\":\"service_account_credential\",\"value\":\"file://secrets/service-account.json\"},{\"key\":\"jwt_exp_timeout\",\"value\":\"5mins\"},{\"key\":\"preemptive_refresh_duration\",\"value\":\"30mins\"}]}]}]}",
