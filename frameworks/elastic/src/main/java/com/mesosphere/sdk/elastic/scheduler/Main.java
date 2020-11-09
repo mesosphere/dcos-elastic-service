@@ -1,5 +1,6 @@
 package com.mesosphere.sdk.elastic.scheduler;
 
+import com.mesosphere.sdk.framework.EnvStore;
 import com.mesosphere.sdk.scheduler.DefaultScheduler;
 import com.mesosphere.sdk.scheduler.SchedulerBuilder;
 import com.mesosphere.sdk.scheduler.SchedulerConfig;
@@ -20,7 +21,7 @@ import java.util.Collections;
  */
 public final class Main {
   private static final String CUSTOM_YAML_BLOCK_BASE64_ENV = "CUSTOM_YAML_BLOCK_BASE64";
-  private static final String REPLACEMENT_FAILURE_POLICY_ENABLED_ENV = "REPLACEMENT_FAILURE_POLICY_ENABLED";
+  private static final String ENABLE_AUTOMATIC_POD_REPLACEMENT_ENV = "ENABLE_AUTOMATIC_POD_REPLACEMENT";
   private Main() {}
 
   public static void main(String[] args) throws Exception {
@@ -70,8 +71,7 @@ public final class Main {
 
     DefaultServiceSpec.Builder builder = DefaultServiceSpec.newBuilder(serviceSpecGenerator.build());
 
-    String replacementFailurePolicyEnabled = System.getenv(REPLACEMENT_FAILURE_POLICY_ENABLED_ENV);
-    if (replacementFailurePolicyEnabled != null && replacementFailurePolicyEnabled.equals("true")) {
+    if (EnvStore.fromEnv().getOptionalBoolean(ENABLE_AUTOMATIC_POD_REPLACEMENT_ENV, false)) {
       builder.replacementFailurePolicy(getReplacementFailurePolicy());
     }
 

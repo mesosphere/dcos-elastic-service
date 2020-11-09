@@ -107,7 +107,7 @@
           "description": "Replacement failure policy",
           "type": "object",
           "properties": {
-            "enabled": {
+            "enable_automatic_pod_replacement": {
               "description": "Replacement failure policy enabled",
               "type": "boolean",
               "default": false
@@ -115,12 +115,12 @@
             "permanent_failure_timeout_secs": {
               "description": "Permanent failure timeout in seconds",
               "type": "integer",
-              "default": 60
+              "default": 120
             },
             "min_replace_delay_secs": {
               "description": "Minimal replacement delay in seconds",
               "type": "integer",
-              "default": 30
+              "default": 240
             }
           }
         },

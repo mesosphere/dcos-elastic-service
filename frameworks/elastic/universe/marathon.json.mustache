@@ -43,9 +43,11 @@
     "BOOTSTRAP_URI": "{{resource.assets.uris.bootstrap-zip}}",
     "JAVA_URI": "{{resource.assets.uris.jre-tar-gz}}",
     "LIBMESOS_URI": "{{resource.assets.uris.libmesos-bundle-tar-gz}}",
-    "REPLACEMENT_FAILURE_POLICY_ENABLED_ENV": "{{service.replacement_failure_policy.enabled}}",
+    {{#service.replacement_failure_policy.enable_automatic_pod_replacement}}
+    "ENABLE_AUTOMATIC_POD_REPLACEMENT": "{{service.replacement_failure_policy.enable_automatic_pod_replacement}}",
     "PERMANENT_FAILURE_TIMEOUT_SECS": "{{service.replacement_failure_policy.permanent_failure_timeout_secs}}",
     "MIN_REPLACE_DELAY_SECS": "{{service.replacement_failure_policy.min_replace_delay_secs}}",
+    {{/service.replacement_failure_policy.enable_automatic_pod_replacement}}
     "FRAMEWORK_NAME": "{{service.name}}",
     "FRAMEWORK_USER": "{{service.user}}",
     "FRAMEWORK_PRINCIPAL": "{{service.service_account}}",
