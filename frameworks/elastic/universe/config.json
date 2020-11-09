@@ -103,6 +103,27 @@
             "type": "application/x-region+string"
           }
         },
+        "replacement_failure_policy" : {
+          "description": "Replacement failure policy",
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "description": "Replacement failure policy enabled",
+              "type": "boolean",
+              "default": false
+            },
+            "permanent_failure_timeout_secs": {
+              "description": "Permanent failure timeout in seconds",
+              "type": "integer",
+              "default": 60
+            },
+            "min_replace_delay_secs": {
+              "description": "Minimal replacement delay in seconds",
+              "type": "integer",
+              "default": 30
+            }
+          }
+        },
         "update_strategy": {
           "description": "Elasticsearch update strategy. [parallel, serial]",
           "type": "string",
