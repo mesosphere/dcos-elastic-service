@@ -78,7 +78,7 @@ def configure_package(configure_security: None, configure_external_volumes: None
 
 @pytest.mark.external_volumes
 @pytest.mark.sanity
-def test_metrics() -> None:
+def test_data_integrity() -> None:
     _post_docs_with_bulk_request(DOCS_NUMBER)
     sdk_install.uninstall(config.PACKAGE_NAME, service_name)
     sdk_install.install(
