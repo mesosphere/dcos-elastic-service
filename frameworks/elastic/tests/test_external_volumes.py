@@ -14,29 +14,25 @@ from tests.test_data_integrity import _post_docs_with_bulk_request, _assert_inde
 
 log = logging.getLogger(__name__)
 service_name = sdk_utils.get_foldered_name(config.SERVICE_NAME)
-DOC_COUNT=100
+DOCS_NUMBER = 1000
 
 master_external_volume = {
     "external_volume": {
         "enabled": True,
         "portworx_volume_options": "size=50",
-        "volume_name": "MasterNodeVolume"
+        "volume_name": "MasterNodeVolume",
     }
 }
 
 data_external_volume = {
-    "external_volume": {
-        "enabled": True,
-        "portworx_volume_options": "size=50",
-        "volume_name": ""
-    }
+    "external_volume": {"enabled": True, "portworx_volume_options": "size=50", "volume_name": ""}
 }
 
 coordinator_external_volume = {
     "external_volume": {
         "enabled": True,
         "portworx_volume_options": "size=50",
-        "volume_name": "CoordinatorNodeVolume"
+        "volume_name": "CoordinatorNodeVolume",
     }
 }
 
@@ -44,7 +40,7 @@ ingest_external_volume = {
     "external_volume": {
         "enabled": True,
         "portworx_volume_options": "size=50",
-        "volume_name": "IngestNodeVolume"
+        "volume_name": "IngestNodeVolume",
     }
 }
 
@@ -52,14 +48,15 @@ volume_options = {
     "service": {
         "replacement_failure_policy": {
             "enable_automatic_pod_replacement": True,
-            "permanent_failure_timeout_secs": 60
-        },
+            "permanent_failure_timeout_secs": 60,
+        }
     },
     "master_nodes": master_external_volume,
     "data_nodes": data_external_volume,
     "coordinator_nodes": coordinator_external_volume,
-    "ingest_nodes": ingest_external_volume
+    "ingest_nodes": ingest_external_volume,
 }
+
 
 @pytest.fixture(scope="module", autouse=True)
 def configure_package(configure_security: None, configure_external_volumes: None) -> Iterator[None]:
@@ -71,25 +68,27 @@ def configure_package(configure_security: None, configure_external_volumes: None
             config.PACKAGE_NAME,
             service_name,
             config.DEFAULT_TASK_COUNT,
-            additional_options=volume_options
+            additional_options=volume_options,
         )
 
         yield  # let the test session execute
     finally:
         sdk_install.uninstall(config.PACKAGE_NAME, service_name)
 
+
 @pytest.mark.external_volumes
 @pytest.mark.sanity
 def test_metrics() -> None:
-    _post_docs_with_bulk_request(DOC_COUNT)
+    _post_docs_with_bulk_request(DOCS_NUMBER)
     sdk_install.uninstall(config.PACKAGE_NAME, service_name)
     sdk_install.install(
         config.PACKAGE_NAME,
         service_name,
         config.DEFAULT_TASK_COUNT,
-        additional_options=volume_options
+        additional_options=volume_options,
     )
-    _assert_indexed_docs_number(DOC_COUNT)
+    _assert_indexed_docs_number(DOCS_NUMBER)
+
 
 @pytest.mark.external_volumes
 @pytest.mark.sanity
@@ -128,4 +127,3 @@ def test_auto_replace_on_drain():
 
     # Reactivate the drained agent, otherwise uninstall plans will be halted for portworx
     sdk_agents.reactivate_agent(replace_agent_id)
-

@@ -36,6 +36,7 @@ def pytest_runtest_setup(item):
         if previousfailed is not None:
             pytest.xfail("previous test failed (%s)" % previousfailed.name)
 
+
 @pytest.fixture(scope="session")
 def configure_external_volumes():
     # Handle creation of external volumes.
