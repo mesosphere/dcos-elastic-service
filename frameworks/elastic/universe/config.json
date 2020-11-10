@@ -103,7 +103,7 @@
             "type": "application/x-region+string"
           }
         },
-        "replacement_failure_policy" : {
+        "replacement_failure_policy": {
           "description": "Replacement failure policy",
           "type": "object",
           "properties": {
