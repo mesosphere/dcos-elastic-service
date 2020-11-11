@@ -223,6 +223,11 @@
               "type": "string",
               "description": "Volume name. If empty service path will be used.",
               "default": ""
+            },
+            "driver_name": {
+              "type": "string",
+              "description": "External Volume storage provider to use.",
+              "default": "pxd"
             }
           }
         },
@@ -362,6 +367,11 @@
               "type": "string",
               "description": "Volume name. If empty service path will be used.",
               "default": ""
+            },
+            "driver_name": {
+              "type": "string",
+              "description": "External Volume storage provider to use.",
+              "default": "pxd"
             }
           }
         },
@@ -496,6 +506,11 @@
               "type": "string",
               "description": "Volume name. If empty service path will be used.",
               "default": ""
+            },
+            "driver_name": {
+              "type": "string",
+              "description": "External Volume storage provider to use.",
+              "default": "pxd"
             }
           }
         },
@@ -630,6 +645,11 @@
               "type": "string",
               "description": "Volume name. If empty service path will be used.",
               "default": ""
+            },
+            "driver_name": {
+              "type": "string",
+              "description": "External Volume storage provider to use.",
+              "default": "pxd"
             }
           }
         },

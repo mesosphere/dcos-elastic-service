@@ -30,7 +30,7 @@ pods:
       portworx-volume:
         type: DOCKER
         container-path: "container-path"
-        driver-name: pxd
+        driver-name: {{MASTER_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
         driver-options: '{{{MASTER_NODE_EXTERNAL_VOLUME_PORTWORX_OPTIONS}}}'
         {{#MASTER_NODE_EXTERNAL_VOLUME_NAME}}
         volume-name: {{MASTER_NODE_EXTERNAL_VOLUME_NAME}}
@@ -150,7 +150,7 @@ pods:
       portworx-volume:
         type: DOCKER
         container-path: "container-path"
-        driver-name: pxd
+        driver-name: {{DATA_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
         driver-options: '{{{DATA_NODE_EXTERNAL_VOLUME_PORTWORX_OPTIONS}}}'
         {{#DATA_NODE_EXTERNAL_VOLUME_NAME}}
         volume-name: {{DATA_NODE_EXTERNAL_VOLUME_NAME}}
@@ -268,7 +268,7 @@ pods:
       portworx-volume:
         type: DOCKER
         container-path: "container-path"
-        driver-name: pxd
+        driver-name: {{INGEST_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
         driver-options: '{{{INGEST_NODE_EXTERNAL_VOLUME_PORTWORX_OPTIONS}}}'
         {{#INGEST_NODE_EXTERNAL_VOLUME_NAME}}
         volume-name: {{INGEST_NODE_EXTERNAL_VOLUME_NAME}}
@@ -453,7 +453,7 @@ pods:
       portworx-volume:
         type: DOCKER
         container-path: "container-path"
-        driver-name: pxd
+        driver-name: {{COORDINATOR_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
         driver-options: '{{{COORDINATOR_NODE_EXTERNAL_VOLUME_PORTWORX_OPTIONS}}}'
         {{#COORDINATOR_NODE_EXTERNAL_VOLUME_NAME}}
         volume-name: {{COORDINATOR_NODE_EXTERNAL_VOLUME_NAME}}
