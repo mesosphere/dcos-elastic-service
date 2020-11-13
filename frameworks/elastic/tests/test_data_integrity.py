@@ -18,7 +18,7 @@ SHARDS_NUMBER = 3
 DATA_NODES_NUMBER = 3
 ALL_NODES_NUMBER = 7
 
-DOCS_NUMBER = 1000
+DOCS_NUMBER = 100
 INTERVALS_NUMBER = 10
 INDEXER_INTERVAL_IN_SECONDS = 10
 
@@ -106,7 +106,7 @@ def _post_docs_with_bulk_request(docs_number: int) -> None:
     bulk_response = config._curl_query(
         service_name,
         "POST",
-        "{}/{}/_bulk?refresh=wait_for&timeout=60s".format(index_name, index_type),
+        "{}/{}/_bulk?refresh=wait_for".format(index_name, index_type),
         _generate_elastic_docs_as_ndjson(docs_number),
     )
     assert not bulk_response["errors"]

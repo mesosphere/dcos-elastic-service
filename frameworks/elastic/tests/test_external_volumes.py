@@ -14,7 +14,7 @@ from tests.test_data_integrity import _post_docs_with_bulk_request, _assert_inde
 
 log = logging.getLogger(__name__)
 service_name = sdk_utils.get_foldered_name(config.SERVICE_NAME)
-DOCS_NUMBER = 1000
+DOCS_NUMBER = 100
 
 master_external_volume = {
     "external_volume": {
