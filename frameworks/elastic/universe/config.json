@@ -214,7 +214,7 @@
               "description": "If true, external profile will be used.",
               "default": false
             },
-            "portworx_volume_options": {
+            "driver_options": {
               "type": "string",
               "default": "size=50",
               "description": "Volume options."
@@ -358,7 +358,7 @@
               "description": "If true, external profile will be used.",
               "default": false
             },
-            "portworx_volume_options": {
+            "driver_options": {
               "type": "string",
               "default": "size=100",
               "description": "Volume options."
@@ -497,7 +497,7 @@
               "description": "If true, external profile will be used.",
               "default": false
             },
-            "portworx_volume_options": {
+            "driver_options": {
               "type": "string",
               "default": "size=20",
               "description": "Volume options."
@@ -636,7 +636,7 @@
               "description": "If true, external profile will be used.",
               "default": false
             },
-            "portworx_volume_options": {
+            "driver_options": {
               "type": "string",
               "default": "size=20",
               "description": "Volume options."

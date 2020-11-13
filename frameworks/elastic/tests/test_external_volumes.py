@@ -19,19 +19,19 @@ DOCS_NUMBER = 100
 master_external_volume = {
     "external_volume": {
         "enabled": True,
-        "portworx_volume_options": "size=50",
+        "driver_options": "size=50",
         "volume_name": "MasterNodeVolume",
     }
 }
 
 data_external_volume = {
-    "external_volume": {"enabled": True, "portworx_volume_options": "size=50", "volume_name": ""}
+    "external_volume": {"enabled": True, "driver_options": "size=50", "volume_name": ""}
 }
 
 coordinator_external_volume = {
     "external_volume": {
         "enabled": True,
-        "portworx_volume_options": "size=50",
+        "driver_options": "size=50",
         "volume_name": "CoordinatorNodeVolume",
     }
 }
@@ -39,7 +39,7 @@ coordinator_external_volume = {
 ingest_external_volume = {
     "external_volume": {
         "enabled": True,
-        "portworx_volume_options": "size=50",
+        "driver_options": "size=50",
         "volume_name": "IngestNodeVolume",
     }
 }

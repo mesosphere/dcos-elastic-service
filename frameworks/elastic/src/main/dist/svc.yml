@@ -31,7 +31,7 @@ pods:
         type: DOCKER
         container-path: "container-path"
         driver-name: {{MASTER_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
-        driver-options: '{{{MASTER_NODE_EXTERNAL_VOLUME_PORTWORX_OPTIONS}}}'
+        driver-options: '{{{MASTER_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS}}}'
         {{#MASTER_NODE_EXTERNAL_VOLUME_NAME}}
         volume-name: {{MASTER_NODE_EXTERNAL_VOLUME_NAME}}
         {{/MASTER_NODE_EXTERNAL_VOLUME_NAME}}
@@ -151,7 +151,7 @@ pods:
         type: DOCKER
         container-path: "container-path"
         driver-name: {{DATA_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
-        driver-options: '{{{DATA_NODE_EXTERNAL_VOLUME_PORTWORX_OPTIONS}}}'
+        driver-options: '{{{DATA_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS}}}'
         {{#DATA_NODE_EXTERNAL_VOLUME_NAME}}
         volume-name: {{DATA_NODE_EXTERNAL_VOLUME_NAME}}
         {{/DATA_NODE_EXTERNAL_VOLUME_NAME}}
@@ -269,7 +269,7 @@ pods:
         type: DOCKER
         container-path: "container-path"
         driver-name: {{INGEST_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
-        driver-options: '{{{INGEST_NODE_EXTERNAL_VOLUME_PORTWORX_OPTIONS}}}'
+        driver-options: '{{{INGEST_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS}}}'
         {{#INGEST_NODE_EXTERNAL_VOLUME_NAME}}
         volume-name: {{INGEST_NODE_EXTERNAL_VOLUME_NAME}}
         {{/INGEST_NODE_EXTERNAL_VOLUME_NAME}}
@@ -454,7 +454,7 @@ pods:
         type: DOCKER
         container-path: "container-path"
         driver-name: {{COORDINATOR_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
-        driver-options: '{{{COORDINATOR_NODE_EXTERNAL_VOLUME_PORTWORX_OPTIONS}}}'
+        driver-options: '{{{COORDINATOR_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS}}}'
         {{#COORDINATOR_NODE_EXTERNAL_VOLUME_NAME}}
         volume-name: {{COORDINATOR_NODE_EXTERNAL_VOLUME_NAME}}
         {{/COORDINATOR_NODE_EXTERNAL_VOLUME_NAME}}
