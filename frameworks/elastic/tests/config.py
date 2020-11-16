@@ -80,7 +80,7 @@ DEFAULT_SETTINGS_MAPPINGS = {
     retry_on_result=lambda res: not res,
 )
 def check_kibana_adminrouter_integration(path: str) -> bool:
-    curl_cmd = 'curl -L -I -k -H "Authorization: token={}" -s {}/{}'.format(
+    curl_cmd = 'curl -L -I -k -H "Authorization: token={}" -s -X GET {}/{}'.format(
         sdk_utils.dcos_token(), sdk_utils.dcos_url().rstrip("/"), path.lstrip("/")
     )
     rc, stdout, _ = sdk_cmd.master_ssh(curl_cmd)

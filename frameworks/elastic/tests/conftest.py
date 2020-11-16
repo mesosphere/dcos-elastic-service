@@ -1,7 +1,9 @@
 from typing import Iterator
 
+import os
 import pytest
 import sdk_security
+import sdk_external_volumes
 from tests import config
 
 
@@ -34,3 +36,14 @@ def pytest_runtest_setup(item):
         previousfailed = getattr(item.parent, "_previousfailed", None)
         if previousfailed is not None:
             pytest.xfail("previous test failed (%s)" % previousfailed.name)
+
+
+@pytest.fixture(scope="session")
+def configure_external_volumes():
+    if is_env_var_set("ENABLE_EXTERNAL_VOLUMES", default=str(False)):
+        yield from sdk_external_volumes.external_volumes_session()
+    else:
+        yield
+
+def is_env_var_set(key: str, default: str) -> bool:
+    return str(os.environ.get(key, default)).lower() in ["true", "1"]

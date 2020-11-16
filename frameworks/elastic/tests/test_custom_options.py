@@ -42,11 +42,11 @@ def test_xmx_and_xms_flags(configure_security):
         },
     )
     # getting all the tasks and checking the flag duplicacy by running curl_cmd command.
-    for task in sdk_tasks.get_task_ids(config.SERVICE_NAME):
+    for task in sdk_tasks.get_service_tasks(config.SERVICE_NAME):
         cmd = "ps aux"
         flag_xms = "Xms"
         flag_xmx = "Xmx"
-        exit_code, stdout, stderr = sdk_cmd.service_task_exec(config.SERVICE_NAME, task, cmd)
+        exit_code, stdout, stderr = sdk_cmd.service_task_exec(config.SERVICE_NAME, task.name, cmd)
 
         if not str(task).count("exporter"):
             assert str(stdout).count(flag_xms) == 1, "Default xms flag prefix should appear once"
@@ -55,7 +55,7 @@ def test_xmx_and_xms_flags(configure_security):
         if str(task).count("master"):
             master_xms = flag_xms + str(MASTER_NODE_HEAP)
             master_xmx = flag_xmx + str(MASTER_NODE_HEAP)
-            log.info("Checking flags in master node: " + task)
+            log.info("Checking flags in master node: " + task.name)
             assert (
                 str(stdout).count(master_xms) == 1
             ), "Configured master node xms flag prefix should appear once"
@@ -66,7 +66,7 @@ def test_xmx_and_xms_flags(configure_security):
         if str(task).count("data"):
             data_xms = flag_xms + str(DATA_NODE_HEAP)
             data_xmx = flag_xmx + str(DATA_NODE_HEAP)
-            log.info("Checking flags in data node: " + task)
+            log.info("Checking flags in data node: " + task.name)
             assert (
                 str(stdout).count(data_xms) == 1
             ), "Configured data node xms flag prefix should appear once"
@@ -77,7 +77,7 @@ def test_xmx_and_xms_flags(configure_security):
         if str(task).count("coordinator"):
             coordinator_xms = flag_xms + str(COORDINATOR_NODE_HEAP)
             coordinator_xmx = flag_xmx + str(COORDINATOR_NODE_HEAP)
-            log.info("Checking flags in coordinator node: " + task)
+            log.info("Checking flags in coordinator node: " + task.name)
             assert (
                 str(stdout).count(coordinator_xms) == 1
             ), "Configured coordinator node xms flag prefix should appear once"
@@ -88,7 +88,7 @@ def test_xmx_and_xms_flags(configure_security):
         if str(task).count("ingest"):
             ingest_xms = flag_xms + str(INGEST_NODE_HEAP)
             ingest_xmx = flag_xmx + str(INGEST_NODE_HEAP)
-            log.info("Checking flags in ingest node: " + task)
+            log.info("Checking flags in ingest node: " + task.name)
             assert (
                 str(stdout).count(ingest_xms) == 1
             ), "Configured ingest node flag xms prefix should appear once"

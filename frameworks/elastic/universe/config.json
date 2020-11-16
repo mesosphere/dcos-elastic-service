@@ -119,6 +119,27 @@
             "type": "application/x-region+string"
           }
         },
+        "replacement_failure_policy": {
+          "description": "Replacement failure policy",
+          "type": "object",
+          "properties": {
+            "enable_automatic_pod_replacement": {
+              "description": "Replacement failure policy enabled",
+              "type": "boolean",
+              "default": false
+            },
+            "permanent_failure_timeout_secs": {
+              "description": "Permanent failure timeout in seconds",
+              "type": "integer",
+              "default": 120
+            },
+            "min_replace_delay_secs": {
+              "description": "Minimal replacement delay in seconds",
+              "type": "integer",
+              "default": 240
+            }
+          }
+        },
         "update_strategy": {
           "description": "Elasticsearch update strategy. [parallel, serial]",
           "type": "string",
@@ -199,6 +220,32 @@
         "volume_profile": {
           "type": "string",
           "description": "Volume profile to be used for storing Master Node data."
+        },
+        "external_volume": {
+          "type": "object",
+          "description": "The Master node's external volume configuration.\nOnly Portworx external volumes are supported.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If true, external profile will be used.",
+              "default": false
+            },
+            "driver_options": {
+              "type": "string",
+              "default": "size=50",
+              "description": "Volume options."
+            },
+            "volume_name": {
+              "type": "string",
+              "description": "Volume name. If empty service path will be used.",
+              "default": ""
+            },
+            "driver_name": {
+              "type": "string",
+              "description": "External Volume storage provider to use.",
+              "default": "pxd"
+            }
+          }
         },
         "transport_port": {
           "description": "Transport port for master nodes to listen on.",
@@ -318,6 +365,32 @@
           "type": "string",
           "description": "Volume profile to be used for storing Data Node data."
         },
+        "external_volume": {
+          "type": "object",
+          "description": "The Data node's external volume configuration.\nOnly Portworx external volumes are supported.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If true, external profile will be used.",
+              "default": false
+            },
+            "driver_options": {
+              "type": "string",
+              "default": "size=100",
+              "description": "Volume options."
+            },
+            "volume_name": {
+              "type": "string",
+              "description": "Volume name. If empty service path will be used.",
+              "default": ""
+            },
+            "driver_name": {
+              "type": "string",
+              "description": "External Volume storage provider to use.",
+              "default": "pxd"
+            }
+          }
+        },
         "placement": {
           "description": "Placement constraints for data nodes (e.g., [[\"hostname\", \"UNIQUE\"]]).",
           "type": "string",
@@ -431,6 +504,32 @@
           "type": "string",
           "description": "Volume profile to be used for storing Ingest Node data."
         },
+        "external_volume": {
+          "type": "object",
+          "description": "The Ingest node's external volume configuration.\nOnly Portworx external volumes are supported.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If true, external profile will be used.",
+              "default": false
+            },
+            "driver_options": {
+              "type": "string",
+              "default": "size=20",
+              "description": "Volume options."
+            },
+            "volume_name": {
+              "type": "string",
+              "description": "Volume name. If empty service path will be used.",
+              "default": ""
+            },
+            "driver_name": {
+              "type": "string",
+              "description": "External Volume storage provider to use.",
+              "default": "pxd"
+            }
+          }
+        },
         "placement": {
           "description": "Placement constraints for ingest nodes (e.g., [[\"hostname\", \"UNIQUE\"]]).",
           "type": "string",
@@ -543,6 +642,32 @@
         "volume_profile": {
           "type": "string",
           "description": "Volume profile to be used for storing Coordinator Node data."
+        },
+        "external_volume": {
+          "type": "object",
+          "description": "The Coordinator node's external volume configuration.\nOnly Portworx external volumes are supported.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If true, external profile will be used.",
+              "default": false
+            },
+            "driver_options": {
+              "type": "string",
+              "default": "size=20",
+              "description": "Volume options."
+            },
+            "volume_name": {
+              "type": "string",
+              "description": "Volume name. If empty service path will be used.",
+              "default": ""
+            },
+            "driver_name": {
+              "type": "string",
+              "description": "External Volume storage provider to use.",
+              "default": "pxd"
+            }
+          }
         },
         "placement": {
           "description": "Placement constraints for coordinator nodes (e.g., [[\"hostname\", \"UNIQUE\"]]).",

@@ -14,6 +14,7 @@ import sdk_plan
 import sdk_service
 import sdk_tasks
 import sdk_utils
+import retrying
 from tests import config
 
 log = logging.getLogger(__name__)
@@ -127,8 +128,9 @@ def test_metrics() -> None:
     assert len(elastic_metrics) > 0
 
     node_types = ["master", "data", "coordinator"]
-    node_names = get_node_names_from_metrics(elastic_metrics)
+    node_names = get_metrics()
     for node_type in node_types:
+        log.info("Check metrics for {}".format(node_type))
         assert len(list(filter(lambda x: x.startswith(node_type), node_names))) > 0
 
 
@@ -145,6 +147,21 @@ def get_node_names_from_metrics(metrics: List[Dict[Any, Any]]) -> Set[str]:
             names.add(metric["tags"]["name"])
     return names
 
+
+@retrying.retry(
+    wait_fixed=1000,
+    retry_on_exception=lambda e: isinstance(e, AssertionError)
+)
+def get_metrics():
+    metrics = sdk_metrics.wait_for_metrics_from_cli("exporter-0-node", 60)
+    names = set()
+    for metric in metrics:
+        if "name" in metric["tags"]:
+            names.add(metric["tags"]["name"])
+
+    for node_type in ["master", "data", "coordinator"]:
+        assert len(list(filter(lambda x: x.startswith(node_type), names))) > 0
+    return names
 
 @pytest.mark.incremental
 @pytest.mark.sanity
@@ -378,7 +395,7 @@ def test_plugin_install_via_proxy() -> None:
         _install_and_run_proxy(proxy_host, proxy_port)
 
         plugin_name = "analysis-ukrainian"
-        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-7.6.0.zip"
+        plugins = "https://s3.amazonaws.com/downloads.mesosphere.io/infinity-artifacts/elastic/analysis-ukrainian-7.9.3.zip"
         _check_proxy_healthy(proxy_host, proxy_port, plugins)
 
         sdk_service.update_configuration(

@@ -25,6 +25,18 @@ pods:
         soft: {{MASTER_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{MASTER_NODE_RLIMIT_NOFILE_HARD}}
     placement: '{{{MASTER_NODE_PLACEMENT}}}'
+    {{#MASTER_NODE_EXTERNAL_VOLUME_ENABLED}}
+    external-volumes:
+      portworx-volume:
+        type: DOCKER
+        container-path: "container-path"
+        driver-name: {{MASTER_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
+        driver-options: '{{{MASTER_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS}}}'
+        {{#MASTER_NODE_EXTERNAL_VOLUME_NAME}}
+        volume-name: {{MASTER_NODE_EXTERNAL_VOLUME_NAME}}
+        {{/MASTER_NODE_EXTERNAL_VOLUME_NAME}}
+        volume-mode: RW
+    {{/MASTER_NODE_EXTERNAL_VOLUME_ENABLED}}
     tasks:
       node:
         goal: RUNNING
@@ -45,6 +57,7 @@ pods:
             vip:
               prefix: master
               port: 9300
+        {{^MASTER_NODE_EXTERNAL_VOLUME_ENABLED}}
         volume:
           path: "container-path"
           type: {{MASTER_NODE_DISK_TYPE}}
@@ -53,6 +66,7 @@ pods:
           profiles:
             - {{MASTER_NODE_VOLUME_PROFILE}}
           {{/MASTER_NODE_VOLUME_PROFILE}}
+        {{/MASTER_NODE_EXTERNAL_VOLUME_ENABLED}}
         cmd: |
           set -ex
 
@@ -71,6 +85,9 @@ pods:
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
+          {{#MASTER_NODE_EXTERNAL_VOLUME_ENABLED}}
+          MASTER_NODE_EXTERNAL_VOLUME_ENABLED: {{MASTER_NODE_EXTERNAL_VOLUME_ENABLED}}
+          {{/MASTER_NODE_EXTERNAL_VOLUME_ENABLED}}
           NODE_HEAP_MB: {{MASTER_NODE_HEAP_MB}}
           DATA_NODE_COUNT: {{DATA_NODE_COUNT}}
           MASTER_NODE_TRANSPORT_PORT: {{MASTER_NODE_TRANSPORT_PORT}}
@@ -141,6 +158,18 @@ pods:
         soft: {{DATA_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{DATA_NODE_RLIMIT_NOFILE_HARD}}
     placement: '{{{DATA_NODE_PLACEMENT}}}'
+    {{#DATA_NODE_EXTERNAL_VOLUME_ENABLED}}
+    external-volumes:
+      portworx-volume:
+        type: DOCKER
+        container-path: "container-path"
+        driver-name: {{DATA_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
+        driver-options: '{{{DATA_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS}}}'
+        {{#DATA_NODE_EXTERNAL_VOLUME_NAME}}
+        volume-name: {{DATA_NODE_EXTERNAL_VOLUME_NAME}}
+        {{/DATA_NODE_EXTERNAL_VOLUME_NAME}}
+        volume-mode: RW
+    {{/DATA_NODE_EXTERNAL_VOLUME_ENABLED}}
     tasks:
       node:
         goal: RUNNING
@@ -161,6 +190,7 @@ pods:
             vip:
               prefix: data
               port: 9300
+        {{^DATA_NODE_EXTERNAL_VOLUME_ENABLED}}
         volume:
           path: "container-path"
           type: {{DATA_NODE_DISK_TYPE}}
@@ -169,6 +199,7 @@ pods:
           profiles:
             - {{DATA_NODE_VOLUME_PROFILE}}
           {{/DATA_NODE_VOLUME_PROFILE}}
+        {{/DATA_NODE_EXTERNAL_VOLUME_ENABLED}}
         cmd: |
           set -ex
 
@@ -187,6 +218,9 @@ pods:
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
+          {{#DATA_NODE_EXTERNAL_VOLUME_ENABLED}}
+          DATA_NODE_EXTERNAL_VOLUME_ENABLED: {{DATA_NODE_EXTERNAL_VOLUME_ENABLED}}
+          {{/DATA_NODE_EXTERNAL_VOLUME_ENABLED}}
           NODE_HEAP_MB: {{DATA_NODE_HEAP_MB}}
           MASTER_NODE_TRANSPORT_PORT: {{MASTER_NODE_TRANSPORT_PORT}}
           DATA_ENABLED: true
@@ -255,6 +289,18 @@ pods:
         soft: {{INGEST_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{INGEST_NODE_RLIMIT_NOFILE_HARD}}
     placement: '{{{INGEST_NODE_PLACEMENT}}}'
+    {{#INGEST_NODE_EXTERNAL_VOLUME_ENABLED}}
+    external-volumes:
+      portworx-volume:
+        type: DOCKER
+        container-path: "container-path"
+        driver-name: {{INGEST_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
+        driver-options: '{{{INGEST_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS}}}'
+        {{#INGEST_NODE_EXTERNAL_VOLUME_NAME}}
+        volume-name: {{INGEST_NODE_EXTERNAL_VOLUME_NAME}}
+        {{/INGEST_NODE_EXTERNAL_VOLUME_NAME}}
+        volume-mode: RW
+    {{/INGEST_NODE_EXTERNAL_VOLUME_ENABLED}}
     tasks:
       node:
         goal: RUNNING
@@ -275,6 +321,7 @@ pods:
             vip:
               prefix: ingest
               port: 9300
+        {{^INGEST_NODE_EXTERNAL_VOLUME_ENABLED}}
         volume:
           path: "container-path"
           type: {{INGEST_NODE_DISK_TYPE}}
@@ -283,6 +330,7 @@ pods:
           profiles:
             - {{INGEST_NODE_VOLUME_PROFILE}}
           {{/INGEST_NODE_VOLUME_PROFILE}}
+        {{/INGEST_NODE_EXTERNAL_VOLUME_ENABLED}}
         cmd: |
           set -ex
 
@@ -301,6 +349,9 @@ pods:
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
+          {{#INGEST_NODE_EXTERNAL_VOLUME_ENABLED}}
+          INGEST_NODE_EXTERNAL_VOLUME_ENABLED: {{INGEST_NODE_EXTERNAL_VOLUME_ENABLED}}
+          {{/INGEST_NODE_EXTERNAL_VOLUME_ENABLED}}
           NODE_HEAP_MB: {{INGEST_NODE_HEAP_MB}}
           MASTER_NODE_TRANSPORT_PORT: {{MASTER_NODE_TRANSPORT_PORT}}
           DATA_ENABLED: false
@@ -436,6 +487,18 @@ pods:
         soft: {{COORDINATOR_NODE_RLIMIT_NOFILE_SOFT}}
         hard: {{COORDINATOR_NODE_RLIMIT_NOFILE_HARD}}
     placement: '{{{COORDINATOR_NODE_PLACEMENT}}}'
+    {{#COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED}}
+    external-volumes:
+      portworx-volume:
+        type: DOCKER
+        container-path: "container-path"
+        driver-name: {{COORDINATOR_NODE_EXTERNAL_VOLUME_DRIVER_NAME}}
+        driver-options: '{{{COORDINATOR_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS}}}'
+        {{#COORDINATOR_NODE_EXTERNAL_VOLUME_NAME}}
+        volume-name: {{COORDINATOR_NODE_EXTERNAL_VOLUME_NAME}}
+        {{/COORDINATOR_NODE_EXTERNAL_VOLUME_NAME}}
+        volume-mode: RW
+    {{/COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED}}
     tasks:
       node:
         goal: RUNNING
@@ -456,6 +519,7 @@ pods:
             vip:
               prefix: coordinator
               port: 9300
+        {{^COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED}}
         volume:
           path: "container-path"
           type: {{COORDINATOR_NODE_DISK_TYPE}}
@@ -464,6 +528,7 @@ pods:
           profiles:
             - {{COORDINATOR_NODE_VOLUME_PROFILE}}
           {{/COORDINATOR_NODE_VOLUME_PROFILE}}
+        {{/COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED}}
         cmd: |
           set -ex
 
@@ -482,6 +547,9 @@ pods:
 
           exec ./elasticsearch-{{ELASTIC_VERSION}}/bin/elasticsearch
         env:
+          {{#COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED}}
+          COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED: {{COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED}}
+          {{/COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED}}
           NODE_HEAP_MB: {{COORDINATOR_NODE_HEAP_MB}}
           MASTER_NODE_TRANSPORT_PORT: {{MASTER_NODE_TRANSPORT_PORT}}
           DATA_ENABLED: false

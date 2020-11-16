@@ -43,6 +43,11 @@
     "BOOTSTRAP_URI": "{{resource.assets.uris.bootstrap-zip}}",
     "JAVA_URI": "{{resource.assets.uris.jre-tar-gz}}",
     "LIBMESOS_URI": "{{resource.assets.uris.libmesos-bundle-tar-gz}}",
+    {{#service.replacement_failure_policy.enable_automatic_pod_replacement}}
+    "ENABLE_AUTOMATIC_POD_REPLACEMENT": "{{service.replacement_failure_policy.enable_automatic_pod_replacement}}",
+    "PERMANENT_FAILURE_TIMEOUT_SECS": "{{service.replacement_failure_policy.permanent_failure_timeout_secs}}",
+    "MIN_REPLACE_DELAY_SECS": "{{service.replacement_failure_policy.min_replace_delay_secs}}",
+    {{/service.replacement_failure_policy.enable_automatic_pod_replacement}}
     "FRAMEWORK_NAME": "{{service.name}}",
     "FRAMEWORK_USER": "{{service.user}}",
     "FRAMEWORK_PRINCIPAL": "{{service.service_account}}",
@@ -99,6 +104,12 @@
     {{#master_nodes.volume_profile}}
     "MASTER_NODE_VOLUME_PROFILE": "{{master_nodes.volume_profile}}",
     {{/master_nodes.volume_profile}}
+    {{#master_nodes.external_volume.enabled}}
+    "MASTER_NODE_EXTERNAL_VOLUME_ENABLED": "{{master_nodes.external_volume.enabled}}",
+    "MASTER_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS": "{{master_nodes.external_volume.driver_options}}",
+    "MASTER_NODE_EXTERNAL_VOLUME_NAME" : "{{master_nodes.external_volume.volume_name}}",
+    "MASTER_NODE_EXTERNAL_VOLUME_DRIVER_NAME" : "{{master_nodes.external_volume.driver_name}}",
+    {{/master_nodes.external_volume.enabled}}
     "MASTER_NODE_TRANSPORT_PORT": "{{master_nodes.transport_port}}",
     "DATA_NODE_COUNT": "{{data_nodes.count}}",
     "DATA_NODE_CPUS": "{{data_nodes.cpus}}",
@@ -110,6 +121,12 @@
     {{#data_nodes.volume_profile}}
     "DATA_NODE_VOLUME_PROFILE": "{{data_nodes.volume_profile}}",
     {{/data_nodes.volume_profile}}
+    {{#data_nodes.external_volume.enabled}}
+    "DATA_NODE_EXTERNAL_VOLUME_ENABLED": "{{data_nodes.external_volume.enabled}}",
+    "DATA_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS": "{{data_nodes.external_volume.driver_options}}",
+    "DATA_NODE_EXTERNAL_VOLUME_NAME" : "{{data_nodes.external_volume.volume_name}}",
+    "DATA_NODE_EXTERNAL_VOLUME_DRIVER_NAME" : "{{data_nodes.external_volume.driver_name}}",
+    {{/data_nodes.external_volume.enabled}}
     "INGEST_NODE_COUNT": "{{ingest_nodes.count}}",
     "INGEST_NODE_CPUS": "{{ingest_nodes.cpus}}",
     "INGEST_NODE_MEM": "{{ingest_nodes.mem}}",
@@ -120,6 +137,12 @@
     {{#ingest_nodes.volume_profile}}
     "INGEST_NODE_VOLUME_PROFILE": "{{ingest_nodes.volume_profile}}",
     {{/ingest_nodes.volume_profile}}
+    {{#ingest_nodes.external_volume.enabled}}
+    "INGEST_NODE_EXTERNAL_VOLUME_ENABLED": "{{ingest_nodes.external_volume.enabled}}",
+    "INGEST_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS": "{{ingest_nodes.external_volume.driver_options}}",
+    "INGEST_NODE_EXTERNAL_VOLUME_NAME" : "{{ingest_nodes.external_volume.volume_name}}",
+    "INGEST_NODE_EXTERNAL_VOLUME_DRIVER_NAME" : "{{ingest_nodes.external_volume.driver_name}}",
+    {{/ingest_nodes.external_volume.enabled}}
     "COORDINATOR_NODE_COUNT": "{{coordinator_nodes.count}}",
     "COORDINATOR_NODE_CPUS": "{{coordinator_nodes.cpus}}",
     "COORDINATOR_NODE_MEM": "{{coordinator_nodes.mem}}",
@@ -130,6 +153,12 @@
     {{#coordinator_nodes.volume_profile}}
     "COORDINATOR_NODE_VOLUME_PROFILE": "{{coordinator_nodes.volume_profile}}",
     {{/coordinator_nodes.volume_profile}}
+    {{#coordinator_nodes.external_volume.enabled}}
+    "COORDINATOR_NODE_EXTERNAL_VOLUME_ENABLED": "{{coordinator_nodes.external_volume.enabled}}",
+    "COORDINATOR_NODE_EXTERNAL_VOLUME_DRIVER_OPTIONS": "{{coordinator_nodes.external_volume.driver_options}}",
+    "COORDINATOR_NODE_EXTERNAL_VOLUME_NAME" : "{{coordinator_nodes.external_volume.volume_name}}",
+    "COORDINATOR_NODE_EXTERNAL_VOLUME_DRIVER_NAME" : "{{coordinator_nodes.external_volume.driver_name}}",
+    {{/coordinator_nodes.external_volume.enabled}}
     {{#prometheus_exporter.prometheus_exporter_enabled}}
     "PROMETHEUS_EXPORTER_ENABLED": "{{prometheus_exporter.prometheus_exporter_enabled}}",
     {{/prometheus_exporter.prometheus_exporter_enabled}}

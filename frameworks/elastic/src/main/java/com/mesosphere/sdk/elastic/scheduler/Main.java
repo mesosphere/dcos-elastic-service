@@ -1,11 +1,13 @@
 package com.mesosphere.sdk.elastic.scheduler;
 
+import com.mesosphere.sdk.framework.EnvStore;
 import com.mesosphere.sdk.scheduler.DefaultScheduler;
 import com.mesosphere.sdk.scheduler.SchedulerBuilder;
 import com.mesosphere.sdk.scheduler.SchedulerConfig;
 import com.mesosphere.sdk.scheduler.SchedulerRunner;
 import com.mesosphere.sdk.scheduler.SchedulerUtils;
 import com.mesosphere.sdk.specification.DefaultServiceSpec;
+import com.mesosphere.sdk.specification.ReplacementFailurePolicy;
 import com.mesosphere.sdk.specification.yaml.RawServiceSpec;
 
 import java.io.File;
@@ -19,7 +21,7 @@ import java.util.Collections;
  */
 public final class Main {
   private static final String CUSTOM_YAML_BLOCK_BASE64_ENV = "CUSTOM_YAML_BLOCK_BASE64";
-
+  private static final String ENABLE_AUTOMATIC_POD_REPLACEMENT_ENV = "ENABLE_AUTOMATIC_POD_REPLACEMENT";
   private Main() {}
 
   public static void main(String[] args) throws Exception {
@@ -31,6 +33,15 @@ public final class Main {
     SchedulerRunner
         .fromSchedulerBuilder(createSchedulerBuilder(new File(args[0])))
         .run();
+  }
+
+  private static ReplacementFailurePolicy getReplacementFailurePolicy() throws Exception {
+    return ReplacementFailurePolicy.newBuilder()
+            .permanentFailureTimoutSecs(
+                    Integer.valueOf(System.getenv("PERMANENT_FAILURE_TIMEOUT_SECS")))
+            .minReplaceDelaySecs(
+                    Integer.valueOf(System.getenv("MIN_REPLACE_DELAY_SECS")))
+            .build();
   }
 
   private static SchedulerBuilder createSchedulerBuilder(File yamlSpecFile) throws Exception {
@@ -58,7 +69,13 @@ public final class Main {
       serviceSpecGenerator.setAllPodsEnv("CUSTOM_YAML_BLOCK", esYamlBlock);
     }
 
-    return DefaultScheduler.newBuilder(serviceSpecGenerator.build(), schedulerConfig)
+    DefaultServiceSpec.Builder builder = DefaultServiceSpec.newBuilder(serviceSpecGenerator.build());
+
+    if (EnvStore.fromEnv().getOptionalBoolean(ENABLE_AUTOMATIC_POD_REPLACEMENT_ENV, false)) {
+      builder.replacementFailurePolicy(getReplacementFailurePolicy());
+    }
+
+    return DefaultScheduler.newBuilder(builder.build(), schedulerConfig)
         .setCustomConfigValidators(Collections.singletonList(new ElasticZoneValidator()))
         .setPlansFrom(rawServiceSpec)
         .withSingleRegionConstraint();
